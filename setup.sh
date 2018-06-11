@@ -54,6 +54,43 @@ brew bundle install
 echo '📦 Installing Node Version Manager'
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
 
+# VSCode Extensions
+echo '⌨️ Installing VSCode Extension: Theme, Night Owl'
+code --install-extension sdras.night-owl
+
+echo '⌨️ Installing VSCode Extension: Pigments'
+code --install-extension jaspernorth.vscode-pigments
+
+echo '⌨️ Installing VSCode Extension: Prettier'
+code --install-extension esbenp.prettier-vscode
+
+echo '⌨️ Installing VSCode Extension: Emmet'
+code --install-extension FallenMax.mithril-emmet
+
+echo '⌨️ Installing VSCode Extension: Debugger for Chrome'
+code --install-extension msjsdiag.debugger-for-chrome
+
+echo '⌨️ Installing VSCode Extension: JavaScript (ES6) code snippets'
+code --install-extension xabikos.JavaScriptSnippets
+
+echo '⌨️ Installing VSCode Extension: React-Native/React/Redux snippets for es6/es7'
+code --install-extension EQuimper.react-native-react-redux
+
+echo '⌨️ Installing VSCode Extension: React Standard Style code snippets'
+code --install-extension TimonVS.ReactSnippetsStandard
+
+echo '⌨️ Installing VSCode Extension: TODO Highlight'
+code --install-extension wayou.vscode-todo-highlight
+
+echo '⌨️ Installing VSCode Extension: Auto Close Tag'
+code --install-extension formulahendry.auto-close-tag
+
+echo '⌨️ Installing VSCode Extension: GitLens — Git supercharged'
+code --install-extension eamodio.gitlens
+
+echo '⌨️ Installing VSCode Extension: Live Server'
+code --install-extension ritwickdey.LiveServer
+
 echo -e "
 ✅ Setup script complete
 
