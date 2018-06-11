@@ -1,4 +1,24 @@
 {
+    // Specifies the color theme used in the workbench.
     "workbench.colorTheme": "Night Owl",
-    "window.zoomLevel": 1
+
+    // Controls the font family.
+    "editor.fontFamily": "Dank Mono",
+
+    // Controls the font size in pixels.
+    "editor.fontSize": 15,
+    
+      // Enables font ligatures
+    "editor.fontLigatures": true,
+
+    // Adjust the zoom level of the window. The original size is 0 and each increment above (e.g. 1) or below (e.g. -1) represents zooming 20% larger or smaller. You can also enter decimals to adjust the zoom level with a finer granularity.
+    "window.zoomLevel": 0,
+
+    // Whether auto fetching is enabled
+    "git.autofetch": true,
+
+    // Specifies which messages should be suppressed
+    "gitlens.advanced.messages": {
+        "suppressShowKeyBindingsNotice": true
+    }
 }
