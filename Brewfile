@@ -24,6 +24,8 @@ cask 'Sonos'                   # For the jams
 cask 'drobo-dashboard'         # NAS
 cask 'snagit'                  # Screenshots
 cask 'microsoft-office'        # You know what this is
+cask 'hyper'                   # A fine electron-based terminal
+cask 'now'                     # Used for quick deployments
 
 mas 'Slack', id: 803453959
 mas '1Password 7', id: 1333542190
