@@ -1,0 +1,24 @@
+[user]
+	name = Arnold Sandoval
+	email = arnold@arnie.io
+[github]
+	user = arnoldsandoval
+	token = XXXXXXXXXXXXXXXXXXXXXXXXX
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+[alias]
+	st = status
+	ci = commit
+	co = checkout
+	cp = cherry-pick
+[merge]
+	tool = opendiff
+[core]
+	legacyheaders = false
+	whitespace = fix
+[repack]
+	usedeltabaseoffset = true
+[apply]
+	whitespace = nowarn
