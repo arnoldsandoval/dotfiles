@@ -26,13 +26,13 @@ cask 'snagit'                  # Screenshots
 cask 'microsoft-office'        # You know what this is
 cask 'hyper'                   # A fine electron-based terminal
 cask 'now'                     # Used for quick deployments
+cask 'spectacle'               # Window Manager
 
 mas 'Slack', id: 803453959
 mas '1Password 7', id: 1333542190
 mas 'xScope 4', id: 889428659
 mas 'Xcode', id: 497799835
 mas 'Bear', id: 1091189122
-mas 'Divvy - Window Manager', id: 413857545
 mas 'Micro Snitch', id: 972028355
 mas 'Taurine', id: 960276676
 mas 'Tweetbot 2 for Twitter', id: 557168941
