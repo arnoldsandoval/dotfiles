@@ -13,6 +13,7 @@
 	ci = commit
 	co = checkout
 	cp = cherry-pick
+	ga = add
 [merge]
 	tool = opendiff
 [core]
