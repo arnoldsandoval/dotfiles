@@ -1,26 +1,10 @@
 #!/bin/bash
 
-# macOS stuff
-echo '💻 Turning on AppleShowAllFiles'
-defaults write com.apple.finder AppleShowAllFiles TRUE;
-
-echo '💻 Turning on AppleShowAllExtensions'
-defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-
-echo '💻 Turning on AppleInterfaceTheme Dark'
-defaults write /Library/Preferences/.GlobalPreferences AppleInterfaceTheme Dark
-
-echo '💻  Autohide the Dock'
-defaults write com.apple.dock autohide-time-modifier -int 0
-
-echo '💻 Show Library Folder'
-chflags nohidden ~/Library
-
-killall Finder
-killall Dock
-
-echo '📁 Making ~/Sites directory'
-mkdir ~/Sites
+# Homebrew
+if ! which brew > /dev/null; then
+    echo '📦 Installing Homebrew'
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi;
 
 # zsh/ohmyzsh
 echo '📦 Installing zsh'
@@ -29,20 +13,7 @@ brew install zsh
 echo '📦 Installing Oh My Zsh!'
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-source ~/.bash_profile
-
-# Homebrew
-if ! which brew > /dev/null; then
-    echo '📦 Installing Homebrew'
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi;
-
-echo '📦 Installing Mac App Store CLI'
-brew install mas
-
-echo '📦 Install OS X apps from Brewfile'
-brew bundle install
-
+# MongoDB
 echo '📦 Install MongoDB'
 brew install mongodb
 
@@ -54,6 +25,13 @@ sudo chown -R `id -un` /data/db
 
 echo '📦 Run mongo daemon'
 mongod
+
+# Install macOS apps
+echo '📦 Installing Mac App Store CLI'
+brew install mas
+
+echo '📦 Install OS X apps from Brewfile'
+brew bundle install
 
 # Node
 echo '📦 Installing Node Version Manager'
