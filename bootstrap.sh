@@ -27,6 +27,18 @@ function doDotfiles() {
 	source ~/.bash_profile;
 }
 
+function doBrew () {
+	source ./brew.sh;
+}
+
+function doMacOs () {
+	source ./src/.macOS;
+}
+
+function doAll () {
+	doBrew && doMacOs && doDotFiles
+}
+
 if [ "$1" == "--force" -o "$1" == "-f" ]; then
 	doDotfiles;
 else
@@ -34,8 +46,8 @@ else
 	echo "";
 
 	[[ "$TYPE" == "dotfiles" ]] && doDotfiles;
-	[[ "$TYPE" == "casks" ]] && source ./brew.sh;
-	[[ "$TYPE" == "macOS" ]] && source ./src/.macos;
-	[[ "$TYPE" == "all" ]] && echo "all";
+	[[ "$TYPE" == "casks" ]] && doBrew;
+	[[ "$TYPE" == "macOS" ]] && doMacOs;
+	[[ "$TYPE" == "all" ]] && doAll;
 fi;
 unset doDotfiles;
