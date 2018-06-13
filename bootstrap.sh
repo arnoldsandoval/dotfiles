@@ -4,7 +4,7 @@ cd "$(dirname "${BASH_SOURCE}")";
 
 git pull origin master;
 
-function doIt() {
+function doDotfiles() {
     cd src &&
 	rsync --exclude ".git/" \
 		--exclude ".DS_Store" \
@@ -28,12 +28,14 @@ function doIt() {
 }
 
 if [ "$1" == "--force" -o "$1" == "-f" ]; then
-	doIt;
+	doDotfiles;
 else
-	read -p "This may overwrite existing files in your home directory. Are you sure? (y/n) " -n 1;
+	read -p "What would you like to boostrap? (dotfiles, casks, macOS) " TYPE;
 	echo "";
-	if [[ $REPLY =~ ^[Yy]$ ]]; then
-		doIt;
-	fi;
+
+	[[ "$TYPE" == "dotfiles" ]] && doDotfiles;
+	[[ "$TYPE" == "casks" ]] && source ./brew.sh;
+	[[ "$TYPE" == "macOS" ]] && source ./src/.macos;
+	[[ "$TYPE" == "all" ]] && echo "all";
 fi;
-unset doIt;
+unset doDotfiles;
