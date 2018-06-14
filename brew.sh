@@ -24,7 +24,7 @@ echo '📦 Change permissions for data directory'
 sudo chown -R `id -un` /data/db
 
 echo '📦 Run mongo daemon'
-mongod
+brew services start mongodb
 
 # Install macOS apps
 echo '📦 Installing Mac App Store CLI'
