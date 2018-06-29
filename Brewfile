@@ -36,3 +36,4 @@ mas 'Bear', id: 1091189122
 mas 'Micro Snitch', id: 972028355
 mas 'Taurine', id: 960276676
 mas 'Tweetbot 2 for Twitter', id: 557168941
+mas 'iStat Menus', id: 1319778037
