@@ -13,7 +13,6 @@ brew 'yarn'
 cask 'insomnia'                # A nice REST Client
 cask 'google-chrome'           # Browser: Google Chrome
 cask 'firefox'                 # Browser: Firefox
-cask 'discord'                 # For chatting with the gaming homies
 cask 'starcraft'               # For playing with the gaming homies
 cask 'visual-studio-code'      # Favorite IDE
 cask 'expo-xde'                # Expo
@@ -27,8 +26,9 @@ cask 'microsoft-office'        # You know what this is
 cask 'hyper'                   # A fine electron-based terminal
 cask 'now'                     # Used for quick deployments
 cask 'spectacle'               # Window Manager
+cask 'virtualbox'              # VMs
+cask 'franz'                   # Slack, Discord, etc.
 
-mas 'Slack', id: 803453959
 mas '1Password 7', id: 1333542190
 mas 'xScope 4', id: 889428659
 mas 'Xcode', id: 497799835
