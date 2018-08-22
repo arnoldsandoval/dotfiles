@@ -10,24 +10,25 @@ brew 'yarn'
 
 # Apps
 
-cask 'insomnia'                # A nice REST Client
-cask 'google-chrome'           # Browser: Google Chrome
-cask 'firefox'                 # Browser: Firefox
-cask 'starcraft'               # For playing with the gaming homies
-cask 'visual-studio-code'      # Favorite IDE
-cask 'expo-xde'                # Expo
-cask 'sketch'                  # Sketch
-cask 'zeplin'                  # Zeplin
-cask 'adobe-creative-cloud'    # Adobe Creative Cloud
-cask 'Sonos'                   # For the jams
-cask 'drobo-dashboard'         # NAS
-cask 'snagit'                  # Screenshots
-cask 'microsoft-office'        # You know what this is
-cask 'hyper'                   # A fine electron-based terminal
-cask 'now'                     # Used for quick deployments
-cask 'spectacle'               # Window Manager
-cask 'virtualbox'              # VMs
-cask 'franz'                   # Slack, Discord, etc.
+cask 'insomnia'                                  # A nice REST Client
+cask 'google-chrome'                             # Browser: Google Chrome
+cask 'firefox'                                   # Browser: Firefox
+cask 'caskroom/versions/firefoxdeveloperedition' # Browser: Firefox Developer Edition
+cask 'starcraft'                                 # For playing with the gaming homies
+cask 'visual-studio-code'                        # Favorite IDE
+cask 'expo-xde'                                  # Expo
+cask 'sketch'                                    # Sketch
+cask 'zeplin'                                    # Zeplin
+cask 'adobe-creative-cloud'                      # Adobe Creative Cloud
+cask 'Sonos'                                     # For the jams
+cask 'drobo-dashboard'                           # NAS
+cask 'snagit'                                    # Screenshots
+cask 'microsoft-office'                          # You know what this is
+cask 'hyper'                                     # A fine electron-based terminal
+cask 'now'                                       # Used for quick deployments
+cask 'spectacle'                                 # Window Manager
+cask 'virtualbox'                                # VMs
+cask 'franz'                                     # Slack, Discord, etc.
 
 mas '1Password 7', id: 1333542190
 mas 'xScope 4', id: 889428659
