@@ -20,5 +20,14 @@
     // Specifies which messages should be suppressed
     "gitlens.advanced.messages": {
         "suppressShowKeyBindingsNotice": true
-    }
+    },
+
+    "emmet.triggerExpansionOnTab": true,
+    "emmet.showSuggestionsAsSnippets": true,
+    "editor.snippetSuggestions": "top",
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact",
+        "vue-html": "html",
+        "plaintext": "jade"
+    }    
 }
