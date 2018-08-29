@@ -28,7 +28,8 @@ cask 'hyper'                     # A fine electron-based terminal
 cask 'now'                       # Used for quick deployments
 cask 'spectacle'                 # Window Manager
 cask 'virtualbox'                # VMs
-cask 'franz'                     # Slack, Discord, etc.
+cask 'slack'                     # Slack
+cask 'discord'                   # Discord
 
 mas '1Password 7', id: 1333542190
 mas 'xScope 4', id: 889428659
@@ -38,3 +39,4 @@ mas 'Micro Snitch', id: 972028355
 mas 'Taurine', id: 960276676
 mas 'Tweetbot 2 for Twitter', id: 557168941
 mas 'iStat Menus', id: 1319778037
+mas 'Things 3', id: 904280696
