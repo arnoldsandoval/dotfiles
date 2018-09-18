@@ -80,6 +80,12 @@ code --install-extension dbaeumer.vscode-eslint
 echo '⌨️ Installing VSCode Extension: StyleLint'
 code --install-extension shinnn.stylelint
 
+echo '⌨️ Installing VSCode Extension: EditorConfig'
+code --install-extension EditorConfig.EditorConfig
+
+echo '⌨️ Installing VSCode Extension: Prettier'
+ext install esbenp.prettier-vscode
+
 echo -e "
 ✅ Setup script complete
 
