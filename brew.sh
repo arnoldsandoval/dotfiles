@@ -74,6 +74,18 @@ code --install-extension eamodio.gitlens
 echo '⌨️ Installing VSCode Extension: Live Server'
 code --install-extension ritwickdey.LiveServer
 
+echo '⌨️ Installing VSCode Extension: ESLint'
+code --install-extension dbaeumer.vscode-eslint
+
+echo '⌨️ Installing VSCode Extension: StyleLint'
+code --install-extension shinnn.stylelint
+
+echo '⌨️ Installing VSCode Extension: EditorConfig'
+code --install-extension EditorConfig.EditorConfig
+
+echo '⌨️ Installing VSCode Extension: Prettier'
+ext install esbenp.prettier-vscode
+
 echo -e "
 ✅ Setup script complete
 

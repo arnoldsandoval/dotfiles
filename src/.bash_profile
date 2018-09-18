@@ -20,6 +20,7 @@ cd() { builtin cd "$@"; ll; }               # Always list directory contents upo
 alias f='open -a Finder ./'                 # f:            Opens current directory in MacOS Finder
 alias ~="cd ~"                              # ~:            Go Home
 alias s="cd ~/Sites"                        # ~:            Go To Sites Directory
+alias df="cd ~/Sites/dotfiles"              # ~:            Go to Dotfiles repo
 alias d="cd ~/Desktop"                      # ~:            Go To Desktop Directory
 alias c='clear'                             # c:            Clear terminal display
 trash () { command mv "$@" ~/.Trash ; }     # trash:        Moves a file to the MacOS trash
