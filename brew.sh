@@ -38,53 +38,31 @@ echo '📦 Installing Node Version Manager'
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
 
 # VSCode Extensions
-echo '⌨️ Installing VSCode Extension: Theme, Night Owl'
-code --install-extension sdras.night-owl
+# NOTE: You can always generate this list on any computer by running the following:
+#   `code --list-extensions | xargs -L 1 echo code --install-extension`
 
-echo '⌨️ Installing VSCode Extension: Pigments'
-code --install-extension jaspernorth.vscode-pigments
-
-echo '⌨️ Installing VSCode Extension: Prettier'
-code --install-extension esbenp.prettier-vscode
-
-echo '⌨️ Installing VSCode Extension: Emmet'
-code --install-extension FallenMax.mithril-emmet
-
-echo '⌨️ Installing VSCode Extension: Debugger for Chrome'
-code --install-extension msjsdiag.debugger-for-chrome
-
-echo '⌨️ Installing VSCode Extension: JavaScript (ES6) code snippets'
-code --install-extension xabikos.JavaScriptSnippets
-
-echo '⌨️ Installing VSCode Extension: React-Native/React/Redux snippets for es6/es7'
-code --install-extension EQuimper.react-native-react-redux
-
-echo '⌨️ Installing VSCode Extension: React Standard Style code snippets'
-code --install-extension TimonVS.ReactSnippetsStandard
-
-echo '⌨️ Installing VSCode Extension: TODO Highlight'
-code --install-extension wayou.vscode-todo-highlight
-
-echo '⌨️ Installing VSCode Extension: Auto Close Tag'
-code --install-extension formulahendry.auto-close-tag
-
-echo '⌨️ Installing VSCode Extension: GitLens — Git supercharged'
-code --install-extension eamodio.gitlens
-
-echo '⌨️ Installing VSCode Extension: Live Server'
-code --install-extension ritwickdey.LiveServer
-
-echo '⌨️ Installing VSCode Extension: ESLint'
+code --install-extension akamud.vscode-theme-onedark
+code --install-extension christian-kohler.npm-intellisense
 code --install-extension dbaeumer.vscode-eslint
-
-echo '⌨️ Installing VSCode Extension: StyleLint'
-code --install-extension shinnn.stylelint
-
-echo '⌨️ Installing VSCode Extension: EditorConfig'
+code --install-extension eamodio.gitlens
 code --install-extension EditorConfig.EditorConfig
+code --install-extension EQuimper.react-native-react-redux
+code --install-extension esbenp.prettier-vscode
+code --install-extension FallenMax.mithril-emmet
+code --install-extension flowtype.flow-for-vscode
+code --install-extension formulahendry.auto-close-tag
+code --install-extension jaspernorth.vscode-pigments
+code --install-extension msjsdiag.debugger-for-chrome
+code --install-extension shinnn.stylelint
+code --install-extension silvenon.mdx
+code --install-extension TimonVS.ReactSnippetsStandard
+code --install-extension wayou.vscode-todo-highlight
+code --install-extension xabikos.JavaScriptSnippets
+code --install-extension zhuangtongfa.Material-theme
+code --install-extension Zignd.html-css-class-completion
 
-echo '⌨️ Installing VSCode Extension: Prettier'
-ext install esbenp.prettier-vscode
+echo '⌨️ Install Pure Prompt'
+npm install --global pure-prompt
 
 echo -e "
 ✅ Setup script complete

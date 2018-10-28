@@ -1,33 +1,68 @@
 {
-    // Specifies the color theme used in the workbench.
-    "workbench.colorTheme": "Night Owl",
+  // Specifies the color theme used in the workbench.
+  "workbench.colorTheme": "Atom One Dark",
 
-    // Controls the font family.
-    "editor.fontFamily": "Dank Mono",
+  // Controls the font family.
+  "editor.fontFamily": "Dank Mono",
 
-    // Controls the font size in pixels.
-    "editor.fontSize": 15,
-    
-      // Enables font ligatures
-    "editor.fontLigatures": true,
+  // Controls the font size in pixels.
+  "editor.fontSize": 15,
 
-    // Adjust the zoom level of the window. The original size is 0 and each increment above (e.g. 1) or below (e.g. -1) represents zooming 20% larger or smaller. You can also enter decimals to adjust the zoom level with a finer granularity.
-    "window.zoomLevel": 0,
+  // Enables font ligatures
+  "editor.fontLigatures": true,
 
-    // Whether auto fetching is enabled
-    "git.autofetch": true,
+  // Adjust the zoom level of the window. The original size is 0 and each increment above (e.g. 1) or below (e.g. -1) represents zooming 20% larger or smaller. You can also enter decimals to adjust the zoom level with a finer granularity.
+  "window.zoomLevel": 0,
 
-    // Specifies which messages should be suppressed
-    "gitlens.advanced.messages": {
-        "suppressShowKeyBindingsNotice": true
-    },
+  "javascript.validate.enable": false,
 
-    "emmet.triggerExpansionOnTab": true,
-    "emmet.showSuggestionsAsSnippets": true,
-    "editor.snippetSuggestions": "top",
-    "emmet.includeLanguages": {
-        "javascript": "javascriptreact",
-        "vue-html": "html",
-        "plaintext": "jade"
-    }    
+  "flow.pathToFlow": "${workspaceRoot}/node_modules/.bin/flow",
+
+  // Whether auto fetching is enabled
+  "git.autofetch": true,
+
+  // Configure file associations to languages (e.g. `"*.extension": "html"`). These have precedence over the default associations of the languages installed.
+  "files.associations": {
+    "*.csx": "javascript"
+  },
+
+  // Format a file on save. A formatter must be available, the file must not be auto-saved, and editor must not be shutting down.
+  "editor.formatOnSave": true,
+
+  // Prettier Settings
+  "prettier.eslintIntegration": true,
+
+  // Specifies which messages should be suppressed
+  "gitlens.advanced.messages": {
+    "suppressShowKeyBindingsNotice": true
+  },
+
+  "terminal.integrated.shell.osx": "zsh",
+  "terminal.integrated.fontSize": 14,
+
+  "workbench.colorCustomizations": {
+    "terminal.background": "#212121",
+    "terminal.foreground": "#FFF",
+    "terminal.ansiBlue": "#0095FF",
+    "terminal.ansiCyan": "#5AC8FA",
+    "terminal.ansiGreen": "#4CD964",
+    "terminal.ansiMagenta": "#FF2D55",
+    "terminal.ansiRed": "#FF3B30",
+    "terminal.ansiWhite": "#FFF",
+    "terminal.ansiYellow": "#FFCC00",
+    "terminal.selectionForeground": "#fff",
+    "terminal.selectionBackground": "#4b0845",
+    // "terminalCursor.background": "#d45fb1",
+    "terminalCursor.foreground": "#d45fb1"
+  },
+
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.showSuggestionsAsSnippets": true,
+  "editor.snippetSuggestions": "top",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "vue-html": "html",
+    "plaintext": "jade"
+  },
+  "javascript.updateImportsOnFileMove.enabled": "always"
 }

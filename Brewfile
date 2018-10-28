@@ -18,12 +18,8 @@ cask 'starcraft'                 # For playing with the gaming homies
 cask 'visual-studio-code'        # Favorite IDE
 cask 'expo-xde'                  # Expo
 cask 'sketch'                    # Sketch
-cask 'zeplin'                    # Zeplin
-cask 'adobe-creative-cloud'      # Adobe Creative Cloud
 cask 'Sonos'                     # For the jams
-cask 'drobo-dashboard'           # NAS
 cask 'snagit'                    # Screenshots
-cask 'microsoft-office'          # You know what this is
 cask 'hyper'                     # A fine electron-based terminal
 cask 'now'                       # Used for quick deployments
 cask 'spectacle'                 # Window Manager
