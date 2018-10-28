@@ -64,6 +64,9 @@ code --install-extension Zignd.html-css-class-completion
 echo '⌨️ Install Pure Prompt'
 npm install --global pure-prompt
 
+echo '⌨️ Install Expo CLI'
+npm install --global expo-cli
+
 echo -e "
 ✅ Setup script complete
 

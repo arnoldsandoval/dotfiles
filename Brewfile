@@ -16,7 +16,6 @@ cask 'firefox'                   # Browser: Firefox
 cask 'firefox-developer-edition' # Browser: Firefox Developer Edition
 cask 'starcraft'                 # For playing with the gaming homies
 cask 'visual-studio-code'        # Favorite IDE
-cask 'expo-xde'                  # Expo
 cask 'sketch'                    # Sketch
 cask 'Sonos'                     # For the jams
 cask 'snagit'                    # Screenshots
