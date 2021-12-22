@@ -1,0 +1,28 @@
+# General
+alias vim='nvim'
+alias v='vim'
+alias vimt='nvim +NERDTree'
+
+alias ed='code ~/.zshrc'
+alias ref='source ~/.zshrc'
+
+alias l='colorls -A --sd'
+alias ll='colorls -lA --sd'
+
+# Git
+alias g="git"
+alias gs="git s"
+alias nah="git reset --hard;git clean -df"
+alias co="git checkout"
+
+# Personal
+alias s='cd ~/Sites'
+alias df='cd ~/Sites/dotfiles'
+
+# Work
+alias o='cd ~/okta'
+alias h='cd ~/'
+alias ods='cd ~/okta/odyssey'
+alias oui='cd ~/okta/okta-ui'
+alias ouir='cd ~/okta/okta-ui-react'
+alias omono='cd ~/okta/okta-core'

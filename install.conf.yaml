@@ -1,0 +1,16 @@
+- defaults:
+    link:
+      relink: true
+- brewfile:
+    - Brewfile
+- clean: ["~"]
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+    - [sh preinstall.sh, Running pre installation script]
+    - [vim +PlugUpdate +PlugClean! +qa, Installing and updating plugins]
+- link:
+    ~/.zshrc: zshrc
+    ~/.aliases: aliases
+    ~/.p10k.zsh: p10k
+    ~/.config/nvim: nvim
+    ~/.config/neofetch/config.conf: neofetch.conf
