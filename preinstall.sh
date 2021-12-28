@@ -23,15 +23,6 @@ else
   echo 'Already using base16-shell'
 fi
 
-# check if mac-cli is installed
-if [ ! -f "which mac" ]; then
-    echo 'Installing mac-cli'
-    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/guarinogabriel/mac-cli/master/mac-cli/tools/install)"
-else
-    echo 'Updating mac-cli'
-    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/guarinogabriel/mac-cli/master/mac-cli/tools/update)"
-fi
-
 # change default shell
 if [! $0 = "-zsh"]; then
   echo 'Changing default shell to zsh'
