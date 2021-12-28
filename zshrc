@@ -10,15 +10,12 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
 # Plugins {{{
-# ==============================================================================
-#
     # Load the Antibody plugin manager for zsh.
     source <(antibody init)
-    
 
     # Setup required env var for oh-my-zsh plugins
     export ZSH="$(antibody home)/https-COLON--SLASH--SLASH-github.com-SLASH-robbyrussell-SLASH-oh-my-zsh"
-    
+
     antibody bundle robbyrussell/oh-my-zsh
     antibody bundle robbyrussell/oh-my-zsh path:plugins/git
     antibody bundle robbyrussell/oh-my-zsh path:plugins/git-flow
@@ -43,8 +40,6 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
     # antibody bundle robbyrussell/oh-my-zsh path:themes/robbyrussell.zsh-theme
     antibody bundle romkatv/powerlevel10k
 # }}}
-
-source $(dirname $(gem which colorls))/tab_complete.sh
 
 # Base16 Shell
 BASE16_SHELL="$HOME/.config/base16-shell/"
