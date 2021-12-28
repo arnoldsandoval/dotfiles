@@ -47,6 +47,9 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
+# Set the Base16 theme
+base16_brogrammer
+
 source ~/.aliases
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
