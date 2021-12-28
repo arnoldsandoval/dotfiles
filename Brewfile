@@ -1,5 +1,6 @@
 # Sources
 tap 'homebrew/cask-fonts'
+tap 'homebrew/cask-drivers'
 
 # utilities
 brew 'git'
@@ -8,9 +9,10 @@ brew 'antibody'
 brew 'tmux'
 brew 'svn'                       # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
 brew 'neovim'
+brew 'neofetch'
+brew 'httpie'
 
 # apps
-cask 'insomnia'                  # REST Client
 cask 'google-chrome'             # Browser: Google Chrome
 cask 'firefox'                   # Browser: Firefox
 cask 'visual-studio-code'        # Favorite IDE
@@ -24,7 +26,6 @@ cask 'figma'                     # Design tool
 cask 'vanilla'                   # Keeps the menu bar clutter free
 
 mas '1Password 7', id: 1333542190
-mas 'Xcode', id: 497799835
 
 cask 'qlmarkdown'                # quicklook for markdown files
 cask 'quicklook-json'            # quicklook for json files
