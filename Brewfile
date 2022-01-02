@@ -1,34 +1,40 @@
-# Sources
+# sources
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-drivers'
 
 # utilities
-brew 'git'
-brew 'tig'
-brew 'antibody'
-brew 'tmux'
-brew 'svn'                       # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
-brew 'neovim'
-brew 'neofetch'
-brew 'httpie'
-
+brew 'git'                        # Distributed revision control system
+brew 'tig'                        # Text interface for Git repositories
+brew 'antibody'                   # Shell plugin manager
+brew 'tmux'                       # Terminal multiplexer
+brew 'svn'                        # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
+brew 'neovim'                     # Ambitious Vim-fork focused on extensibility and agility
+brew 'neofetch'                   # Fast, highly customisable system info script
+brew 'httpie'                     # User-friendly cURL replacement (command-line HTTP client)
 # apps
-cask 'google-chrome'             # Browser: Google Chrome
-cask 'firefox'                   # Browser: Firefox
-cask 'visual-studio-code'        # Favorite IDE
-cask 'sonos'                     # Jams at home
-cask 'iterm2'                    # Terminal replacement
-cask 'slack'                     # Work chat
-cask 'discord'                   # All other chat
-cask 'cleanshot'                 # Screen capturing tool
-cask 'pixelsnap'                 # Screen measuring tool
-cask 'figma'                     # Design tool
-cask 'vanilla'                   # Keeps the menu bar clutter free
-
-mas '1Password 7', id: 1333542190
-
-cask 'qlmarkdown'                # quicklook for markdown files
-cask 'quicklook-json'            # quicklook for json files
-
+cask '1password'                  # Password manager that keeps all passwords secure behind one password
+cask 'airfoil'                    # Sends audio from computer to outputs
+cask 'audio-hijack'               # Records from any application
+cask 'cleanshot'                  # Screen capturing tool
+cask 'discord'                    # Voice and text chat software
+cask 'elgato-stream-deck'         # Assign keys, and then decorate and label them
+cask 'figma'                      # Design tool
+cask 'firefox'                    # Browser: Firefox
+cask 'google-chrome'              # Browser: Google Chrome
+cask 'iterm2'                     # Terminal replacement
+cask 'maccy'                      # Clipboard manager
+cask 'obs'                        # Open-source software for live streaming and screen recording
+cask 'pixelsnap'                  # Screen measuring tool
+cask 'qlmarkdown'                 # quicklook for markdown files
+cask 'quicklook-json'             # quicklook for json files
+cask 'rectangle'                  # Move and resize windows using keyboard shortcuts or snap areas
+cask 'slack'                      # Team communication and collaboration software
+cask 'sonos'                      # Jams at home
+cask 'soundsource'                # Superior sound control for Mac
+cask 'tradingview'                # Charting and social-networking for investment traders
+cask 'vanilla'                    # Keeps the menu bar clutter free
+cask 'visual-studio-code'         # Favorite IDE
+# mac app store apps
+mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
 # fonts
 cask 'font-fira-mono-nerd-font'
