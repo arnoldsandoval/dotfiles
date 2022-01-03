@@ -1,7 +1,6 @@
-# sources
+# Sources
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-drivers'
-
 # utilities
 brew 'git'                        # Distributed revision control system
 brew 'tig'                        # Text interface for Git repositories
@@ -34,6 +33,7 @@ cask 'soundsource'                # Superior sound control for Mac
 cask 'tradingview'                # Charting and social-networking for investment traders
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'visual-studio-code'         # Favorite IDE
+cask 'via'                        # My keyboard's best friend
 # mac app store apps
 mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
 # fonts
