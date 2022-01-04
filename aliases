@@ -6,13 +6,17 @@ alias vimt='nvim +NERDTree'
 alias ed='code ~/.zshrc'
 alias ref='source ~/.zshrc'
 
+# Internet/Network
 alias fast='speedtest-cli'
+alias ip='dig +short myip.opendns.com @resolver1.opendns.com -4'
+alias ipv6='dig +short AAAA myip.opendns.com @resolver1.opendns.com'
+alias iplocal='ipconfig getifaddr en0'
 
 # Git
-alias g="git"
-alias gs="git s"
-alias nah="git reset --hard;git clean -df"
-alias co="git checkout"
+alias g='git'
+alias gs='git s'
+alias nah='git reset --hard;git clean -df'
+alias co='git checkout'
 
 # Personal
 alias s='cd ~/Sites'
