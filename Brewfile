@@ -25,6 +25,7 @@ cask 'maccy'                      # Clipboard manager
 cask 'obs'                        # Open-source software for live streaming and screen recording
 cask 'pixelsnap'                  # Screen measuring tool
 cask 'qlmarkdown'                 # quicklook for markdown files
+cask 'qmk-toolbox'                # Toolbox companion for QMK Firmware
 cask 'quicklook-json'             # quicklook for json files
 cask 'rectangle'                  # Move and resize windows using keyboard shortcuts or snap areas
 cask 'slack'                      # Team communication and collaboration software
