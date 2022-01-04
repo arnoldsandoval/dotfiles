@@ -7,7 +7,7 @@ alias ed='code ~/.zshrc'
 alias ref='source ~/.zshrc'
 
 # Internet/Network
-alias fast='speedtest-cli'
+alias fast='speedtest'
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com -4'
 alias ipv6='dig +short AAAA myip.opendns.com @resolver1.opendns.com'
 alias iplocal='ipconfig getifaddr en0'

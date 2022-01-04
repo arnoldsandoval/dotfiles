@@ -1,6 +1,7 @@
 # Sources
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-drivers'
+tap 'teamookla/speedtest'
 # utilities
 brew 'git'                        # Distributed revision control system
 brew 'tig'                        # Text interface for Git repositories
@@ -10,7 +11,7 @@ brew 'svn'                        # wtf? see https://github.com/Homebrew/homebre
 brew 'neovim'                     # Ambitious Vim-fork focused on extensibility and agility
 brew 'neofetch'                   # Fast, highly customisable system info script
 brew 'httpie'                     # User-friendly cURL replacement (command-line HTTP client)
-brew 'speedtest-cli'              # Command-line interface for https://speedtest.net bandwidth tests
+brew 'speedtest'                  # Command-line interface for https://speedtest.net bandwidth tests
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
 cask 'airfoil'                    # Sends audio from computer to outputs
