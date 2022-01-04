@@ -6,6 +6,8 @@ alias vimt='nvim +NERDTree'
 alias ed='code ~/.zshrc'
 alias ref='source ~/.zshrc'
 
+alias fast='speedtest-cli'
+
 # Git
 alias g="git"
 alias gs="git s"
