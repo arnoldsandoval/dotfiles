@@ -2,6 +2,7 @@
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-drivers'
 tap 'teamookla/speedtest'
+
 # utilities
 brew 'git'                        # Distributed revision control system
 brew 'tig'                        # Text interface for Git repositories
@@ -12,6 +13,7 @@ brew 'neovim'                     # Ambitious Vim-fork focused on extensibility 
 brew 'neofetch'                   # Fast, highly customisable system info script
 brew 'httpie'                     # User-friendly cURL replacement (command-line HTTP client)
 brew 'speedtest'                  # Command-line interface for https://speedtest.net bandwidth tests
+
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
 cask 'airfoil'                    # Sends audio from computer to outputs
@@ -37,7 +39,10 @@ cask 'tradingview'                # Charting and social-networking for investmen
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'visual-studio-code'         # Favorite IDE
 cask 'via'                        # My keyboard's best friend
+cask 'kindle'                     # Interface for reading and syncing eBooks
+
 # mac app store apps
 mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
+
 # fonts
 cask 'font-fira-mono-nerd-font'
