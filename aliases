@@ -2,6 +2,7 @@
 alias vim='nvim'
 alias v='vim'
 alias vimt='nvim +NERDTree'
+alias update="softwareupdate --all --install --force"
 
 alias ed='code ~/.zshrc'
 alias ref='source ~/.zshrc'

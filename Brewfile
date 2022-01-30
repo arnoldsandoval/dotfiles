@@ -25,6 +25,7 @@ cask 'figma'                      # Design tool
 cask 'firefox'                    # Browser: Firefox
 cask 'google-chrome'              # Browser: Google Chrome
 cask 'iterm2'                     # Terminal replacement
+cask 'ledger-live'                # Wallet desktop application to maintain multiple cryptocurrencies
 cask 'maccy'                      # Clipboard manager
 cask 'obs'                        # Open-source software for live streaming and screen recording
 cask 'pixelsnap'                  # Screen measuring tool
@@ -36,6 +37,7 @@ cask 'slack'                      # Team communication and collaboration softwar
 cask 'sonos'                      # Jams at home
 cask 'soundsource'                # Superior sound control for Mac
 cask 'tradingview'                # Charting and social-networking for investment traders
+cask 'trezor-suite'               # Companion app for the Trezor hardware wallet
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'visual-studio-code'         # Favorite IDE
 cask 'via'                        # My keyboard's best friend
