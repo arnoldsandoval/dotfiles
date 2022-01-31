@@ -13,6 +13,7 @@ brew 'neovim'                     # Ambitious Vim-fork focused on extensibility 
 brew 'neofetch'                   # Fast, highly customisable system info script
 brew 'httpie'                     # User-friendly cURL replacement (command-line HTTP client)
 brew 'speedtest'                  # Command-line interface for https://speedtest.net bandwidth tests
+cask 'proxyman'                   # Modern and intuitive HTTP Debugging Proxy app
 
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
