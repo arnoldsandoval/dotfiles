@@ -13,6 +13,10 @@ brew 'neovim'                     # Ambitious Vim-fork focused on extensibility 
 brew 'neofetch'                   # Fast, highly customisable system info script
 brew 'httpie'                     # User-friendly cURL replacement (command-line HTTP client)
 brew 'speedtest'                  # Command-line interface for https://speedtest.net bandwidth tests
+brew 'links'                      # Lynx-like WWW browser that supports tables, menus, etc.
+brew 'youtube-dl'                 # Download YouTube videos from the command-line
+brew 'tree'                       # Display directories as trees (with optional color/HTML output)
+brew 'task'                # Feature-rich console based todo list manager
 cask 'proxyman'                   # Modern and intuitive HTTP Debugging Proxy app
 
 # apps
