@@ -48,7 +48,7 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # Set the Base16 theme
-base16_brogrammer
+base16_nord
 
 source ~/.aliases
 

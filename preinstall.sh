@@ -17,8 +17,8 @@ fi
 # check if base16-shell is installed
 DIR_B16="$HOME/.config/base16-shell"
 if [ ! -d "$DIR_B16" ]; then
-  echo 'Cloning chriskempson/base16-shell'
-  git clone https://github.com/chriskempson/base16-shell.git $DIR_B16
+  echo 'Cloning jonleopard/base16-shell'
+  git clone https://github.com/jonleopard/base16-shell.git $DIR_B16
 else
   echo 'Already using base16-shell'
 fi
