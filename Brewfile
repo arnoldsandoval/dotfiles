@@ -16,7 +16,8 @@ brew 'speedtest'                  # Command-line interface for https://speedtest
 brew 'links'                      # Lynx-like WWW browser that supports tables, menus, etc.
 brew 'youtube-dl'                 # Download YouTube videos from the command-line
 brew 'tree'                       # Display directories as trees (with optional color/HTML output)
-brew 'task'                # Feature-rich console based todo list manager
+brew 'task'                       # Feature-rich console based todo list manager
+brew 'flow-cli'                   # Command-line interface that provides utilities for building Flow applications
 cask 'proxyman'                   # Modern and intuitive HTTP Debugging Proxy app
 
 # apps
