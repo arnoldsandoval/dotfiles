@@ -30,7 +30,7 @@ cask 'elgato-stream-deck'         # Assign keys, and then decorate and label the
 cask 'figma'                      # Design tool
 cask 'firefox'                    # Browser: Firefox
 cask 'google-chrome'              # Browser: Google Chrome
-cask 'iterm2'                     # Terminal replacement
+cask 'hyper'                      # Terminal replacement
 cask 'ledger-live'                # Wallet desktop application to maintain multiple cryptocurrencies
 cask 'maccy'                      # Clipboard manager
 cask 'obs'                        # Open-source software for live streaming and screen recording
