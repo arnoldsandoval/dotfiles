@@ -1,13 +1,13 @@
 - defaults:
     link:
       relink: true
-- brewfile:
-    - Brewfile
 - clean: ["~"]
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - [sh preinstall.sh, Running pre installation script]
     - [vim +PlugUpdate +PlugClean! +qa, Installing and updating plugins]
+- brewfile:
+    - Brewfile
 - link:
     ~/.zshrc: zshrc
     ~/.aliases: aliases
