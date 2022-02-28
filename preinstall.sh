@@ -14,13 +14,12 @@ if [ ! -d "$DIR_NVM" ]; then
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 fi
 
-# check if base16-shell is installed
-DIR_B16="$HOME/.config/base16-shell"
-if [ ! -d "$DIR_B16" ]; then
-  echo 'Cloning jonleopard/base16-shell'
-  git clone https://github.com/jonleopard/base16-shell.git $DIR_B16
+# check for homebrew
+which -s brew
+if [[ $? != 0 ]] ; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
-  echo 'Already using base16-shell'
+  brew update
 fi
 
 # change default shell
