@@ -11,7 +11,7 @@
         "revision": "33784e8b25e6296c0788a7d34065677558da002d"
       },
       "arnoldsandoval/internal": {
-        "revision": "22e184a353b0ec1becf8fc02e84e436a7b5284e2"
+        "revision": "bc577e314b0c3a2ee4c3b1d5c8fcd146aa460082"
       }
     },
     "cask": {
@@ -226,7 +226,7 @@
         }
       },
       "font-dank-mono": {
-        "version": "491",
+        "version": "1.000",
         "options": {
           "full_name": "font-dank-mono"
         }
@@ -779,7 +779,7 @@
       "monterey": {
         "HOMEBREW_VERSION": "3.4.0",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "cf70211e591ac83d59f93c41b25edd6fe31c41e9",
+        "Homebrew/homebrew-core": "751c3eaf455fae2fb79e9e4b1a771676bff2cadd",
         "CLT": "13.0.0.0.1.1627064638",
         "Xcode": "13.2.1",
         "macOS": "12.2"
