@@ -3,6 +3,7 @@ alias vim='nvim'
 alias v='vim'
 alias vimt='nvim +NERDTree'
 alias update="softwareupdate --all --install --force"
+alias h='cd ~/'
 
 alias ed='code ~/.zshrc'
 alias ref='source ~/.zshrc'
@@ -24,9 +25,4 @@ alias s='cd ~/Sites'
 alias df='cd ~/Sites/dotfiles'
 
 # Work
-alias o='cd ~/okta'
-alias h='cd ~/'
-alias ods='cd ~/okta/odyssey'
-alias oui='cd ~/okta/okta-ui'
-alias ouir='cd ~/okta/okta-ui-react'
-alias omono='cd ~/okta/okta-core'
+alias dapp='cd ~/Dapper'
