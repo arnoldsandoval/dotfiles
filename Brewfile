@@ -2,6 +2,7 @@
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-drivers'
 tap 'teamookla/speedtest'
+tap 'arnoldsandoval/homebrew-internal'
 
 # utilities
 brew 'git'                        # Distributed revision control system
@@ -54,3 +55,4 @@ mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
 
 # fonts
 cask 'font-fira-mono-nerd-font'
+cask 'font-dank-mono'

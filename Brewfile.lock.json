@@ -9,6 +9,9 @@
       },
       "teamookla/speedtest": {
         "revision": "33784e8b25e6296c0788a7d34065677558da002d"
+      },
+      "arnoldsandoval/internal": {
+        "revision": "22e184a353b0ec1becf8fc02e84e436a7b5284e2"
       }
     },
     "cask": {
@@ -220,6 +223,12 @@
         "version": "3.2.0",
         "options": {
           "full_name": "hyper"
+        }
+      },
+      "font-dank-mono": {
+        "version": "491",
+        "options": {
+          "full_name": "font-dank-mono"
         }
       }
     },
@@ -768,9 +777,9 @@
         "macOS": "11.6"
       },
       "monterey": {
-        "HOMEBREW_VERSION": "3.3.16",
+        "HOMEBREW_VERSION": "3.4.0",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "95e42ce031cf0725ea27866e573661cd8d13d579",
+        "Homebrew/homebrew-core": "cf70211e591ac83d59f93c41b25edd6fe31c41e9",
         "CLT": "13.0.0.0.1.1627064638",
         "Xcode": "13.2.1",
         "macOS": "12.2"
