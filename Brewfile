@@ -40,7 +40,6 @@ cask 'qlmarkdown'                 # quicklook for markdown files
 cask 'qmk-toolbox'                # Toolbox companion for QMK Firmware
 cask 'quicklook-json'             # quicklook for json files
 cask 'rectangle'                  # Move and resize windows using keyboard shortcuts or snap areas
-cask 'slack'                      # Team communication and collaboration software
 cask 'sonos'                      # Jams at home
 cask 'soundsource'                # Superior sound control for Mac
 cask 'tradingview'                # Charting and social-networking for investment traders
@@ -49,6 +48,10 @@ cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'visual-studio-code'         # Favorite IDE
 cask 'via'                        # My keyboard's best friend
 cask 'kindle'                     # Interface for reading and syncing eBooks
+
+# work
+cask 'notion'                     # App to write, plan, collaborate, and get organized
+cask 'slack'                      # Team communication and collaboration software
 
 # mac app store apps
 mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
