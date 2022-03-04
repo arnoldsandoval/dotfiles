@@ -2,16 +2,16 @@
   "entries": {
     "tap": {
       "homebrew/cask-fonts": {
-        "revision": "9a5073ab710e3a602434a97d0dbba09e3499dd4e"
+        "revision": "6b7f585650c33023e9d316e2b3eb567e73bb0c63"
       },
       "homebrew/cask-drivers": {
-        "revision": "d6e20ba1ca91283713b1f225777997ce64b4a37c"
+        "revision": "e4b0e625c4fbd52431138c4db2bf3e17c28acec8"
       },
       "teamookla/speedtest": {
         "revision": "33784e8b25e6296c0788a7d34065677558da002d"
       },
       "arnoldsandoval/internal": {
-        "revision": "bc577e314b0c3a2ee4c3b1d5c8fcd146aa460082"
+        "revision": "2a31bd83de0c0f39307a589df5f85239318335f2"
       }
     },
     "cask": {
@@ -28,7 +28,7 @@
         }
       },
       "google-chrome": {
-        "version": "98.0.4758.109",
+        "version": "99.0.4844.51",
         "options": {
           "full_name": "google-chrome"
         }
@@ -40,7 +40,7 @@
         }
       },
       "visual-studio-code": {
-        "version": "1.64.2",
+        "version": "1.65.0",
         "options": {
           "full_name": "visual-studio-code"
         }
@@ -130,7 +130,7 @@
         }
       },
       "soundsource": {
-        "version": "5.3.9",
+        "version": "5.3.10",
         "options": {
           "full_name": "soundsource"
         }
@@ -148,7 +148,7 @@
         }
       },
       "obs": {
-        "version": "27.2.1",
+        "version": "27.2.2",
         "options": {
           "full_name": "obs"
         }
@@ -190,7 +190,7 @@
         }
       },
       "rectangle": {
-        "version": "0.51,57",
+        "version": "0.53,59",
         "options": {
           "full_name": "rectangle"
         }
@@ -214,7 +214,7 @@
         }
       },
       "proxyman": {
-        "version": "3.1.0,30100",
+        "version": "3.2.0,30200",
         "options": {
           "full_name": "proxyman"
         }
@@ -229,6 +229,24 @@
         "version": "1.000",
         "options": {
           "full_name": "font-dank-mono"
+        }
+      },
+      "notion": {
+        "version": "2.0.20",
+        "options": {
+          "full_name": "notion"
+        }
+      },
+      "perimeter81": {
+        "version": "7.0.0",
+        "options": {
+          "full_name": "perimeter81"
+        }
+      },
+      "font-monolisa": {
+        "version": "professional",
+        "options": {
+          "full_name": "font-monolisa"
         }
       }
     },
@@ -779,7 +797,7 @@
       "monterey": {
         "HOMEBREW_VERSION": "3.4.0",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "751c3eaf455fae2fb79e9e4b1a771676bff2cadd",
+        "Homebrew/homebrew-core": "a88b7f3a0f24b0433d4de4ad6b13c9812f3ddebe",
         "CLT": "13.0.0.0.1.1627064638",
         "Xcode": "13.2.1",
         "macOS": "12.2"

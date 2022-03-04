@@ -52,6 +52,7 @@ cask 'kindle'                     # Interface for reading and syncing eBooks
 # work
 cask 'notion'                     # App to write, plan, collaborate, and get organized
 cask 'slack'                      # Team communication and collaboration software
+cask 'perimeter81'                # Zero trust network as a service client
 
 # mac app store apps
 mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
@@ -59,3 +60,4 @@ mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
 # fonts
 cask 'font-fira-mono-nerd-font'
 cask 'font-dank-mono'
+cask 'font-monolisa'
