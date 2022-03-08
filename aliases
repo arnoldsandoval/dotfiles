@@ -17,8 +17,12 @@ alias iplocal='ipconfig getifaddr en0'
 # Git
 alias g='git'
 alias gs='git s'
-alias nah='git reset --hard;git clean -df'
-alias co='git checkout'
+alias gnah='git reset --hard;git clean -df'
+alias gco='git checkout'
+alias glol='git log --pretty=oneline' # prints one line list of commits
+alias gundo='git restore --staged'
+alias gb='git branch'
+alias g-b='git checkout -b' # create new branch
 
 # Personal
 alias s='cd ~/Sites'
