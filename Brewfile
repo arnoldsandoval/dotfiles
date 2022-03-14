@@ -55,8 +55,12 @@ cask 'slack'                      # Team communication and collaboration softwar
 cask 'perimeter81'                # Zero trust network as a service client
 
 # mac app store apps
-mas 'Gif Brewery 3 by Gfycat', id: 1081413713 # Makes GIFs from Video Files
-
+mas 'Gif Brewery 3', id: 1081413713 # Makes GIFs from Video Files
+mas 'Apollo', id: 979274575         # The award winning Reddit app
+mas 'Twitter', id: 1482454543       # Chat about what's happening
+mas '1Blocker', id: 1365531024      # Blocks ads, trackers, pop-ups
+mas 'Hand Mirror', id: 1502839586   # One-click camera check
+mas 'Caffeinated', id: 1362171212   # Keeps your display awake
 # fonts
 cask 'font-fira-mono-nerd-font'
 cask 'font-dank-mono'
