@@ -51,3 +51,5 @@ source ~/.aliases
 export PATH="$HOME/bin:$HOME/git-idm:/usr/local/sbin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export PATH=$(npm bin -g):$PATH

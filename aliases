@@ -31,5 +31,8 @@ alias df='cd ~/Sites/dotfiles'
 # Work
 alias dapp='cd ~/Dapper'
 alias da='cd ~/Dapper'
+alias sk='cd ~/Dapper/skeleton'
 alias nfl='cd ~/Dapper/nfl-app'
 alias nba='cd ~/Dapper/nba-app'
+alias ufc='cd ~/Dapper/nba-app'
+alias lal='cd ~/Dapper/nba-app'
