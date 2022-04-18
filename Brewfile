@@ -28,6 +28,8 @@ cask 'audio-hijack'               # Records from any application
 cask 'cleanshot'                  # Screen capturing tool
 cask 'discord'                    # Voice and text chat software
 cask 'elgato-stream-deck'         # Assign keys, and then decorate and label them
+cask 'elgato-control-center'      # Control your Elgato Key Lights
+cask 'elgato-wave-link'           # Software custom-built for content creation
 cask 'figma'                      # Design tool
 cask 'firefox'                    # Browser: Firefox
 cask 'google-chrome'              # Browser: Google Chrome
@@ -61,6 +63,7 @@ mas 'Twitter', id: 1482454543       # Chat about what's happening
 mas '1Blocker', id: 1365531024      # Blocks ads, trackers, pop-ups
 mas 'Hand Mirror', id: 1502839586   # One-click camera check
 mas 'Caffeinated', id: 1362171212   # Keeps your display awake
+
 # fonts
 cask 'font-fira-mono-nerd-font'
 cask 'font-dank-mono'
