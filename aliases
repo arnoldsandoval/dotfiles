@@ -1,4 +1,5 @@
 # General
+
 alias vim='nvim'
 alias v='vim'
 alias vimt='nvim +NERDTree'
@@ -9,12 +10,14 @@ alias ed='code ~/.zshrc'
 alias ref='source ~/.zshrc'
 
 # Internet/Network
+
 alias fast='speedtest'
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com -4'
 alias ipv6='dig +short AAAA myip.opendns.com @resolver1.opendns.com'
 alias iplocal='ipconfig getifaddr en0'
 
 # Git
+
 alias g='git'
 alias gs='git s'
 alias gnah='git reset --hard;git clean -df'
@@ -25,14 +28,19 @@ alias gb='git branch'
 alias g-b='git checkout -b' # create new branch
 
 # Personal
+
 alias s='cd ~/Sites'
 alias df='cd ~/Sites/dotfiles'
 
 # Work
+
 alias dapp='cd ~/Dapper'
 alias da='cd ~/Dapper'
 alias sk='cd ~/Dapper/skeleton'
 alias nfl='cd ~/Dapper/nfl-app'
 alias nba='cd ~/Dapper/nba-app'
-alias ufc='cd ~/Dapper/nba-app'
-alias lal='cd ~/Dapper/nba-app'
+alias ufc='cd ~/Dapper/ufc-app'
+alias lal='cd ~/Dapper/laliga-app'
+alias flute='cd ~/Dapper/flute'
+alias p='cd ~/Dapper/platform-services'
+alias npm6='npm install -g npm@latest-6'
