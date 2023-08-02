@@ -29,6 +29,7 @@ cask 'cleanshot'                  # Screen capturing tool
 cask 'discord'                    # Voice and text chat software
 cask 'elgato-stream-deck'         # Assign keys, and then decorate and label them
 cask 'elgato-control-center'      # Control your Elgato Key Lights
+cask 'elgato-camera-hub'          # Elgato FACECAM configuration tool
 cask 'elgato-wave-link'           # Software custom-built for content creation
 cask 'figma'                      # Design tool
 cask 'firefox'                    # Browser: Firefox
@@ -50,6 +51,9 @@ cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'visual-studio-code'         # Favorite IDE
 cask 'via'                        # My keyboard's best friend
 cask 'kindle'                     # Interface for reading and syncing eBooks
+cask 'raycast'                    # Control your tools with a few keystrokes
+cask 'linear-linear'              # App to manage software development and track bugs
+cask 'readdle-spark'              # The email client
 
 # work
 cask 'notion'                     # App to write, plan, collaborate, and get organized
@@ -58,7 +62,6 @@ cask 'perimeter81'                # Zero trust network as a service client
 
 # mac app store apps
 mas 'Gif Brewery 3', id: 1081413713 # Makes GIFs from Video Files
-mas 'Apollo', id: 979274575         # The award winning Reddit app
 mas 'Twitter', id: 1482454543       # Chat about what's happening
 mas '1Blocker', id: 1365531024      # Blocks ads, trackers, pop-ups
 mas 'Hand Mirror', id: 1502839586   # One-click camera check
