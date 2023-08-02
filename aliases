@@ -44,3 +44,5 @@ alias lal='cd ~/Dapper/laliga-app'
 alias flute='cd ~/Dapper/flute'
 alias p='cd ~/Dapper/platform-services'
 alias npm6='npm install -g npm@latest-6'
+
+alias ngrok='~/ngrok'
