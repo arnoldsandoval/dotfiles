@@ -30,3 +30,6 @@ alias g-b='git checkout -b' # create new branch
 alias s='cd ~/Sites'
 alias df='cd ~/dotfiles'
 alias hl='cd ~/hitloop'
+
+alias python="$(pyenv which python)"
+alias pip="$(pyenv which pip)"

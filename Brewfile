@@ -5,6 +5,7 @@ tap 'teamookla/speedtest'
 tap 'arnoldsandoval/homebrew-internal'
 
 # utilities
+brew 'pyenv'                      # Python version management
 brew 'antidote'                   # Plugin manager for zsh, inspired by antigen and antibody
 brew 'git'                        # Distributed revision control system
 brew 'tig'                        # Text interface for Git repositories
@@ -22,6 +23,7 @@ brew 'flow-cli'                   # Command-line interface that provides utiliti
 cask 'proxyman'                   # Modern and intuitive HTTP Debugging Proxy app
 
 # apps
+cask "docker"                     # App to build and share containerized applications and microservices
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
 cask 'audio-hijack'               # Records from any application
 cask 'cleanshot'                  # Screen capturing tool
