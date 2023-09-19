@@ -9,37 +9,8 @@ fi
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
-# Plugins {{{
-    # Load the Antibody plugin manager for zsh.
-    source <(antibody init)
-
-    # Setup required env var for oh-my-zsh plugins
-    export ZSH="$(antibody home)/https-COLON--SLASH--SLASH-github.com-SLASH-robbyrussell-SLASH-oh-my-zsh"
-
-    antibody bundle robbyrussell/oh-my-zsh
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/git
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/git-flow
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/httpie
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/jsontools
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/jump
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/nmap
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/rsync
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/tmux
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/tmuxinator
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/web-search
-    antibody bundle robbyrussell/oh-my-zsh path:plugins/z
-
-    # Other bundles
-    antibody bundle sampson-chen/sack
-    antibody bundle zsh-users/zsh-autosuggestions
-
-    # This needs to be the last bundle.
-    antibody bundle zsh-users/zsh-syntax-highlighting
-
-    # Load the theme.
-    # antibody bundle robbyrussell/oh-my-zsh path:themes/robbyrussell.zsh-theme
-    antibody bundle romkatv/powerlevel10k
-# }}}
+source $HOMEBREW_PREFIX/opt/antidote/share/antidote/antidote.zsh
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
 
 source ~/.aliases
 

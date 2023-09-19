@@ -27,22 +27,6 @@ alias gundo='git restore --staged'
 alias gb='git branch'
 alias g-b='git checkout -b' # create new branch
 
-# Personal
-
 alias s='cd ~/Sites'
-alias df='cd ~/Sites/dotfiles'
-
-# Work
-
-alias dapp='cd ~/Dapper'
-alias da='cd ~/Dapper'
-alias sk='cd ~/Dapper/skeleton'
-alias nfl='cd ~/Dapper/nfl-app'
-alias nba='cd ~/Dapper/nba-app'
-alias ufc='cd ~/Dapper/ufc-app'
-alias lal='cd ~/Dapper/laliga-app'
-alias flute='cd ~/Dapper/flute'
-alias p='cd ~/Dapper/platform-services'
-alias npm6='npm install -g npm@latest-6'
-
-alias ngrok='~/ngrok'
+alias df='cd ~/dotfiles'
+alias hl='cd ~/hitloop'

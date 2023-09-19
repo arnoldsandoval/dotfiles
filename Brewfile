@@ -5,9 +5,9 @@ tap 'teamookla/speedtest'
 tap 'arnoldsandoval/homebrew-internal'
 
 # utilities
+brew 'antidote'                   # Plugin manager for zsh, inspired by antigen and antibody
 brew 'git'                        # Distributed revision control system
 brew 'tig'                        # Text interface for Git repositories
-brew 'antibody'                   # Shell plugin manager
 brew 'tmux'                       # Terminal multiplexer
 brew 'svn'                        # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
 brew 'neovim'                     # Ambitious Vim-fork focused on extensibility and agility
@@ -23,7 +23,6 @@ cask 'proxyman'                   # Modern and intuitive HTTP Debugging Proxy ap
 
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
-cask 'airfoil'                    # Sends audio from computer to outputs
 cask 'audio-hijack'               # Records from any application
 cask 'cleanshot'                  # Screen capturing tool
 cask 'discord'                    # Voice and text chat software
@@ -34,23 +33,16 @@ cask 'elgato-wave-link'           # Software custom-built for content creation
 cask 'figma'                      # Design tool
 cask 'firefox'                    # Browser: Firefox
 cask 'google-chrome'              # Browser: Google Chrome
-cask 'hyper'                      # Terminal replacement
-cask 'ledger-live'                # Wallet desktop application to maintain multiple cryptocurrencies
 cask 'maccy'                      # Clipboard manager
 cask 'obs'                        # Open-source software for live streaming and screen recording
 cask 'pixelsnap'                  # Screen measuring tool
 cask 'qlmarkdown'                 # quicklook for markdown files
-cask 'qmk-toolbox'                # Toolbox companion for QMK Firmware
 cask 'quicklook-json'             # quicklook for json files
 cask 'rectangle'                  # Move and resize windows using keyboard shortcuts or snap areas
 cask 'sonos'                      # Jams at home
 cask 'soundsource'                # Superior sound control for Mac
-cask 'tradingview'                # Charting and social-networking for investment traders
-cask 'trezor-suite'               # Companion app for the Trezor hardware wallet
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'visual-studio-code'         # Favorite IDE
-cask 'via'                        # My keyboard's best friend
-cask 'kindle'                     # Interface for reading and syncing eBooks
 cask 'raycast'                    # Control your tools with a few keystrokes
 cask 'linear-linear'              # App to manage software development and track bugs
 cask 'readdle-spark'              # The email client
@@ -58,12 +50,8 @@ cask 'readdle-spark'              # The email client
 # work
 cask 'notion'                     # App to write, plan, collaborate, and get organized
 cask 'slack'                      # Team communication and collaboration software
-cask 'perimeter81'                # Zero trust network as a service client
 
 # mac app store apps
-mas 'Gif Brewery 3', id: 1081413713 # Makes GIFs from Video Files
-mas 'Twitter', id: 1482454543       # Chat about what's happening
-mas '1Blocker', id: 1365531024      # Blocks ads, trackers, pop-ups
 mas 'Hand Mirror', id: 1502839586   # One-click camera check
 mas 'Caffeinated', id: 1362171212   # Keeps your display awake
 
