@@ -1,6 +1,5 @@
 # General
 
-alias vim='nvim'
 alias v='vim'
 alias vimt='nvim +NERDTree'
 alias update="softwareupdate --all --install --force"
@@ -16,20 +15,8 @@ alias ip='dig +short myip.opendns.com @resolver1.opendns.com -4'
 alias ipv6='dig +short AAAA myip.opendns.com @resolver1.opendns.com'
 alias iplocal='ipconfig getifaddr en0'
 
-# Git
-
-alias g='git'
-alias gs='git s'
-alias gnah='git reset --hard;git clean -df'
-alias gco='git checkout'
-alias glol='git log --pretty=oneline' # prints one line list of commits
-alias gundo='git restore --staged'
-alias gb='git branch'
-alias g-b='git checkout -b' # create new branch
-
-alias s='cd ~/Sites'
-alias df='cd ~/dotfiles'
-alias hl='cd ~/hitloop'
-
-alias python="$(pyenv which python)"
-alias pip="$(pyenv which pip)"
+alias dotfiles='cd ~/otti/dotfiles'
+alias core='cd ~/otti'
+alias api='cd ~/otti/apps/api'
+alias web='cd ~/otti/apps/web'
+alias admin='cd ~/otti/apps/admin'
