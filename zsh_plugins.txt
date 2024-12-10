@@ -1,8 +1,6 @@
-# frameworks like oh-my-zsh are supported
 ohmyzsh/ohmyzsh
 ohmyzsh/ohmyzsh path:plugins/git
 ohmyzsh/ohmyzsh path:plugins/git-flow
-ohmyzsh/ohmyzsh path:plugins/httpie
 ohmyzsh/ohmyzsh path:plugins/jsontools
 ohmyzsh/ohmyzsh path:plugins/jump
 ohmyzsh/ohmyzsh path:plugins/nmap
@@ -12,4 +10,4 @@ ohmyzsh/ohmyzsh path:plugins/tmuxinator
 ohmyzsh/ohmyzsh path:plugins/web-search
 ohmyzsh/ohmyzsh path:plugins/z
 sampson-chen/sack
-zsh-users/zsh-autosuggestionsan
+zsh-users/zsh-autosuggestions

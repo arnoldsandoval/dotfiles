@@ -10,13 +10,14 @@ alias ref='source ~/.zshrc'
 
 # Internet/Network
 
-alias fast='speedtest'
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com -4'
 alias ipv6='dig +short AAAA myip.opendns.com @resolver1.opendns.com'
 alias iplocal='ipconfig getifaddr en0'
 
 alias dotfiles='cd ~/otti/dotfiles'
-alias core='cd ~/otti'
-alias api='cd ~/otti/apps/api'
-alias web='cd ~/otti/apps/web'
-alias admin='cd ~/otti/apps/admin'
+alias core='cd ~/otti/core'
+alias api='cd ~/otti/core/apps/api'
+alias web='cd ~/otti/core/apps/web'
+alias admin='cd ~/otti/core/apps/admin'
+alias ui='cd ~/otti/core/apps/admin'
+alias dev='cd ~/otti/core && pnpm run dev'

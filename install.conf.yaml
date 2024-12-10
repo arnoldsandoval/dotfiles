@@ -11,8 +11,6 @@
 - link:
     ~/.zshrc: zshrc
     ~/.aliases: aliases
-    ~/.p10k.zsh: p10k
-    ~/.config/nvim: nvim
-    ~/.config/neofetch/config.conf: neofetch.conf
     ~/git-idm: git-identity-manager
     ~/.zsh_plugins.txt: zsh_plugins.txt
+    ~/.config/starship.toml: starship.toml

@@ -11,6 +11,8 @@ brew 'tree'                       # Display directories as trees (with optional 
 brew 'task'                       # Feature-rich console based todo list manager
 cask "docker"                     # App to build and share containerized applications and microservices
 brew "docker-compose"             # Isolated development environments using Docker
+brew "tmux"
+brew "starship"                   # Cross-shell prompt for astronauts
 
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
@@ -28,7 +30,7 @@ cask 'soundsource'                # Superior sound control for Mac
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'raycast'                    # Control your tools with a few keystrokes
 cask 'linear-linear'              # App to manage software development and track bugs
-cask 'micdrop'
+cask 'mic-drop'
 
 # work
 cask 'notion'                     # App to write, plan, collaborate, and get organized

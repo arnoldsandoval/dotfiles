@@ -8,8 +8,6 @@ else
   brew update
 fi
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
 # change default shell
 if [ ! "$SHELL" = "/bin/zsh" ]; then
   echo 'Changing default shell to zsh'
