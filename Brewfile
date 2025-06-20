@@ -30,7 +30,9 @@ cask 'soundsource'                # Superior sound control for Mac
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'raycast'                    # Control your tools with a few keystrokes
 cask 'linear-linear'              # App to manage software development and track bugs
-cask 'mic-drop'
+cask 'cyberduck'                  # FTP, SFTP, WebDAV, and cloud storage browser
+cask 'iina'                       # Media player for macOS
+cask 'claude'                     # AI assistant for writing, coding, and more
 
 # work
 cask 'notion'                     # App to write, plan, collaborate, and get organized
@@ -39,7 +41,6 @@ cask 'postman'                    # Collaboration platform for API development
 cask 'figma'                       # Design tool
 cask 'visual-studio-code'         # Open-source code editor
 cask 'cursor'                     # Write, edit, and chat about your code with AI
-cask 'pika'                       # Colour picker for colours onscreen
 cask 'loom'
 cask 'ngrok'
 cask 'zoom'                       # Video communication and virtual meeting platform
