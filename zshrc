@@ -52,3 +52,10 @@ export PATH="$HOME/bin:$HOME/git-idm:/usr/local/sbin:$PATH"
 export PGHOST=localhost
 export PGUSER=localhost
 export PGPASSWORD=localhost
+
+# bun completions
+[ -s "/Users/arnie/.bun/_bun" ] && source "/Users/arnie/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

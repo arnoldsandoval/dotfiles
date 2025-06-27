@@ -33,6 +33,7 @@ cask 'linear-linear'              # App to manage software development and track
 cask 'cyberduck'                  # FTP, SFTP, WebDAV, and cloud storage browser
 cask 'iina'                       # Media player for macOS
 cask 'claude'                     # AI assistant for writing, coding, and more
+cask 'aqua-voice'                # Voice control for Mac 
 
 # work
 cask 'notion'                     # App to write, plan, collaborate, and get organized
