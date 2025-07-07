@@ -17,10 +17,10 @@ brew "starship"                   # Cross-shell prompt for astronauts
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
 cask 'cleanshot'                  # Screen capturing tool
-cask 'cursor'
+cask 'cursor'                     # Write, edit, and chat about your code with AI
 cask 'discord'                    # Voice and text chat software
-cask 'docker'
-cask 'elgato-control-center'
+cask 'docker'                    # App to build and share containerized applications and microservices
+cask 'elgato-control-center' 
 cask 'elgato-stream-deck'
 cask 'firefox'                     # Browser: Firefox
 cask 'google-chrome'              # Browser: Google Chrome
