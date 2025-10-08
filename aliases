@@ -1,63 +1,21 @@
 # General
-
 alias v='vim'
 alias vimt='nvim +NERDTree'
 alias update="softwareupdate --all --install --force"
 
 # Internet/Network
-
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com -4'
 alias ipv6='dig +short AAAA myip.opendns.com @resolver1.opendns.com'
 alias iplocal='ipconfig getifaddr en0'
 
 alias c='cd ~/code'
-alias dotfiles='cd ~/code/dotfiles'
-alias core='cd ~/otti/core'
-alias api='cd ~/otti/core/apps/api'
-alias web='cd ~/otti/core/apps/web'
-alias admin='cd ~/otti/core/apps/admin'
-alias ui='cd ~/otti/core/packages/ui'
-alias patterns='cd ~/otti/core/packages/ui-patterns'
-alias icons='cd ~/otti/core/packages/icons'
-alias schemas='cd ~/otti/core/packages/schemas'
-alias theme='cd ~/otti/core/packages/ui-theme'
-alias uid='cd ~/otti/core/packages/ui && pnpm run dev'
-alias dev='cd ~/otti/core && pnpm run dev'
-alias test='cd ~/otti/core && pnpm run test'
-alias build='cd ~/otti/core && pnpm run build'
-alias clean='cd ~/otti/core && pnpm exec turbo clean'
-alias e2e='cd ~/otti/core/packages/end-to-end-tests && pnpm exec turbo test'
-alias e2eh='cd ~/otti/core/packages/end-to-end-tests && pnpm run test -- --headed'
-alias e2er='cd ~/otti/core/packages/end-to-end-tests && pnpm exec playwright codegen http://localhost:3000'
-alias e2ed='cd ~/otti/core/packages/end-to-end-tests && pnpm run test -- --debug'
-alias ccore='cursor ~/otti/core'
-alias cdf='cursor ~/code/dotfiles'
-alias caliases='cursor ~/code/dotfiles/aliases'
+alias dot='cd ~/code/dotfiles'
+alias codedot='code ~/code/dotfiles'
 alias dc='pnpm dlx depcheck'
-
-alias migrate-up='cd ~/otti/core/apps/api && pnpm run migrate-up'
 
 alias gpom='git pull origin main'
 alias gprm='git pull --rebase origin main'
 
-# Graphite
-
-# Function to create a new branch with a specified name and track it automatically with graphite
-function gtc() {
-    gt create "$1"
-}
-
-alias browsertools-mcp="npx @agentdeskai/browser-tools-server@latest"
-
-# Fetch latest from main, and update the whole stack (--force just means it can resolve simple issues by itself, like untracking merged branches)
-alias gts='gt sync --force'
-
-# Push latest commits to github, and open a PR in draft mode if there isn't one
-alias gtp='gt submit --stack'
-
-alias up='gt up'
-
-alias dn='gt down'
 
 # Function to start an ngrok tunnel on a specified port
 function tunnel() {

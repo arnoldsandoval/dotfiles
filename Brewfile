@@ -19,17 +19,18 @@ cask 'discord'                    # Voice and text chat software
 cask 'docker'                     # App to build and share containerized applications and microservices
 cask 'elgato-control-center'      # Control your Elgato devices
 cask 'elgato-stream-deck'         # Control your Elgato devices
-cask 'firefox'                     # Browser: Firefox
+cask 'firefox'                    # Browser: Firefox
 cask 'google-chrome'              # Browser: Google Chrome
 cask 'pixelsnap'                  # Screen measuring tool
 cask 'sonos'                      # Jams at home
 cask 'vanilla'                    # Keeps the menu bar clutter free
 cask 'raycast'                    # Control your tools with a few keystrokes
-cask 'cyberduck'                  # FTP, SFTP, WebDAV, and cloud storage browser
-cask 'iina'                       # Media player for macOS
 cask 'claude'                     # AI assistant for writing, coding, and more
 cask 'aqua-voice'                 # Voice control for Mac 
- 
+cask 'slack'                      # Work chat
+cask 'granola'                    # AI meeting notes tool
+cask 'screen-studio'              # Screen Studio
+
 # code
 cask 'postman'                    # Collaboration platform for API development
 cask 'visual-studio-code'         # Open-source code editor
