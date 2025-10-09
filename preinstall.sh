@@ -1,11 +1,24 @@
 #!/bin/bash
 
 # check for homebrew
-which -s brew
-if [[ $? != 0 ]] ; then
+if ! command -v brew &> /dev/null; then
+  echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  
+  # Add Homebrew to PATH (Apple Silicon)
+  export PATH="/opt/homebrew/bin:$PATH"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  
+  echo "Homebrew installed successfully"
 else
+  echo "Homebrew already installed, updating..."
   brew update
+fi
+
+# Verify brew is now available
+if ! command -v brew &> /dev/null; then
+  echo "Error: Homebrew installation failed or not in PATH"
+  exit 1
 fi
 
 # change default shell
