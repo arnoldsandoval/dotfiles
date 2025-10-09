@@ -4,15 +4,18 @@ macOS development environment setup powered by [Dotbot](https://github.com/anish
 
 ## Quick Start
 
+**First time setup** (requires Homebrew):
 ```bash
+# Install Homebrew first (requires password)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Then install dotfiles
 git clone https://github.com/arnoldsandoval/dotfiles.git ~/code/dotfiles
 cd ~/code/dotfiles
 ./install
 ```
 
-That's it! The install script will:
-
-- ✅ Install Homebrew (if needed)
+The install script will:
 - ✅ Set up Zsh + Oh-My-Zsh + Antidote
 - ✅ Install all apps and dev tools
 - ✅ Create symlinks for all configs
