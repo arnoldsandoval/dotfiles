@@ -3,6 +3,7 @@ tap 'homebrew/cask-fonts'
 tap 'arnoldsandoval/homebrew-internal'
 
 # utilities
+brew "nodenv"                     # Node version management
 brew 'git'                        # Distributed revision control system
 brew 'svn'                        # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
 brew 'nodeenv'                    # Create and manage multiple versions of Node.js
