@@ -1,16 +1,23 @@
 - defaults:
     link:
       relink: true
-- clean: ["~"]
+
+- clean: 
+    ~/.config:
+      recursive: true
+
+- create:
+    - ~/.config
+    - ~/bin
+
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - [sh preinstall.sh, Running pre installation script]
-    - [vim +PlugUpdate +PlugClean! +qa, Installing and updating plugins]
 - brewfile:
     - Brewfile
 - link:
     ~/.zshrc: zshrc
     ~/.aliases: aliases
-    ~/git-idm: git-identity-manager
     ~/.zsh_plugins.txt: zsh_plugins.txt
     ~/.config/starship.toml: starship.toml
+    ~/.gitconfig: gitconfig

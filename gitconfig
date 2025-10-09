@@ -1,0 +1,66 @@
+[user]
+	# Set your user name and email
+	name = arnie
+	email = arnold@arnie.io
+
+[core]
+	editor = vim
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+	ignorecase = false
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+[push]
+	default = current
+
+[color]
+	ui = auto
+
+[alias]
+	# Status and info
+	st = status
+	s = status -s
+	d = diff
+	dc = diff --cached
+	l = log --oneline --graph --decorate
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	last = log -1 HEAD
+
+	# Branches
+	br = branch
+	co = checkout
+	cb = checkout -b
+	
+	# Commits
+	c = commit
+	cm = commit -m
+	ca = commit -a
+	cam = commit -am
+	amend = commit --amend
+	
+	# Remote
+	p = push
+	pl = pull
+	f = fetch
+	
+	# Utilities
+	undo = reset HEAD~1 --mixed
+	unstage = reset HEAD --
+	discard = checkout --
+	
+	# Show aliases
+	aliases = config --get-regexp alias
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	algorithm = histogram
+
+[rerere]
+	enabled = true

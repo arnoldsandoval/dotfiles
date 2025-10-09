@@ -5,6 +5,3 @@
 [submodule "dotbot-brew"]
 	path = dotbot-brew
 	url = https://github.com/d12frosted/dotbot-brew.git
-[submodule "git-identity-manager"]
-	path = git-identity-manager
-	url = https://github.com/samrocketman/git-identity-manager.git

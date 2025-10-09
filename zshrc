@@ -3,9 +3,9 @@ export PATH=/opt/homebrew/bin:$PATH
 eval "$(starship init zsh)"
 
 export ZSH="$HOME/Library/Caches/antidote/https-COLON--SLASH--SLASH-github.com-SLASH-ohmyzsh-SLASH-ohmyzsh"
-source $ZSH/oh-my-zsh.sh
 ZSH_THEME="robbyrussell"
 plugins=(git)
+source $ZSH/oh-my-zsh.sh
 
 # Set the root name of the plugins files (.txt and .zsh) antidote will use.
 zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
@@ -25,21 +25,27 @@ fi
 # Source your static plugins file.
 source ${zsh_plugins}.zsh
 
-# Source nvm
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-
-eval "$(nodenv init -)"
+# Lazy load nodenv to improve startup time
+nodenv() {
+  unfunction "$0"
+  eval "$(command nodenv init -)"
+  $0 "$@"
+}
 
 source ~/.aliases
 
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="$HOME/bin:/usr/local/sbin:$PATH"
 
-# add git-idm to path and make it executable
-export PATH="$HOME/bin:$HOME/git-idm:/usr/local/sbin:$PATH"
+# Lazy load fzf
+[ -f ~/.fzf.zsh ] && {
+  fzf() {
+    unfunction "$0"
+    source ~/.fzf.zsh
+    $0 "$@"
+  }
+}
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
+# Local dev database credentials only - not for production use
 export PGHOST=localhost
 export PGUSER=localhost
 export PGPASSWORD=localhost
@@ -51,4 +57,3 @@ export PGPASSWORD=localhost
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH" source /Users/arnie/.zshrc

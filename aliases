@@ -1,6 +1,4 @@
 # General
-alias v='vim'
-alias vimt='nvim +NERDTree'
 alias update="softwareupdate --all --install --force"
 
 # Internet/Network
@@ -12,10 +10,6 @@ alias c='cd ~/code'
 alias dot='cd ~/code/dotfiles'
 alias codedot='code ~/code/dotfiles'
 alias dc='pnpm dlx depcheck'
-
-alias gpom='git pull origin main'
-alias gprm='git pull --rebase origin main'
-
 
 # Function to start an ngrok tunnel on a specified port
 function tunnel() {
