@@ -1,5 +1,4 @@
 # Sources
-tap 'homebrew/cask-fonts'
 tap 'arnoldsandoval/homebrew-internal'
 
 # utilities
@@ -39,3 +38,5 @@ cask 'ngrok'                      # Secure introspectable tunnels to localhost
 cask 'font-fira-mono-nerd-font'
 cask 'font-dank-mono'
 cask 'font-monolisa'
+cask 'font-riforma'
+cask 'font-whyte'
