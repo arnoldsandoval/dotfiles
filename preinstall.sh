@@ -32,8 +32,9 @@ else
 fi
 
 # install antidote
-if [ ! -d "${ZDOTDIR:-~}/.antidote" ]; then
-    git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-~}/.antidote
+ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
+if [ ! -d "$ANTIDOTE_DIR" ]; then
+    git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
 else
     echo "Antidote is already installed"
 fi
