@@ -6,7 +6,7 @@ brew "nodenv"                     # Node version management
 brew 'git'                        # Distributed revision control system
 brew 'svn'                        # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
 brew 'nodeenv'                    # Create and manage multiple versions of Node.js
-cask "docker"                     # App to build and share containerized applications and microservices
+cask "docker-desktop"             # App to build and share containerized applications and microservices
 brew "docker-compose"             # Isolated development environments using Docker
 brew "starship"                   # Cross-shell prompt for astronauts
 
@@ -28,6 +28,7 @@ cask 'slack'                      # Work chat
 cask 'granola'                    # AI meeting notes tool
 cask 'screen-studio'              # Screen Studio
 cask 'zoom'                       # Video communication and virtual meeting platform
+cask 'figma'                      # Collaborative interface design tool
 
 # code
 cask 'postman'                    # Collaboration platform for API development
