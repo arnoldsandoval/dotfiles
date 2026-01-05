@@ -2,6 +2,7 @@
 	# Set your user name and email
 	name = arnie
 	email = arnold@arnie.io
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICf21qywyaQtu+IGPKMu5nu32GMstbtbYUEzuppUcP5I
 
 [core]
 	editor = vim
@@ -64,3 +65,9 @@
 
 [rerere]
 	enabled = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = false

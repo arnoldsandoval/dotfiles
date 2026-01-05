@@ -46,9 +46,14 @@ export PATH="$HOME/bin:/usr/local/sbin:$PATH"
 }
 
 # Local dev database credentials only - not for production use
+# export PGHOST=localhost
+# export PGUSER=localhost
+# export PGPASSWORD=localhost
+
+# Dealops dev db creds...
 export PGHOST=localhost
-export PGUSER=localhost
-export PGPASSWORD=localhost
+export PGUSER=postgres
+export PGPASSWORD=postgres
 
 # bun completions
 [ -s "/Users/arnie/.bun/_bun" ] && source "/Users/arnie/.bun/_bun"
@@ -57,3 +62,11 @@ export PGPASSWORD=localhost
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+# android
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+# for thefuck
+eval $(thefuck --alias)

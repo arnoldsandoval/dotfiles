@@ -18,7 +18,7 @@ function tunnel() {
         echo "Please provide a port number."
         return 1
     fi
-    ngrok http --url=arnie.otti.ngrok.dev "$port"
+    ngrok http --url=arnie.ngrok.dev "$port"
 }
 
 alias gpatch='git diff > ~/Desktop/patch-$(date +"%Y%m%d-%H%M%S").patch'

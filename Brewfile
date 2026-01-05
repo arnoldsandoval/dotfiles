@@ -1,7 +1,9 @@
 # Sources
 tap 'arnoldsandoval/homebrew-internal'
+tap 'oven-sh/bun'
 
 # utilities
+brew 'oven-sh/bun/bun'            # Fast all-in-one JavaScript runtime
 brew "nodenv"                     # Node version management
 brew 'git'                        # Distributed revision control system
 brew 'svn'                        # wtf? see https://github.com/Homebrew/homebrew-cask/issues/80695
@@ -9,6 +11,11 @@ brew 'nodeenv'                    # Create and manage multiple versions of Node.
 cask "docker-desktop"             # App to build and share containerized applications and microservices
 brew "docker-compose"             # Isolated development environments using Docker
 brew "starship"                   # Cross-shell prompt for astronauts
+brew "ffmpeg"                     # Powerful multimedia framework
+brew "gamdl"                      # A command-line app for downloading Apple Music songs, music videos and post videos.
+brew "yt-dlp"                     # A youtube-dl fork with additional features and fixes
+brew "gh"                         # GitHub command-line tool
+brew "railway"                    # Interact with your Railway project from the command line.     
 
 # apps
 cask '1password'                  # Password manager that keeps all passwords secure behind one password
