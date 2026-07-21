@@ -74,16 +74,18 @@ check_links() {
       err "wrong link: $target -> $(readlink "$target")"; bad=$((bad+1))
     fi
   done < <(_link_manifest; _link_skills_entries)
-  # broken repo-pointing symlinks anywhere interesting
-  local f
+  # Broken repo-pointing symlinks anywhere interesting. Deliberately NO
+  # process substitution and NO comments/quotes inside one: the bash 3.2
+  # parser (macOS) scans substitution bodies naively and trips on both.
+  local broken f
+  broken=$(find "$HOME/.config" "$HOME/.local/bin" "$HOME/.claude/skills" "$HOME" \
+             -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null)
   while IFS= read -r f; do
+    [[ -n $f ]] || continue
+    [[ $(readlink "$f") == "$DOTFILES"/* ]] || continue
     err "broken repo link: $f -> $(readlink "$f")"; bad=$((bad+1))
-  done < <(find "$HOME/.config" "$HOME/.local/bin" "$HOME/.claude/skills" "$HOME" \
-             -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null \
-           | while IFS= read -r l; do
-               # note: not a case statement — bash 3.2 (macOS) can't parse
-               # case inside process substitution
-               [[ $(readlink "$l") == "$DOTFILES"/* ]] && echo "$l"
-             done)
+  done <<EOF
+$broken
+EOF
   return $((bad > 0))
 }
