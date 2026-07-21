@@ -36,6 +36,8 @@ cask 'visual-studio-code'
 cask 'docker-desktop'
 cask 'postman'
 cask 'ngrok'
+cask 'slack'
+cask 'zoom'
 
 # fonts
 cask 'font-fira-mono-nerd-font'

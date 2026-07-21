@@ -24,9 +24,15 @@ install_packages_tier1() {
   local profile; profile=$(profile_get)
   if [[ $OS == darwin ]]; then
     has brew || { warn "homebrew not installed — skipping brew packages (install from https://brew.sh then re-run)"; return 0; }
-    ui_spin "brew bundle (core)" brew bundle --no-upgrade --file "$DOTFILES/packages/darwin/Brewfile.core"
+    # run bundles VISIBLY (no gum spin): it swallows brew errors whole —
+    # a failed personal bundle once went completely unnoticed behind it
+    log "brew bundle (core)"
+    brew bundle --no-upgrade --file "$DOTFILES/packages/darwin/Brewfile.core" || warn "core bundle had failures (see above)"
     local pf="$DOTFILES/packages/darwin/Brewfile.${profile#mac-}"   # personal|work
-    [[ -f $pf ]] && ui_spin "brew bundle (${profile#mac-})" brew bundle --no-upgrade --file "$pf"
+    if [[ -f $pf ]]; then
+      log "brew bundle (${profile#mac-})"
+      brew bundle --no-upgrade --file "$pf" || warn "${profile#mac-} bundle had failures (see above)"
+    fi
   else
     _install_linux_pkgs
   fi

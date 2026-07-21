@@ -1,6 +1,36 @@
 # Brewfile.personal — personal-Mac-only additions (shared apps live in Brewfile.core)
+tap 'dopplerhq/doppler'
+
+# cli
 brew 'gamdl'
 brew 'railway'
+brew 'node'
+brew 'mkcert'
+brew 'mosh'
+brew 'dopplerhq/doppler/doppler'
+brew 'terminal-notifier'
+brew 'tlrc'
+brew 'whisper-cpp'
 
+# ios toolchain
+brew 'cocoapods'
+brew 'fastlane'
+brew 'xcodegen'
+brew 'rbenv'
+brew 'ruby-build'
+
+# apps
 cask 'claude'        # desktop app
 cask 'claude-code'   # the cli
+cask '1password-cli'
+cask 'android-studio'
+cask 'zulu@17'
+cask 'asana'
+cask 'cursor'
+cask 'notion'
+cask 'obsidian'
+cask 'raspberry-pi-imager'
+cask 'sf-symbols'
+cask 'tableplus'
+cask 'tailscale-app'
+cask 'termius'
