@@ -73,7 +73,7 @@ tui_hub() {
     behind=$(status_get behind); [[ -n $behind && $behind -gt 0 ]] && nudge=" (⇣$behind)"
     local choice
     choice=$(ui_choose "dotfiles — $(profile_get 2>/dev/null || echo unbootstrapped) on $DISTRO" \
-      "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "quit") || true
+      "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "shell") || true
     case ${choice%% *} in
       sessions) sessions_menu ;;
       sync*|sync) do_sync || true ;;
@@ -81,7 +81,7 @@ tui_hub() {
       doctor) run_doctor || true ;;
       skills) skills_list ;;
       bootstrap) cmd_bootstrap ;;
-      quit|"") return 0 ;;
+      shell|quit|"") return 0 ;;
     esac
   done
 }

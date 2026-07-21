@@ -14,10 +14,10 @@ alias dev='tmux new -A -s main'
 alias dt='tmux detach'
 alias cc='dotfiles sessions'
 
-# session picker on SSH login (same behavior as the zsh vm profile)
+# dotfiles hub on SSH login (same behavior as the zsh vm profile)
 if [[ $- == *i* && -n "${SSH_CONNECTION:-}" && -z "${TMUX:-}" && -t 1 ]] \
    && command -v dotfiles >/dev/null 2>&1; then
   dotfiles sync --auto || true
   dotfiles nudge
-  dotfiles sessions
+  dotfiles
 fi
