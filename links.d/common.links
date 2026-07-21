@@ -1,0 +1,8 @@
+# common.links — every machine. Format: TARGET  SOURCE(repo-relative)
+~/.zshrc                     config/zsh/zshrc
+~/.config/starship.toml      config/starship/starship.toml
+~/.config/git/config         config/git/config
+~/.config/git/ignore         config/git/ignore
+~/.tmux.conf                 config/tmux/tmux.conf
+~/.config/zellij/config.kdl  config/zellij/config.kdl
+~/.local/bin/dotfiles        bin/dotfiles

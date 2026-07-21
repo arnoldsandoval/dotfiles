@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# dotfiles — CLI + TUI for managing this machine's dev environment.
+#
+#   dotfiles                # TUI hub (gum-enhanced; plain menus without gum)
+#   dotfiles sessions       # dual-agent project session picker (alias: cc)
+#   dotfiles bootstrap      # tiered setup (see --help)
+#   dotfiles link           # (re)apply symlinks
+#   dotfiles sync [--auto]  # ff-only pull + relink; --auto used by login hooks
+#   dotfiles fetch          # quiet background fetch (used by timers)
+#   dotfiles doctor         # drift report (exit != 0 on findings)
+#   dotfiles skills         # list skills / install manifest entries
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+export DOTFILES
+for f in core platform profile tui link pkg skills sync doctor menu-sessions; do
+  # shellcheck disable=SC1090
+  source "$DOTFILES/lib/$f.sh"
+done
+
+usage() { sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+
+cmd_bootstrap() {
+  local profile="" tier="" yes=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --profile) profile=$2; shift 2 ;;
+      --tier) tier=$2; shift 2 ;;
+      --yes|-y) yes=1; shift ;;
+      *) die "unknown flag: $1" ;;
+    esac
+  done
+  export DOTFILES_YES=$yes
+
+  ui_header "dotfiles bootstrap — $OS/$DISTRO"
+  profile_ensure "$profile"
+
+  if [[ -z $tier || $tier == 0 ]]; then
+    log "tier 0: links + local stubs"
+    apply_links
+    bash "$DOTFILES/lib/gen-local.sh"
+    bash "$DOTFILES/lib/install-hooks.sh"
+  fi
+  if [[ -z $tier || $tier == 1 ]]; then
+    log "tier 1: packages"
+    install_packages_tier1
+    skills_install_manifest
+  fi
+  if [[ -z $tier || $tier == 2 ]]; then
+    log "tier 2: private extras"
+    install_packages_tier2
+  fi
+  echo
+  run_doctor || true
+}
+
+tui_hub() {
+  while true; do
+    local behind nudge=""
+    behind=$(status_get behind); [[ -n $behind && $behind -gt 0 ]] && nudge=" (⇣$behind)"
+    local choice
+    choice=$(ui_choose "dotfiles — $(profile_get 2>/dev/null || echo unbootstrapped) on $DISTRO" \
+      "sessions" "sync$nudge" "doctor" "skills" "bootstrap" "quit") || true
+    case ${choice%% *} in
+      sessions) sessions_menu ;;
+      sync*|sync) do_sync || true ;;
+      doctor) run_doctor || true ;;
+      skills) skills_list ;;
+      bootstrap) cmd_bootstrap ;;
+      quit|"") return 0 ;;
+    esac
+  done
+}
+
+case "${1:-}" in
+  "") if [[ -t 0 && -t 1 ]]; then tui_hub; else usage; fi ;;
+  sessions|menu) shift; sessions_menu "$@" ;;
+  bootstrap) shift; cmd_bootstrap "$@" ;;
+  link) shift; apply_links "$@" ;;
+  sync) shift; do_sync "${1:-}" ;;
+  fetch) if [[ ${2:-} == --maybe ]]; then maybe_fetch_async; else do_fetch; fi ;;
+  nudge) sync_nudge ;;
+  doctor) run_doctor ;;
+  skills) shift; case "${1:-list}" in list) skills_list ;; install) skills_install_manifest ;; *) skills_list ;; esac ;;
+  -h|--help|help) usage ;;
+  *) die "unknown command: $1 (try 'dotfiles help')" ;;
+esac
