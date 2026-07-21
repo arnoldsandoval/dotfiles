@@ -1,6 +1,8 @@
 # intent -> apt package name (only where they differ)
-rg ripgrep
-# not in ubuntu repos — installed via installers.d instead
+# SKIP = provided sudo-free by installers.d instead
+rg SKIP
+fzf SKIP
+jq SKIP
 starship SKIP
 gum SKIP
-zoxide zoxide
+zoxide SKIP
