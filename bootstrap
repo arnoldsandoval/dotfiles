@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# bootstrap — entry point for a new machine.
+#
+#   git clone https://github.com/arnoldsandoval/dotfiles ~/code/dotfiles
+#   cd ~/code/dotfiles && ./bootstrap
+#
+# Tiers (all run by default; each degrades gracefully):
+#   0  symlinks + shell config + local stubs   (no network needed)
+#   1  public packages (brew / apt|tdnf / user-space installers) + manifest skills
+#   2  private extras (homebrew tap) — SKIPPED with a message when not GitHub-authed
+#
+# Flags: --profile mac-personal|mac-work|vm   --tier N   --yes
+set -euo pipefail
+cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+exec bin/dotfiles bootstrap "$@"

@@ -1,0 +1,6 @@
+[Unit]
+Description=dotfiles background fetch
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/dotfiles fetch

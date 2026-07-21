@@ -1,56 +1,78 @@
 # dotfiles
 
-macOS development environment setup powered by [Dotbot](https://github.com/anishathalye/dotbot).
+One repo for every machine: personal Mac, work Mac, Linux VMs/servers.
+Pure bash, no frameworks — a small CLI (`dotfiles`) with a [gum](https://github.com/charmbracelet/gum)-powered
+TUI that degrades to plain menus when gum isn't installed.
 
-## Quick Start
+## New machine
 
-**First time setup** (requires Homebrew):
 ```bash
-# Install Homebrew first (requires password)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Then install dotfiles
-git clone https://github.com/arnoldsandoval/dotfiles.git ~/code/dotfiles
-cd ~/code/dotfiles
-./install
+git clone https://github.com/arnoldsandoval/dotfiles ~/code/dotfiles
+cd ~/code/dotfiles && ./bootstrap
 ```
 
-The install script will:
-- ✅ Set up Zsh + Oh-My-Zsh + Antidote
-- ✅ Install all apps and dev tools
-- ✅ Create symlinks for all configs
+Bootstrap asks **once** what this machine is and saves it:
 
-## What You Get
+| profile        | what you get |
+| -------------- | ------------ |
+| `mac-personal` | full setup: apps + fonts (brew), Claude Code config, 1Password git signing |
+| `mac-work`     | work apps, volta (node/yarn), Copilot-oriented; personal identity only for this repo |
+| `vm`           | CLI-only; auto-applies dotfiles updates on SSH login; session picker on connect |
 
-**Shell**: Zsh + Starship prompt + useful aliases  
-**Node**: nodenv for version management  
-**Apps**: Cursor, VS Code, Docker, Raycast, 1Password, and more  
-**Git**: Custom configuration with useful aliases
+Then it runs in tiers, each degrading gracefully:
 
-## Daily Usage
+- **Tier 0** — symlinks + shell config + local stubs. No network needed. Always works.
+- **Tier 1** — public packages: `brew bundle` on macOS; apt/tdnf on Linux (prints the
+  command to run yourself if sudo isn't available); sudo-free installers for
+  starship/gum/bun/zoxide into `~/.local/bin`; third-party skills from `packages/skills.txt`.
+- **Tier 2** — private extras (the private homebrew tap). **Skipped with a message**
+  when you're not GitHub-authed — never blocks. Unlock later with
+  `gh auth login && dotfiles bootstrap --tier 2`.
 
-| Command       | What it does        |
-| ------------- | ------------------- |
-| `c`           | Jump to ~/code      |
-| `dot`         | Jump to dotfiles    |
-| `tunnel 3000` | Create ngrok tunnel |
+## Daily driving
 
-See all aliases in [`aliases`](./aliases)
+| command | what |
+| --- | --- |
+| `dotfiles` | TUI hub: sessions, sync, doctor, skills, bootstrap |
+| `cc` / `dotfiles sessions` | project session picker — persistent tmux sessions per project, resumable Claude (`cc-*`) or Copilot (`cp-*`) agents |
+| `dotfiles sync` | fast-forward pull + relink (+ one-line summary) |
+| `dotfiles doctor` | drift report: links, packages, skills, git state |
+| `dev` / `dt` | attach/detach the `main` tmux session |
 
-## Customization
+**Sync model:** every shell start kicks a *background* fetch (throttled, never blocks),
+plus a 6h systemd/launchd timer. VMs auto-apply clean fast-forwards at SSH login;
+workstations only show a `dotfiles ⇣N` nudge — applying is always your call where you edit.
 
-**Add an alias**: Edit `~/.aliases`  
-**Install an app**: Add to `Brewfile`, run `brew bundle`  
-**Add Zsh plugin**: Edit `~/.zsh_plugins.txt`
+**Made a change on this machine?** Configs are symlinks into the repo, so editing
+`~/.zshrc` (or a Brewfile) *is* editing the repo. Run `dotfiles save` — it shows the
+diff, commits, and pushes; every other machine picks it up on its next fetch.
+`dotfiles doctor` flags the other direction too: brew packages installed by hand
+that no Brewfile declares.
 
-## Files
+## Where things live
 
-- `aliases` - Shell shortcuts and functions
-- `Brewfile` - Homebrew packages
-- `zshrc` - Zsh configuration
-- `starship.toml` - Prompt theme
-- `gitconfig` - Git settings
+```
+config/<tool>/     configs, symlinked via links.d/*.links (common → OS → profile)
+packages/          intent.txt + Brewfiles + apt/tdnf maps + sudo-free installers
+skills/            authored agent skills (any-agent SKILL.md format) → ~/.claude/skills
+packages/skills.txt  third-party skills, installed from upstream via `npx skills add`
+agents/AGENTS.md   shared agent instructions (CLAUDE.md includes it)
+lib/ bin/          the bash that runs all of this
+```
+
+**Machine-local (never committed):** `~/.config/zsh/local.zsh` (secrets/overrides),
+`~/.gitconfig.local` (identity + signer — generated at first bootstrap),
+`~/.local/share/dotfiles/` (profile, status, backups).
+
+The link engine never deletes: anything it replaces is backed up to
+`~/.local/share/dotfiles/backups/<timestamp>/`.
+
+## Escape hatches
+
+- `DOTFILES_NO_ZSH=1 ssh box` — stay in bash on a VM (the zsh handoff is a bashrc
+  hook, not chsh, so bash is always underneath).
+- `dotfiles link` re-applies symlinks anytime; `dotfiles doctor` tells you what's off.
 
 ---
 
-_This is Arnie's personal setup - use at your own discretion_
+_Arnie's setup — fork at your own discretion._

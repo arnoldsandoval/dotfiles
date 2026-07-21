@@ -1,0 +1,29 @@
+# zshrc — thin loader. The real config lives in fragments next to this file.
+# Linked to ~/.zshrc by the dotfiles link engine.
+
+# Resolve repo root from this file's real location (works wherever the repo lives)
+export DOTFILES="${DOTFILES:-$(cd "$(dirname "$(readlink -f ~/.zshrc)")/../.." && pwd)}"
+
+for _f in env path plugins aliases; do
+  source "$DOTFILES/config/zsh/$_f.zsh"
+done
+
+case "$OSTYPE" in
+  darwin*) source "$DOTFILES/config/zsh/os/darwin.zsh" ;;
+  *)       source "$DOTFILES/config/zsh/os/linux.zsh" ;;
+esac
+
+_profile="$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles/profile" 2>/dev/null)"
+[[ -n $_profile && -f $DOTFILES/config/zsh/profile/$_profile.zsh ]] \
+  && source "$DOTFILES/config/zsh/profile/$_profile.zsh"
+
+# machine-local secrets/overrides (never committed)
+[[ -f ~/.config/zsh/local.zsh ]] && source ~/.config/zsh/local.zsh
+
+command -v starship >/dev/null && eval "$(starship init zsh)"
+command -v zoxide  >/dev/null && eval "$(zoxide init zsh)"
+
+# omz-style update notice: behind origin / uncommitted local edits (fast, offline)
+[[ -o interactive ]] && command -v dotfiles >/dev/null && dotfiles nudge
+
+unset _f _profile
