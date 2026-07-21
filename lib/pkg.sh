@@ -108,8 +108,13 @@ check_packages() {
     profile=$(profile_get)
     for pf in Brewfile.core "Brewfile.${profile#mac-}"; do
       [[ -f $DOTFILES/packages/darwin/$pf ]] || continue
-      out=$(brew bundle check --verbose --file "$DOTFILES/packages/darwin/$pf" 2>&1 | grep -v "satisfied") || true
-      [[ -n $out ]] && { err "missing from $pf:"; printf '%s\n' "$out" | sed 's/^/    /'; bad=$((bad+1)); }
+      # trust the exit code; show only the actionable lines (brew mixes in
+      # unrelated warnings like circular-dependency notices)
+      if ! out=$(brew bundle check --verbose --file "$DOTFILES/packages/darwin/$pf" 2>&1); then
+        err "missing from $pf:"
+        printf '%s\n' "$out" | grep -E "needs to be installed|→" | sed 's/^/    /'
+        bad=$((bad+1))
+      fi
     done
     _check_brew_drift
   fi
@@ -117,17 +122,41 @@ check_packages() {
   return $((bad > 0))
 }
 
-# Drift the other way: things installed by hand that no Brewfile declares.
-# Informational (warn, not error) — the fix is 'add to a Brewfile, dotfiles save'.
-_check_brew_drift() {
-  local profile combined extras
-  profile=$(profile_get)
+# Combined manifest (core + profile + private) — cleanup MUST run against all
+# of them together or one file's apps read as another's orphans.
+_combined_brewfile() {
+  local profile combined; profile=$(profile_get)
   combined=$(mktemp)
   cat "$DOTFILES/packages/darwin/Brewfile.core" \
       "$DOTFILES/packages/darwin/Brewfile.${profile#mac-}" \
       "$DOTFILES/packages/darwin/Brewfile.private" 2>/dev/null >"$combined"
+  echo "$combined"
+}
+
+# Drift the other way: things installed by hand that no Brewfile declares.
+# Informational (warn, not error) — the fix is 'add to a Brewfile, dotfiles save'.
+_check_brew_drift() {
+  local combined extras
+  combined=$(_combined_brewfile)
   extras=$(brew bundle cleanup --file "$combined" 2>/dev/null | sed 's/^/    /')
   rm -f "$combined"
   [[ -n $extras ]] && { warn "installed but not in any Brewfile (add + 'dotfiles save', or uninstall):"; printf '%s\n' "$extras"; }
   return 0
+}
+
+# pkg_cleanup — remove everything no Brewfile declares (darwin only).
+# Shows the would-remove list, then confirms before --force.
+pkg_cleanup() {
+  [[ $OS == darwin ]] || { warn "cleanup is brew-only (nothing to do on $DISTRO)"; return 0; }
+  has brew || return 0
+  local combined
+  combined=$(_combined_brewfile)
+  brew bundle cleanup --file "$combined" || true
+  if ui_confirm "uninstall everything listed above?"; then
+    brew bundle cleanup --force --file "$combined"
+    ok "cleanup done — doctor should be quiet about drift now"
+  else
+    warn "aborted — nothing removed"
+  fi
+  rm -f "$combined"
 }

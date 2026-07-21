@@ -95,6 +95,7 @@ case "${1:-}" in
   save) shift; do_save "$*" ;;
   fetch) if [[ ${2:-} == --maybe ]]; then maybe_fetch_async; else do_fetch; fi ;;
   doctor) run_doctor ;;
+  cleanup) pkg_cleanup ;;
   skills) shift; case "${1:-list}" in list) skills_list ;; install) skills_install_manifest ;; *) skills_list ;; esac ;;
   -h|--help|help) usage ;;
   *) die "unknown command: $1 (try 'dotfiles help')" ;;
