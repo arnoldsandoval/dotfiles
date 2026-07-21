@@ -26,9 +26,10 @@ install_packages_tier1() {
     has brew || { warn "homebrew not installed — skipping brew packages (install from https://brew.sh then re-run)"; return 0; }
     # run bundles VISIBLY (no gum spin): it swallows brew errors whole —
     # a failed personal bundle once went completely unnoticed behind it
+    local pf="$DOTFILES/packages/darwin/Brewfile.${profile#mac-}"   # personal|work
+    _trust_declared_taps "$DOTFILES/packages/darwin/Brewfile.core" "$pf"
     log "brew bundle (core)"
     brew bundle --no-upgrade --file "$DOTFILES/packages/darwin/Brewfile.core" || warn "core bundle had failures (see above)"
-    local pf="$DOTFILES/packages/darwin/Brewfile.${profile#mac-}"   # personal|work
     if [[ -f $pf ]]; then
       log "brew bundle (${profile#mac-})"
       brew bundle --no-upgrade --file "$pf" || warn "${profile#mac-} bundle had failures (see above)"
@@ -60,6 +61,20 @@ _install_linux_pkgs() {
     warn "no sudo — run this yourself later:"
     warn "  ${_pkg_cmd[*]}"
   fi
+}
+
+# Newer brew refuses formulae from untrusted third-party taps. A tap listed
+# in our Brewfiles is declared intent, so trust those automatically (no-op on
+# brew versions without the trust command, and on already-trusted taps).
+_trust_declared_taps() {
+  brew trust --help >/dev/null 2>&1 || return 0
+  local f tap
+  for f in "$@"; do
+    [[ -f $f ]] || continue
+    while IFS= read -r tap; do
+      [[ -n $tap ]] && brew trust "$tap" >/dev/null 2>&1 || true
+    done < <(sed -n "s/^tap '\([^']*\)'.*/\1/p" "$f")
+  done
 }
 
 # Sudo-free fallbacks/user-space tools: every script in installers.d is
