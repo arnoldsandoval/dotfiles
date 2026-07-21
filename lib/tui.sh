@@ -6,16 +6,57 @@
 # where stdout is a pipe; gum draws its UI on the tty and prints to stdout.
 ui_has_gum() { has gum && [[ -t 0 && -t 2 ]]; }
 
-# ui_choose HEADER OPTION... -> prints chosen option (empty on cancel)
-# Numbered entry in both modes (type the number, enter). gum = styling only,
-# so the muscle memory is identical with or without it. enter/q/esc = skip.
+# _ui_read_num MAX -> prints chosen number; returns 1 on cancel (esc/q/EOF).
+# Raw key loop: digits build a number and AUTO-CONFIRM once no larger option
+# could start with the buffer (single keypress for lists <=9). Enter confirms
+# an ambiguous buffer, backspace edits, arrows and stray letters (muscle-
+# memory type-ahead like 'dev') are ignored.
+_ui_read_num() {
+  local n=$1 buf="" k rest
+  while true; do
+    printf '\r\033[K%s❯%s %s' "$C_MAG$C_BLD" "$C_OFF" "$buf" >&2
+    IFS= read -rsn1 k || { echo >&2; return 1; }
+    case $k in
+      $'\e')
+        IFS= read -rsn1 -t 0.02 rest || true
+        if [[ $rest == '[' || $rest == O ]]; then
+          # swallow the rest of the CSI/SS3 sequence (ends at a letter or ~)
+          while IFS= read -rsn1 -t 0.02 rest; do
+            [[ $rest == [A-Za-z~] ]] && break
+          done
+        else
+          echo >&2; return 1                        # bare esc (even typed rapidly)
+        fi ;;
+      q) echo >&2; return 1 ;;
+      "")  # enter: confirm buffer if valid, else clear it
+        if [[ -n $buf ]] && (( 10#$buf >= 1 && 10#$buf <= n )); then
+          echo >&2; printf '%s' $((10#$buf)); return 0
+        fi
+        buf="" ;;
+      $'\x7f') buf=${buf%?} ;;
+      [0-9])
+        buf+=$k
+        if (( 10#$buf > n )); then buf=""; continue; fi
+        if (( 10#$buf >= 1 && 10#$buf * 10 > n )); then
+          echo >&2; printf '%s' $((10#$buf)); return 0
+        fi ;;
+      *) : ;;
+    esac
+  done
+}
+
+# ui_choose [--nested] HEADER OPTION... -> prints chosen option (empty on cancel)
+# Single-keypress numbered selection; esc = shell at top level, back when
+# --nested. gum stays out of this path (terminal probes; see note below).
 ui_choose() {
+  local esc_hint="esc = shell"
+  [[ $1 == --nested ]] && { esc_hint="esc = back"; shift; }
   local header=$1; shift
   # gum-styled, gum-free: pure ANSI, so nothing probes the terminal with
   # escape queries (gum's ESC]11;? / ESC[6n replies arrive on stdin and can
   # swallow type-ahead on the login path). Rounded box, magenta accents.
   local c i opt w=0 hint
-  hint="1-$# · enter = shell"
+  hint="1-$# · $esc_hint"
   (( ${#header} > w )) && w=${#header}
   (( ${#hint} + 2 > w )) && w=$(( ${#hint} + 2 ))
   for opt in "$@"; do (( ${#opt} + 3 > w )) && w=$(( ${#opt} + 3 )); done
@@ -35,15 +76,8 @@ ui_choose() {
     printf '%s╰' "$C_MAG"; _hline 1; printf ' %s%s%s ' "$C_DIM" "$hint" "$C_OFF$C_MAG"
     _hline $(( w - ${#hint} + 1 )); printf '╯%s\n' "$C_OFF"
   } >&2
-  while true; do
-    printf '%s❯%s ' "$C_MAG$C_BLD" "$C_OFF" >&2
-    read -r c || { echo >&2; return 0; }
-    [[ -z $c || $c == q ]] && return 0
-    if [[ $c =~ ^[0-9]+$ ]] && (( c >= 1 && c <= $# )); then
-      eval "echo \"\${$c}\""; return 0
-    fi
-    printf '  %s%s isn%st an option%s\n' "$C_YLW" "'$c'" "'" "$C_OFF" >&2
-  done
+  c=$(_ui_read_num $#) || return 0
+  eval "echo \"\${$c}\""
 }
 
 # ui_confirm PROMPT -> exit 0 yes / 1 no

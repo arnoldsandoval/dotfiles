@@ -61,6 +61,8 @@ _launch() {
 }
 
 sessions_menu() {
+  local ctx=()   # --nested when opened from the hub: esc = back, not shell
+  [[ ${1:-} == --nested ]] && ctx=(--nested)
   local rows=() names=() dirs=() sids=() now line mt name dir sid
   now=$(date +%s)
   while IFS=$'\t' read -r mt name dir sid; do
@@ -71,7 +73,7 @@ sessions_menu() {
   [[ ${#names[@]} -gt 0 ]] || { warn "no projects under $CODE_DIR"; return 0; }
 
   local choice idx=-1 i
-  choice=$(ui_choose "Sessions  (●=claude ●=copilot running)" "${rows[@]}") || true
+  choice=$(ui_choose "${ctx[@]}" "Sessions  (●=claude ●=copilot running)" "${rows[@]}") || true
   [[ -n $choice ]] || return 0
   for i in "${!rows[@]}"; do [[ ${rows[$i]} == "$choice" ]] && idx=$i; done
   [[ $idx -ge 0 ]] || return 0
@@ -82,7 +84,7 @@ sessions_menu() {
   { has copilot || has github-copilot-cli; } && agents+=(copilot)
   [[ ${#agents[@]} -gt 0 ]] || die "no agent CLI installed (claude/copilot)"
   local agent=${agents[0]}
-  [[ ${#agents[@]} -gt 1 ]] && agent=$(ui_choose "Agent for ${names[$idx]}" "${agents[@]}")
+  [[ ${#agents[@]} -gt 1 ]] && agent=$(ui_choose --nested "Agent for ${names[$idx]}" "${agents[@]}")
   [[ -n $agent ]] || return 0
 
   _launch "$agent" "${names[$idx]}" "${dirs[$idx]}" "${sids[$idx]}"

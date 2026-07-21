@@ -75,7 +75,7 @@ tui_hub() {
     choice=$(ui_choose "dotfiles — $(profile_get 2>/dev/null || echo unbootstrapped) on $DISTRO" \
       "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "shell") || true
     case ${choice%% *} in
-      sessions) sessions_menu ;;
+      sessions) sessions_menu --nested ;;
       sync*|sync) do_sync || true ;;
       save) do_save || true ;;
       doctor) run_doctor || true ;;
