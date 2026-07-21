@@ -1,0 +1,7 @@
+{
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
+  "model": "opus[1m]"
+}
