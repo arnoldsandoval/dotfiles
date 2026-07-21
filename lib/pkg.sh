@@ -86,7 +86,23 @@ check_packages() {
   if [[ $OS == darwin ]] && has brew; then
     brew bundle check --file "$DOTFILES/packages/darwin/Brewfile.core" >/dev/null 2>&1 \
       || { err "brew bundle check failed (core)"; bad=$((bad+1)); }
+    _check_brew_drift
   fi
   for i in $(missing_intents); do err "missing tool: $i"; bad=$((bad+1)); done
   return $((bad > 0))
+}
+
+# Drift the other way: things installed by hand that no Brewfile declares.
+# Informational (warn, not error) — the fix is 'add to a Brewfile, dotfiles save'.
+_check_brew_drift() {
+  local profile combined extras
+  profile=$(profile_get)
+  combined=$(mktemp)
+  cat "$DOTFILES/packages/darwin/Brewfile.core" \
+      "$DOTFILES/packages/darwin/Brewfile.${profile#mac-}" \
+      "$DOTFILES/packages/darwin/Brewfile.private" 2>/dev/null >"$combined"
+  extras=$(brew bundle cleanup --file "$combined" 2>/dev/null | sed 's/^/    /')
+  rm -f "$combined"
+  [[ -n $extras ]] && { warn "installed but not in any Brewfile (add + 'dotfiles save', or uninstall):"; printf '%s\n' "$extras"; }
+  return 0
 }

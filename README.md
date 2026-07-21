@@ -43,6 +43,12 @@ Then it runs in tiers, each degrading gracefully:
 plus a 6h systemd/launchd timer. VMs auto-apply clean fast-forwards at SSH login;
 workstations only show a `dotfiles ⇣N` nudge — applying is always your call where you edit.
 
+**Made a change on this machine?** Configs are symlinks into the repo, so editing
+`~/.zshrc` (or a Brewfile) *is* editing the repo. Run `dotfiles save` — it shows the
+diff, commits, and pushes; every other machine picks it up on its next fetch.
+`dotfiles doctor` flags the other direction too: brew packages installed by hand
+that no Brewfile declares.
+
 ## Where things live
 
 ```

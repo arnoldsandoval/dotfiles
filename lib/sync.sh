@@ -47,6 +47,23 @@ do_sync() {
   fi
 }
 
+# do_save [message] — the "I tweaked something on this machine" verb:
+# commit everything + push, so other machines pick it up on their next fetch.
+# (Configs are symlinks into the repo, so editing ~/.zshrc edits the repo.)
+do_save() {
+  local msg=${1:-"chore: update from $(hostname -s 2>/dev/null || hostname)"}
+  if [[ -z $(git -C "$DOTFILES" status --porcelain) ]]; then ok "nothing to save — tree is clean"; return 0; fi
+  git -C "$DOTFILES" add -A
+  git -C "$DOTFILES" status --short
+  if ! ui_confirm "commit + push the above as '$msg'?"; then warn "aborted"; return 1; fi
+  git -C "$DOTFILES" commit -qm "$msg"
+  if git -C "$DOTFILES" push -q 2>/dev/null; then
+    ok "saved + pushed — other machines will see it on their next fetch"
+  else
+    warn "committed but push failed (offline?) — push manually later"
+  fi
+}
+
 # Nudge line for workstation shells (empty when nothing to say).
 sync_nudge() {
   local behind; behind=$(status_get behind)

@@ -14,6 +14,6 @@ is the single source; `CLAUDE.md` includes it so both agents read the same rules
 
 ## Conventions
 
-- Commit subjects: lowercase, imperative ("add x", not "Added X").
+- Commits: prefer [Conventional Commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `chore:`, …), lowercase subjects — unless a repo explicitly enforces a different convention.
 - Prefer `bun` for JS tooling on personal machines; work projects use their own standard (volta/yarn).
 - Skills in `skills/` are `compatibility: any-agent` — write new ones the same way.

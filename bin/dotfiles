@@ -6,6 +6,7 @@
 #   dotfiles bootstrap      # tiered setup (see --help)
 #   dotfiles link           # (re)apply symlinks
 #   dotfiles sync [--auto]  # ff-only pull + relink; --auto used by login hooks
+#   dotfiles save [msg]     # commit + push local edits (configs are repo symlinks)
 #   dotfiles fetch          # quiet background fetch (used by timers)
 #   dotfiles doctor         # drift report (exit != 0 on findings)
 #   dotfiles skills         # list skills / install manifest entries
@@ -60,10 +61,11 @@ tui_hub() {
     behind=$(status_get behind); [[ -n $behind && $behind -gt 0 ]] && nudge=" (⇣$behind)"
     local choice
     choice=$(ui_choose "dotfiles — $(profile_get 2>/dev/null || echo unbootstrapped) on $DISTRO" \
-      "sessions" "sync$nudge" "doctor" "skills" "bootstrap" "quit") || true
+      "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "quit") || true
     case ${choice%% *} in
       sessions) sessions_menu ;;
       sync*|sync) do_sync || true ;;
+      save) do_save || true ;;
       doctor) run_doctor || true ;;
       skills) skills_list ;;
       bootstrap) cmd_bootstrap ;;
@@ -78,6 +80,7 @@ case "${1:-}" in
   bootstrap) shift; cmd_bootstrap "$@" ;;
   link) shift; apply_links "$@" ;;
   sync) shift; do_sync "${1:-}" ;;
+  save) shift; do_save "$*" ;;
   fetch) if [[ ${2:-} == --maybe ]]; then maybe_fetch_async; else do_fetch; fi ;;
   nudge) sync_nudge ;;
   doctor) run_doctor ;;

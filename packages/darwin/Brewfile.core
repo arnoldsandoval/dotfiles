@@ -1,6 +1,7 @@
-# Brewfile.core — CLI tools for every Mac profile
+# Brewfile.core — everything installed on EVERY Mac (personal + work)
 tap 'oven-sh/bun'
 
+# cli
 brew 'git'
 brew 'gh'
 brew 'tmux'
@@ -14,6 +15,26 @@ brew 'oven-sh/bun/bun'
 brew 'docker-compose'
 brew 'ffmpeg'
 brew 'yt-dlp'
+
+# shared apps
+cask '1password'
+cask 'cleanshot'
+cask 'discord'
+cask 'elgato-control-center'
+cask 'elgato-stream-deck'
+cask 'firefox'
+cask 'google-chrome'
+cask 'pixelsnap'
+cask 'sonos'
+cask 'vanilla'
+cask 'raycast'
+cask 'granola'
+cask 'screen-studio'
+cask 'figma'
+cask 'visual-studio-code'
+cask 'docker-desktop'
+cask 'postman'
+cask 'ngrok'
 
 # fonts
 cask 'font-fira-mono-nerd-font'
