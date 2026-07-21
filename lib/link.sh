@@ -81,7 +81,9 @@ check_links() {
   done < <(find "$HOME/.config" "$HOME/.local/bin" "$HOME/.claude/skills" "$HOME" \
              -maxdepth 1 -type l ! -exec test -e {} \; -print 2>/dev/null \
            | while IFS= read -r l; do
-               case "$(readlink "$l")" in "$DOTFILES"/*) echo "$l";; esac
+               # note: not a case statement — bash 3.2 (macOS) can't parse
+               # case inside process substitution
+               [[ $(readlink "$l") == "$DOTFILES"/* ]] && echo "$l"
              done)
   return $((bad > 0))
 }

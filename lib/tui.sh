@@ -13,15 +13,18 @@ ui_has_gum() { has gum && [[ -t 0 && -t 2 ]]; }
 # memory type-ahead like 'dev') are ignored.
 _ui_read_num() {
   local n=$1 buf="" k rest
+  # fractional read -t needs bash 4+; macOS's 3.2 falls back to 1s
+  # (bare esc registers after ~1s there until brew bash takes over PATH)
+  local t=0.02; (( BASH_VERSINFO[0] < 4 )) && t=1
   while true; do
     printf '\r\033[K%s❯%s %s' "$C_MAG$C_BLD" "$C_OFF" "$buf" >&2
     IFS= read -rsn1 k || { echo >&2; return 1; }
     case $k in
       $'\e')
-        IFS= read -rsn1 -t 0.02 rest || true
+        IFS= read -rsn1 -t "$t" rest || true
         if [[ $rest == '[' || $rest == O ]]; then
           # swallow the rest of the CSI/SS3 sequence (ends at a letter or ~)
-          while IFS= read -rsn1 -t 0.02 rest; do
+          while IFS= read -rsn1 -t "$t" rest; do
             [[ $rest == [A-Za-z~] ]] && break
           done
         else

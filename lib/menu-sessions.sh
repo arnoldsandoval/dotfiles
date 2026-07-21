@@ -10,6 +10,9 @@ CLAUDE_PROJ="$HOME/.claude/projects"
 
 _encode_claude_dir() { printf '%s' "$1" | sed 's#[/.]#-#g'; }
 
+# mtime, portable: GNU stat (-c) on linux, BSD stat (-f) on macOS
+_mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0; }
+
 _ago() {
   local s=$1
   if   (( s < 60 ));    then echo "just now"
@@ -26,13 +29,13 @@ discover_projects() {
   for d in "$CODE_DIR"/*/; do
     d="${d%/}"
     [[ -d $d ]] || continue
-    sid=""; mt=$(stat -c %Y "$d" 2>/dev/null || echo 0)
+    sid=""; mt=$(_mtime "$d")
     pdir="$CLAUDE_PROJ/$(_encode_claude_dir "$d")"
     if [[ -d $pdir ]]; then
       newest=$(ls -t "$pdir"/*.jsonl 2>/dev/null | head -1)
       if [[ -n $newest ]]; then
         sid=$(basename "$newest" .jsonl)
-        mt=$(stat -c %Y "$newest")
+        mt=$(_mtime "$newest")
       fi
     fi
     printf '%s\t%s\t%s\t%s\n' "$mt" "$(basename "$d")" "$d" "$sid"

@@ -2,6 +2,7 @@
 tap 'oven-sh/bun'
 
 # cli
+brew 'bash'      # macOS ships bash 3.2 (2007); the dotfiles cli wants a modern one
 brew 'git'
 brew 'gh'
 brew 'tmux'
