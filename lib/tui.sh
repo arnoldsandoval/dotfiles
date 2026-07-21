@@ -71,11 +71,8 @@ ui_spin() {
   if ui_has_gum; then gum spin --title "$title" -- "$@"; else log "$title"; "$@"; fi
 }
 
-# ui_header TEXT
+# ui_header TEXT — pure ansi (gum style probes the terminal; see ui_choose)
 ui_header() {
-  if ui_has_gum; then
-    gum style --border rounded --padding "0 2" --bold "$1"
-  else
-    echo; echo "== $1 =="
-  fi
+  echo
+  printf '%s── %s%s%s ──%s\n' "$C_MAG" "$C_BLD" "$1" "$C_OFF$C_MAG" "$C_OFF"
 }
