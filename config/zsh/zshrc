@@ -23,4 +23,7 @@ _profile="$(cat "${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles/profile" 2>/dev/n
 command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v zoxide  >/dev/null && eval "$(zoxide init zsh)"
 
+# omz-style update notice: behind origin / uncommitted local edits (fast, offline)
+[[ -o interactive ]] && command -v dotfiles >/dev/null && dotfiles nudge
+
 unset _f _profile

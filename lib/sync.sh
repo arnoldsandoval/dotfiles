@@ -64,9 +64,4 @@ do_save() {
   fi
 }
 
-# Nudge line for workstation shells (empty when nothing to say).
-sync_nudge() {
-  local behind; behind=$(status_get behind)
-  [[ -n $behind && $behind -gt 0 ]] && echo "dotfiles ⇣$behind — run 'dotfiles sync'"
-  return 0
-}
+# (the shell-startup nudge lives as a fast path in bin/dotfiles — no lib load)

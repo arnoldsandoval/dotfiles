@@ -14,6 +14,18 @@ set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 export DOTFILES
+
+# Fast path for the shell-startup nudge: no lib sourcing, prints at most 2 lines.
+# (behind-count comes from the status file the background fetch maintains)
+if [[ ${1:-} == nudge ]]; then
+  status="${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles/status"
+  behind=$([[ -f $status ]] && sed -n 's/^behind=//p' "$status" | head -1)
+  [[ -n $behind && $behind -gt 0 ]] && echo "dotfiles ⇣$behind behind — run 'dotfiles sync'"
+  [[ -n $(git -C "$DOTFILES" status --porcelain 2>/dev/null) ]] \
+    && echo "dotfiles ✎ uncommitted changes — run 'dotfiles save'"
+  exit 0
+fi
+
 for f in core platform profile tui link pkg skills sync doctor menu-sessions; do
   # shellcheck disable=SC1090
   source "$DOTFILES/lib/$f.sh"
@@ -82,7 +94,6 @@ case "${1:-}" in
   sync) shift; do_sync "${1:-}" ;;
   save) shift; do_save "$*" ;;
   fetch) if [[ ${2:-} == --maybe ]]; then maybe_fetch_async; else do_fetch; fi ;;
-  nudge) sync_nudge ;;
   doctor) run_doctor ;;
   skills) shift; case "${1:-list}" in list) skills_list ;; install) skills_install_manifest ;; *) skills_list ;; esac ;;
   -h|--help|help) usage ;;

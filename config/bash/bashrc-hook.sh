@@ -18,5 +18,6 @@ alias cc='dotfiles sessions'
 if [[ $- == *i* && -n "${SSH_CONNECTION:-}" && -z "${TMUX:-}" && -t 1 ]] \
    && command -v dotfiles >/dev/null 2>&1; then
   dotfiles sync --auto || true
+  dotfiles nudge
   dotfiles sessions
 fi

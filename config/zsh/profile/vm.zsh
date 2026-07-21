@@ -6,3 +6,4 @@ if [[ -o interactive && -n ${SSH_CONNECTION:-} && -z ${TMUX:-} && -t 1 ]]; then
   command -v dotfiles >/dev/null && dotfiles sync --auto || true
   dotfiles sessions
 fi
+# (dirty-tree nudge still prints via zshrc — auto-sync only handles the behind case)
