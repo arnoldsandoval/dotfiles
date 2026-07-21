@@ -82,10 +82,14 @@ install_packages_tier2() {
 
 # check_packages: doctor-mode. Prints problems, returns nonzero if any.
 check_packages() {
-  local bad=0 i
+  local bad=0 i out pf profile
   if [[ $OS == darwin ]] && has brew; then
-    brew bundle check --file "$DOTFILES/packages/darwin/Brewfile.core" >/dev/null 2>&1 \
-      || { err "brew bundle check failed (core)"; bad=$((bad+1)); }
+    profile=$(profile_get)
+    for pf in Brewfile.core "Brewfile.${profile#mac-}"; do
+      [[ -f $DOTFILES/packages/darwin/$pf ]] || continue
+      out=$(brew bundle check --verbose --file "$DOTFILES/packages/darwin/$pf" 2>&1 | grep -v "satisfied") || true
+      [[ -n $out ]] && { err "missing from $pf:"; printf '%s\n' "$out" | sed 's/^/    /'; bad=$((bad+1)); }
+    done
     _check_brew_drift
   fi
   for i in $(missing_intents); do err "missing tool: $i"; bad=$((bad+1)); done
