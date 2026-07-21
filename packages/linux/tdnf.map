@@ -1,0 +1,6 @@
+# intent -> tdnf (Azure Linux / Mariner) package name (only where they differ)
+rg ripgrep
+# not packaged — installed via installers.d instead
+starship SKIP
+gum SKIP
+zoxide SKIP

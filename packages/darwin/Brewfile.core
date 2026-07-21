@@ -1,0 +1,23 @@
+# Brewfile.core — CLI tools for every Mac profile
+tap 'oven-sh/bun'
+
+brew 'git'
+brew 'gh'
+brew 'tmux'
+brew 'starship'
+brew 'gum'
+brew 'fzf'
+brew 'zoxide'
+brew 'jq'
+brew 'ripgrep'
+brew 'oven-sh/bun/bun'
+brew 'docker-compose'
+brew 'ffmpeg'
+brew 'yt-dlp'
+
+# fonts
+cask 'font-fira-mono-nerd-font'
+cask 'font-dank-mono'
+cask 'font-monolisa'
+cask 'font-riforma'
+cask 'font-whyte'

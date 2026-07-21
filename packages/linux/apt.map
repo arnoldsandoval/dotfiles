@@ -1,0 +1,6 @@
+# intent -> apt package name (only where they differ)
+rg ripgrep
+# not in ubuntu repos — installed via installers.d instead
+starship SKIP
+gum SKIP
+zoxide zoxide

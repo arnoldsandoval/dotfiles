@@ -1,0 +1,15 @@
+# Third-party skills — installed from upstream via `npx skills add <ref>`,
+# never vendored (licensing + staleness). Format: <skill-name> <ref|TBD>
+#
+# TBD refs finalize from ~/.agents/.skill-lock.json on the Mac (the npx-skills
+# lock file records the true install source for each).
+humanizer TBD
+editor TBD
+find-skills TBD
+setup-matt-pocock-skills TBD
+vercel-composition-patterns TBD
+vercel-react-best-practices TBD
+vercel-react-view-transitions TBD
+web-design-guidelines TBD
+writing-guidelines TBD
+shadcn TBD

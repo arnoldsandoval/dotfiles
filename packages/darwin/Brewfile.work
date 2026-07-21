@@ -1,0 +1,10 @@
+# Brewfile.work — work Mac (Copilot-oriented; volta for node/yarn)
+brew 'volta'
+
+cask 'slack'
+cask 'zoom'
+cask 'figma'
+cask 'postman'
+cask 'visual-studio-code'
+cask 'raycast'
+cask '1password'

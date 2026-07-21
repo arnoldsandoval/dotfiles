@@ -1,0 +1,3 @@
+# Brewfile.private — Tier 2 only: requires GitHub auth for the private tap.
+# Bootstrap skips this file (with a message) when unauthenticated.
+tap 'arnoldsandoval/homebrew-internal'

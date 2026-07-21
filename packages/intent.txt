@@ -1,0 +1,14 @@
+# Tools expected on every machine (the command name we check for).
+# Resolution: darwin -> Brewfile.core; ubuntu -> apt (+apt.map); mariner -> tdnf (+tdnf.map).
+# Sudo-free fallbacks for some of these live in installers.d/.
+git
+gh
+zsh
+tmux
+starship
+gum
+fzf
+zoxide
+jq
+rg
+curl
