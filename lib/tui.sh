@@ -2,7 +2,9 @@
 # Everything here must work with gum ABSENT (Tier-0 guarantee).
 # shellcheck shell=bash
 
-ui_has_gum() { has gum && [[ -t 0 && -t 1 ]]; }
+# NOTE: check stdin+stderr, not stdout — ui_choose is called inside $(...)
+# where stdout is a pipe; gum draws its UI on the tty and prints to stdout.
+ui_has_gum() { has gum && [[ -t 0 && -t 2 ]]; }
 
 # ui_choose HEADER OPTION... -> prints chosen option (empty on cancel)
 ui_choose() {
@@ -13,9 +15,18 @@ ui_choose() {
     echo "$header" >&2
     local i=1 opt
     for opt in "$@"; do echo "  $i) $opt" >&2; i=$((i+1)); done
-    printf "> " >&2
-    local c; read -r c || return 0
-    [[ $c =~ ^[0-9]+$ ]] && (( c >= 1 && c <= $# )) && eval "echo \"\${$c}\""
+    # loop until a valid number; empty line or q = cancel (prints nothing).
+    # never bail on stray input — type-ahead during shell startup lands here.
+    local c
+    while true; do
+      printf "choice (1-%d, enter=skip): " "$#" >&2
+      read -r c || { echo >&2; return 0; }
+      [[ -z $c || $c == q ]] && return 0
+      if [[ $c =~ ^[0-9]+$ ]] && (( c >= 1 && c <= $# )); then
+        eval "echo \"\${$c}\""; return 0
+      fi
+      echo "  '$c' isn't an option" >&2
+    done
   fi
 }
 
