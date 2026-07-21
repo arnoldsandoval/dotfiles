@@ -2,4 +2,5 @@
 brew 'gamdl'
 brew 'railway'
 
-cask 'claude'
+cask 'claude'        # desktop app
+cask 'claude-code'   # the cli
