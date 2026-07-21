@@ -11,24 +11,38 @@ ui_has_gum() { has gum && [[ -t 0 && -t 2 ]]; }
 # so the muscle memory is identical with or without it. enter/q/esc = skip.
 ui_choose() {
   local header=$1; shift
-  # Pure bash on purpose: gum probes the terminal with escape queries
-  # (ESC]11;? / ESC[6n) and reads replies from stdin — on the login path that
-  # can swallow type-ahead or hang under a fed pty. A drawn box needs neither.
-  local c i opt
+  # gum-styled, gum-free: pure ANSI, so nothing probes the terminal with
+  # escape queries (gum's ESC]11;? / ESC[6n replies arrive on stdin and can
+  # swallow type-ahead on the login path). Rounded box, magenta accents.
+  local c i opt w=0 hint
+  hint="1-$# · enter = shell"
+  (( ${#header} > w )) && w=${#header}
+  (( ${#hint} + 2 > w )) && w=$(( ${#hint} + 2 ))
+  for opt in "$@"; do (( ${#opt} + 3 > w )) && w=$(( ${#opt} + 3 )); done
+  _hline() { local n=$1 s=""; while (( n-- > 0 )); do s+="─"; done; printf '%s' "$s"; }
   {
-    printf '┌─ %s ' "$header"; printf '─%.0s' {1..8}; echo
+    printf '%s╭─ %s%s%s ' "$C_MAG" "$C_BLD$C_OFF$C_BLD" "$header" "$C_OFF$C_MAG"
+    _hline $(( w - ${#header} + 1 )); printf '╮%s\n' "$C_OFF"
     i=1
-    for opt in "$@"; do printf '│  %d) %s\n' "$i" "$opt"; i=$((i+1)); done
-    printf '└─'; echo
+    local pad
+    for opt in "$@"; do
+      # pad by character count, not printf's byte-width (● is multibyte)
+      pad=$(( w - 1 - ${#opt} )); (( pad < 0 )) && pad=0
+      printf '%s│%s  %s%d)%s %s%*s%s│%s\n' \
+        "$C_MAG" "$C_OFF" "$C_MAG$C_BLD" "$i" "$C_OFF" "$opt" "$pad" "" "$C_MAG" "$C_OFF"
+      i=$((i+1))
+    done
+    printf '%s╰' "$C_MAG"; _hline 1; printf ' %s%s%s ' "$C_DIM" "$hint" "$C_OFF$C_MAG"
+    _hline $(( w - ${#hint} + 1 )); printf '╯%s\n' "$C_OFF"
   } >&2
   while true; do
-    printf "❯ 1-%d (enter = shell): " "$#" >&2
+    printf '%s❯%s ' "$C_MAG$C_BLD" "$C_OFF" >&2
     read -r c || { echo >&2; return 0; }
     [[ -z $c || $c == q ]] && return 0
     if [[ $c =~ ^[0-9]+$ ]] && (( c >= 1 && c <= $# )); then
       eval "echo \"\${$c}\""; return 0
     fi
-    echo "  '$c' isn't an option" >&2
+    printf '  %s%s isn%st an option%s\n' "$C_YLW" "'$c'" "'" "$C_OFF" >&2
   done
 }
 

@@ -12,10 +12,11 @@ STATUS_FILE="$STATE_DIR/status"
 BACKUP_ROOT="$STATE_DIR/backups"
 
 # Colors only when stdout is a tty.
-if [[ -t 1 ]]; then
+if [[ -t 1 || -t 2 ]]; then
   C_RED=$'\e[31m' C_GRN=$'\e[32m' C_YLW=$'\e[33m' C_BLU=$'\e[34m' C_DIM=$'\e[2m' C_OFF=$'\e[0m'
+  C_MAG=$'\e[35m' C_BLD=$'\e[1m'
 else
-  C_RED='' C_GRN='' C_YLW='' C_BLU='' C_DIM='' C_OFF=''
+  C_RED='' C_GRN='' C_YLW='' C_BLU='' C_DIM='' C_OFF='' C_MAG='' C_BLD=''
 fi
 
 log()  { printf '%s\n' "${C_BLU}::${C_OFF} $*"; }
