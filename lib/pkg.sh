@@ -149,12 +149,18 @@ _check_brew_drift() {
 pkg_cleanup() {
   [[ $OS == darwin ]] || { warn "cleanup is brew-only (nothing to do on $DISTRO)"; return 0; }
   has brew || return 0
-  local combined
+  local profile combined; profile=$(profile_get)
+  # trust declared taps first — cleanup's final check loads every declared
+  # formula and hard-fails on untrusted taps
+  _trust_declared_taps "$DOTFILES/packages/darwin/Brewfile.core" \
+    "$DOTFILES/packages/darwin/Brewfile.${profile#mac-}" \
+    "$DOTFILES/packages/darwin/Brewfile.private"
   combined=$(_combined_brewfile)
   brew bundle cleanup --file "$combined" || true
   if ui_confirm "uninstall everything listed above?"; then
-    brew bundle cleanup --force --file "$combined"
-    ok "cleanup done — doctor should be quiet about drift now"
+    brew bundle cleanup --force --file "$combined" \
+      && ok "cleanup done — doctor should be quiet about drift now" \
+      || warn "cleanup finished with errors (see above) — run 'dotfiles doctor' to see what remains"
   else
     warn "aborted — nothing removed"
   fi
