@@ -72,7 +72,10 @@ _trust_declared_taps() {
   for f in "$@"; do
     [[ -f $f ]] || continue
     while IFS= read -r tap; do
-      [[ -n $tap ]] && brew trust "$tap" >/dev/null 2>&1 || true
+      [[ -n $tap ]] || continue
+      # visible on purpose: brew trust may prompt or refuse, and suppressing
+      # that left taps silently untrusted on two machines
+      brew trust "$tap" || warn "could not trust tap $tap (run 'brew trust $tap' manually)"
     done < <(sed -n "s/^tap '\([^']*\)'.*/\1/p" "$f")
   done
 }
