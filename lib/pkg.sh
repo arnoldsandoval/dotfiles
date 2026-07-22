@@ -111,8 +111,9 @@ check_packages() {
     for pf in Brewfile.core "Brewfile.${profile#mac-}"; do
       [[ -f $DOTFILES/packages/darwin/$pf ]] || continue
       # trust the exit code; show only the actionable lines (brew mixes in
-      # unrelated warnings like circular-dependency notices)
-      if ! out=$(brew bundle check --verbose --file "$DOTFILES/packages/darwin/$pf" 2>&1); then
+      # unrelated warnings like circular-dependency notices). NO_UPGRADE:
+      # doctor verifies presence, not freshness — outdated != missing
+      if ! out=$(HOMEBREW_BUNDLE_NO_UPGRADE=1 brew bundle check --verbose --file "$DOTFILES/packages/darwin/$pf" 2>&1); then
         err "missing from $pf:"
         printf '%s\n' "$out" | grep -E "needs to be installed|→" | sed 's/^/    /'
         bad=$((bad+1))
