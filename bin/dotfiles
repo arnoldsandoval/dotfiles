@@ -87,6 +87,8 @@ cmd_bootstrap() {
 }
 
 tui_hub() {
+  ui_alt_on
+  trap ui_alt_off EXIT   # covers esc/quit returns; exec paths restore explicitly
   # One-time notification setup probe (darwin): macOS offers no scriptable way
   # to QUERY notification permission, so fire a test ping once and ask. Yes →
   # stamped forever; no → open the right settings pane, re-ask next hub open.
@@ -109,12 +111,12 @@ tui_hub() {
       "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "repo shell (~/code/dotfiles)") || true
     case ${choice%% *} in
       sessions) sessions_menu --nested ;;
-      sync*|sync) do_sync || true ;;
-      save) do_save || true ;;
-      doctor) run_doctor || true ;;
-      skills) skills_list ;;
-      bootstrap) cmd_bootstrap ;;
-      repo) cd "$DOTFILES" && exec "${SHELL:-bash}" ;;   # shell IN the repo (esc = plain shell)
+      sync*|sync) do_sync || true; ui_pause ;;
+      save) do_save || true; ui_pause ;;
+      doctor) run_doctor || true; ui_pause ;;
+      skills) skills_list; ui_pause ;;
+      bootstrap) cmd_bootstrap; ui_pause ;;
+      repo) ui_alt_off; cd "$DOTFILES" && exec "${SHELL:-bash}" ;;   # shell IN the repo (esc = plain shell)
       quit|"") return 0 ;;
     esac
   done

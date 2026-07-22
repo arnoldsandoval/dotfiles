@@ -91,6 +91,7 @@ _session_mark() { # _session_mark PREFIX NAME -> "●" only if the AGENT is aliv
 # SWITCH this client (new-session -A would trip the nesting guard).
 _enter() {
   local target=$1 dir=$2 cmd=$3 pane
+  ui_alt_off   # leaving the menu app for tmux — restore the real screen first
   if tmux has-session -t "=$target" 2>/dev/null; then
     # true husk = agent dead by process-tree check AND surface is a bare shell
     # (never respawn over a live agent hidden under its wrapper, nor over

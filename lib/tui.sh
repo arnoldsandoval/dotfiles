@@ -55,6 +55,8 @@ ui_choose() {
   local esc_hint="esc = shell"
   [[ $1 == --nested ]] && { esc_hint="esc = back"; shift; }
   local header=$1; shift
+  # one menu at a time: in alt-screen mode each menu clears and redraws in place
+  [[ ${DOTFILES_ALT:-} == 1 ]] && printf '\e[2J\e[H' >&2
   # gum-styled, gum-free: pure ANSI, so nothing probes the terminal with
   # escape queries (gum's ESC]11;? / ESC[6n replies arrive on stdin and can
   # swallow type-ahead on the login path). Rounded box, magenta accents.
@@ -108,6 +110,19 @@ ui_input() {
 ui_spin() {
   local title=$1; shift
   if ui_has_gum; then gum spin --title "$title" -- "$@"; else log "$title"; "$@"; fi
+}
+
+# Alternate screen: the hub runs as a full-screen app (one menu at a time),
+# and on exit the terminal is restored exactly — no menu boxes in scrollback.
+ui_alt_on()  { [[ -t 1 ]] && { printf '\e[?1049h\e[2J\e[H'; export DOTFILES_ALT=1; }; return 0; }
+ui_alt_off() { [[ ${DOTFILES_ALT:-} == 1 ]] && printf '\e[?1049l'; unset DOTFILES_ALT; return 0; }
+
+# ui_pause — hold verbose output on screen until a key (alt-screen mode only,
+# where the next menu redraw would otherwise wipe it)
+ui_pause() {
+  [[ ${DOTFILES_ALT:-} == 1 ]] || return 0
+  printf '\n%s─ press any key ─%s' "$C_DIM" "$C_OFF" >&2
+  IFS= read -rsn1 _ || true
 }
 
 # ui_header TEXT — pure ansi (gum style probes the terminal; see ui_choose)
