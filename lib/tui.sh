@@ -58,7 +58,8 @@ ui_choose() {
   # gum-styled, gum-free: pure ANSI, so nothing probes the terminal with
   # escape queries (gum's ESC]11;? / ESC[6n replies arrive on stdin and can
   # swallow type-ahead on the login path). Rounded box, magenta accents.
-  local c i opt w=0 hint
+  local c i opt w=0 hint n=$# nw
+  nw=${#n}   # digits in the largest row number (10+ options = wider column)
   hint="1-$# · $esc_hint"
   (( ${#header} > w )) && w=${#header}
   (( ${#hint} + 2 > w )) && w=$(( ${#hint} + 2 ))
@@ -66,18 +67,19 @@ ui_choose() {
   _hline() { local n=$1 s=""; while (( n-- > 0 )); do s+="─"; done; printf '%s' "$s"; }
   {
     printf '%s╭─ %s%s%s ' "$C_MAG" "$C_BLD$C_OFF$C_BLD" "$header" "$C_OFF$C_MAG"
-    _hline $(( w - ${#header} + 1 )); printf '╮%s\n' "$C_OFF"
+    _hline $(( w - ${#header} + nw )); printf '╮%s\n' "$C_OFF"
     i=1
     local pad
     for opt in "$@"; do
-      # pad by character count, not printf's byte-width (● is multibyte)
+      # pad by character count, not printf's byte-width (● is multibyte);
+      # number column right-aligned to the widest row number
       pad=$(( w - 1 - ${#opt} )); (( pad < 0 )) && pad=0
-      printf '%s│%s  %s%d)%s %s%*s%s│%s\n' \
-        "$C_MAG" "$C_OFF" "$C_MAG$C_BLD" "$i" "$C_OFF" "$opt" "$pad" "" "$C_MAG" "$C_OFF"
+      printf '%s│%s  %s%*d)%s %s%*s%s│%s\n' \
+        "$C_MAG" "$C_OFF" "$C_MAG$C_BLD" "$nw" "$i" "$C_OFF" "$opt" "$pad" "" "$C_MAG" "$C_OFF"
       i=$((i+1))
     done
     printf '%s╰' "$C_MAG"; _hline 1; printf ' %s%s%s ' "$C_DIM" "$hint" "$C_OFF$C_MAG"
-    _hline $(( w - ${#hint} + 1 )); printf '╯%s\n' "$C_OFF"
+    _hline $(( w - ${#hint} + nw )); printf '╯%s\n' "$C_OFF"
   } >&2
   c=$(_ui_read_num $#) || return 0
   eval "echo \"\${$c}\""
