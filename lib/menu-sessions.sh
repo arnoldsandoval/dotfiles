@@ -50,7 +50,21 @@ _session_mark() { # _session_mark PREFIX NAME -> "●" if tmux session exists
   tmux has-session -t "=$1-$2" 2>/dev/null && echo "●" || echo " "
 }
 
-# _launch AGENT NAME DIR SID — exec into the tmux session (never returns)
+# _enter TARGET DIR CMD — put the user in the tmux session (never returns).
+# Outside tmux: attach-or-create. Inside tmux: create detached if needed and
+# SWITCH this client (new-session -A would trip the nesting guard).
+_enter() {
+  local target=$1 dir=$2 cmd=$3
+  if [[ -n ${TMUX:-} ]]; then
+    tmux has-session -t "=$target" 2>/dev/null \
+      || tmux new-session -d -s "$target" -c "$dir" "$cmd"
+    exec tmux switch-client -t "=$target"
+  else
+    exec tmux new-session -A -s "$target" -c "$dir" "$cmd"
+  fi
+}
+
+# _launch AGENT NAME DIR SID — build the agent command and enter its session
 _launch() {
   local agent=$1 name=$2 dir=$3 sid=$4 cmd
   case $agent in
@@ -58,17 +72,14 @@ _launch() {
       local bin; bin=$(command -v claude || echo "$HOME/.local/bin/claude")
       if [[ -n $sid ]]; then cmd="$bin --resume $sid --remote-control $name"
       else cmd="$bin --remote-control $name"; fi
-      exec tmux new-session -A -s "cc-$name" -c "$dir" "$cmd; exec \$SHELL" ;;
+      _enter "cc-$name" "$dir" "$cmd; exec \$SHELL" ;;
     copilot)
       local bin; bin=$(command -v copilot || command -v github-copilot-cli || true)
       [[ -n $bin ]] || die "copilot CLI not installed"
-      # Name-based resume: copilot sessions can be NAMED (--name) and resumed
-      # by that name (--resume=<name>). Naming every menu-launched session
-      # after its project makes resume self-bootstrapping — no dependency on
-      # copilot's storage internals (session-store.db ids are NOT resumable;
-      # learned the hard way). First launch per project starts a fresh named
-      # session; every launch after resumes it.
-      exec tmux new-session -A -s "cp-$name" -c "$dir" \
+      # Name-based resume: sessions are NAMED after the project (--name) and
+      # resumed by that name — self-bootstrapping, no dependency on copilot
+      # storage internals (session-store.db ids are NOT resumable).
+      _enter "cp-$name" "$dir" \
         "$bin --resume=$name 2>/dev/null || $bin --name=$name; exec \$SHELL" ;;
   esac
 }
