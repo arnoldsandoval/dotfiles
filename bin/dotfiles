@@ -87,6 +87,20 @@ cmd_bootstrap() {
 }
 
 tui_hub() {
+  # One-time notification setup probe (darwin): macOS offers no scriptable way
+  # to QUERY notification permission, so fire a test ping once and ask. Yes →
+  # stamped forever; no → open the right settings pane, re-ask next hub open.
+  if [[ $OS == darwin && ! -f $STATE_DIR/notify-ok && -t 1 ]]; then
+    "$DOTFILES/bin/dotfiles-notify" test
+    if ui_confirm "notification check: did a 📟 banner just appear?"; then
+      ensure_state_dir; touch "$STATE_DIR/notify-ok"
+      ok "notifications verified — agents will ping you when done / blocked"
+    else
+      warn "enable: System Settings → Notifications → terminal-notifier → Allow"
+      warn "(also allow your terminal app; will re-check next time you open the hub)"
+      open "x-apple.systempreferences:com.apple.preference.notifications" 2>/dev/null || true
+    fi
+  fi
   while true; do
     local behind nudge=""
     behind=$(status_get behind); [[ -n $behind && $behind -gt 0 ]] && nudge=" (⇣$behind)"
