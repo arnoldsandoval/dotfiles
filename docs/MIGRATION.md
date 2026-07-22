@@ -8,7 +8,7 @@ This file tracks the per-machine rollout — update it as machines cut over.
 | machine | profile | status |
 | --- | --- | --- |
 | hetzner vm (ubuntu-4gb-fsn1-6) | `vm` | ✅ done 2026-07-21, live-verified |
-| personal mac | `mac-personal` | 🟡 bootstrapped + cleaned 2026-07-22; final: pull → link → skills install → doctor |
+| personal mac | `mac-personal` | ✅ done 2026-07-22 — doctor all clear (pending: one 1Password signing smoke-test) |
 | work mac | `mac-work` | ⬜ pending (do last) |
 
 ## Personal Mac runbook
@@ -28,7 +28,7 @@ This file tracks the per-machine rollout — update it as machines cut over.
    install from upstream via `dotfiles skills install`. `dotfiles sync` (manual)
    also runs `npx skills update -g`. Old repo `arnoldsandoval/skills` is ARCHIVED.
 4. **Mac finishing steps:** `git pull && dotfiles link && dotfiles skills install
-   && dotfiles doctor`. Once green, the `~/.agents/skills` clone can be removed.
+   && dotfiles doctor`. NOTE: keep `~/.agents/skills` — it is the skills CLI's managed store now (installs live there).
 5. Verify: `dotfiles doctor` clean; `git commit -S` signs via 1Password on a scratch
    repo; `brew bundle check` clean for core+personal; new terminal lands in zsh +
    starship with the hub… then update the table above and `dotfiles save`.
