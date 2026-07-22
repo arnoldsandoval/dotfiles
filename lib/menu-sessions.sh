@@ -25,14 +25,18 @@ _ago() {
 # discover_projects -> lines: "mtime<TAB>name<TAB>dir<TAB>claude_session_id"
 # (claude_session_id empty when the project has no Claude history)
 discover_projects() {
-  local d pdir newest sid mt
+  local d pdir newest sid mt all
   for d in "$CODE_DIR"/*/; do
     d="${d%/}"
     [[ -d $d ]] || continue
     sid=""; mt=$(_mtime "$d")
     pdir="$CLAUDE_PROJ/$(_encode_claude_dir "$d")"
     if [[ -d $pdir ]]; then
-      newest=$(ls -t "$pdir"/*.jsonl 2>/dev/null | head -1)
+      # capture then take the first line in pure bash: `ls -t | head -1`
+      # SIGPIPEs ls on big session dirs, and under pipefail that killed the
+      # whole discovery loop (projects silently missing from the menu)
+      all=$(ls -t "$pdir"/*.jsonl 2>/dev/null) || all=""
+      newest=${all%%$'\n'*}
       if [[ -n $newest ]]; then
         sid=$(basename "$newest" .jsonl)
         mt=$(_mtime "$newest")
