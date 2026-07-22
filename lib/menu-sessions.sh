@@ -62,20 +62,14 @@ _launch() {
     copilot)
       local bin; bin=$(command -v copilot || command -v github-copilot-cli || true)
       [[ -n $bin ]] || die "copilot CLI not installed"
-      # Resume the newest session FOR THIS PROJECT: bare `copilot --resume`
-      # opens an all-projects picker, but the session store (sqlite) maps
-      # sessions to cwd — same trick session-digest uses.
-      local db="$HOME/.copilot/session-store.db" csid="" dsql
-      if [[ -f $db ]] && has sqlite3; then
-        dsql=${dir//\'/\'\'}
-        csid=$(sqlite3 "$db" \
-          "SELECT id FROM sessions WHERE cwd='$dsql' ORDER BY updated_at DESC LIMIT 1;" 2>/dev/null) || csid=""
-      fi
-      if [[ -n $csid ]]; then
-        exec tmux new-session -A -s "cp-$name" -c "$dir" "$bin --resume $csid; exec \$SHELL"
-      else
-        exec tmux new-session -A -s "cp-$name" -c "$dir" "$bin; exec \$SHELL"
-      fi ;;
+      # Name-based resume: copilot sessions can be NAMED (--name) and resumed
+      # by that name (--resume=<name>). Naming every menu-launched session
+      # after its project makes resume self-bootstrapping — no dependency on
+      # copilot's storage internals (session-store.db ids are NOT resumable;
+      # learned the hard way). First launch per project starts a fresh named
+      # session; every launch after resumes it.
+      exec tmux new-session -A -s "cp-$name" -c "$dir" \
+        "$bin --resume=$name 2>/dev/null || $bin --name=$name; exec \$SHELL" ;;
   esac
 }
 
