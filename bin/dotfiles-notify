@@ -48,9 +48,14 @@ case $kind in
   *)     title="✅ $proj is done" ;;
 esac
 
-# macOS: banner + sound
+# macOS: banner + sound — prefer our own Dot.app (banner reads "Dot",
+# click focuses the session via its activation handler)
 if [[ $(uname -s) == Darwin ]]; then
-  if command -v terminal-notifier >/dev/null 2>&1; then
+  if [[ -d $HOME/Applications/Dot.app ]]; then
+    mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles"
+    printf '%s' "$sess" > "${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles/last-notify"
+    open -na "$HOME/Applications/Dot.app" --args "$title" "agent session $proj" 2>/dev/null || true
+  elif command -v terminal-notifier >/dev/null 2>&1; then
     # click: focus the exact terminal tab viewing the session, or open one
     exec_arg=()
     [[ -n $sess ]] && exec_arg=(-execute "$HOME/.local/bin/dotfiles-focus $sess")
