@@ -1,5 +1,6 @@
 # Brewfile.work — work-Mac-only additions (shared apps live in Brewfile.core)
 brew 'volta'
+brew 'git-lfs'   # work repos use lfs (git lfs install showed up in gitconfig)
 
 cask 'copilot-cli'
 cask 'intellij-idea'
