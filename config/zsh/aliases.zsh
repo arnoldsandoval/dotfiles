@@ -1,7 +1,17 @@
 # aliases.zsh — cross-platform aliases & small functions
 
 alias c='cd ~/code'
-alias dot='cd ~/code/dotfiles'
+
+# dot — short verb for the dotfiles system:
+#   dot            hub menu          dot sync|save|doctor…  passthrough
+#   dot cd         cd into the repo  (only a shell function can cd)
+dot() {
+  if [[ ${1:-} == cd ]]; then
+    cd "${DOTFILES:-$HOME/code/dotfiles}"
+  else
+    dotfiles "$@"
+  fi
+}
 
 # tmux
 alias dev='tmux new -A -s main'
