@@ -55,7 +55,7 @@ if [[ $(uname -s) == Darwin ]]; then
     exec_arg=()
     [[ -n $sess ]] && exec_arg=(-execute "$HOME/.local/bin/dotfiles-focus $sess")
     terminal-notifier -title "$title" -message "agent session $proj" \
-      -group "dotfiles-$proj" -sound Morse "${exec_arg[@]}" >/dev/null 2>&1 || true
+      -group "dotfiles-$proj" -sound Morse ${exec_arg[@]+"${exec_arg[@]}"} >/dev/null 2>&1 || true
   else
     osascript -e "display notification \"agent session $proj\" with title \"$title\" sound name \"Morse\"" >/dev/null 2>&1 || true
   fi
