@@ -13,7 +13,7 @@ vercel-react-view-transitions vercel-labs/agent-skills
 web-design-guidelines vercel-labs/agent-skills
 writing-guidelines vercel-labs/agent-skills
 humanizer blader/humanizer
-design-motion-principles kylezantos/design-motion-principles
+design-motion-principles kylezantos/design-engineer-auditor-package
 shadcn shadcn-ui/ui
 setup-matt-pocock-skills mattpocock/skills
 tdd mattpocock/skills
