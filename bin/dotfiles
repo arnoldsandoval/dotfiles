@@ -106,7 +106,7 @@ tui_hub() {
     behind=$(status_get behind); [[ -n $behind && $behind -gt 0 ]] && nudge=" (⇣$behind)"
     local choice
     choice=$(ui_choose "dotfiles — $(profile_get 2>/dev/null || echo unbootstrapped) on $DISTRO" \
-      "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "shell") || true
+      "sessions" "sync$nudge" "save" "doctor" "skills" "bootstrap" "repo shell (~/code/dotfiles)") || true
     case ${choice%% *} in
       sessions) sessions_menu --nested ;;
       sync*|sync) do_sync || true ;;
@@ -114,7 +114,8 @@ tui_hub() {
       doctor) run_doctor || true ;;
       skills) skills_list ;;
       bootstrap) cmd_bootstrap ;;
-      shell|quit|"") return 0 ;;
+      repo) cd "$DOTFILES" && exec "${SHELL:-bash}" ;;   # shell IN the repo (esc = plain shell)
+      quit|"") return 0 ;;
     esac
   done
 }
