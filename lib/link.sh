@@ -55,6 +55,13 @@ apply_links() {
     fi
     ln -s "$abs" "$target" && n_fix=$((n_fix+1)) || n_err=$((n_err+1))
   done < <(_link_manifest; _link_skills_entries)
+  # prune skill links whose repo source is gone (skill removed/reclassified);
+  # only touches symlinks pointing into this repo, never other entries
+  local l
+  for l in "$HOME"/.claude/skills/*; do
+    [[ -L $l && ! -e $l && $(readlink "$l") == "$DOTFILES"/skills/* ]] || continue
+    rm "$l" && n_fix=$((n_fix+1))
+  done
   [[ $quiet == --quiet ]] || log "links: $n_ok ok, $n_fix created/fixed, $n_err errors"
   [[ $n_err -eq 0 ]]
 }
