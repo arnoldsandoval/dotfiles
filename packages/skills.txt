@@ -1,10 +1,11 @@
 # Third-party skills — installed from upstream via `npx skills add <ref>`,
 # never vendored (licensing + staleness). Format: <skill-name> <owner/repo>
 #
+# NOTE: 'editor' (MIT, author awesome-llm-apps) is vendored in skills/ —
+# upstream deleted it and no installable ref exists (verified 2026-07-22);
+# license permits redistribution with attribution intact.
 # find-skills lives in vercel-labs/skills; the vercel guide skills in
 # vercel-labs/agent-skills; mattpocock/skills = engineering/productivity set.
-# NOTE: 'editor' (MIT, author awesome-llm-apps) is vendored in skills/ —
-# upstream removed it, license permits redistribution with attribution.
 find-skills vercel-labs/skills
 vercel-composition-patterns vercel-labs/agent-skills
 vercel-react-best-practices vercel-labs/agent-skills
@@ -12,6 +13,7 @@ vercel-react-view-transitions vercel-labs/agent-skills
 web-design-guidelines vercel-labs/agent-skills
 writing-guidelines vercel-labs/agent-skills
 humanizer blader/humanizer
+design-motion-principles kylezantos/design-motion-principles
 shadcn shadcn-ui/ui
 setup-matt-pocock-skills mattpocock/skills
 tdd mattpocock/skills
