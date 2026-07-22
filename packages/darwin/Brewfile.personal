@@ -20,6 +20,7 @@ brew 'ruby-build'
 cask 'claude'        # desktop app
 cask 'claude-code'   # the cli
 cask '1password-cli'
+cask 'ngrok'          # personal tunnel tool; corp TLS interception breaks its download
 cask 'android-studio'
 cask 'zulu@17'
 cask 'obsidian'

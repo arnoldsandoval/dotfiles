@@ -35,7 +35,6 @@ cask 'figma'
 cask 'visual-studio-code'
 cask 'docker-desktop'
 cask 'postman'
-cask 'ngrok'
 cask 'slack'
 cask 'zoom'
 

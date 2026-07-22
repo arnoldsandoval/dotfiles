@@ -11,6 +11,10 @@
 
 skills_manifest() { awk '!/^[[:space:]]*(#|$)/ {print $1, $2}' "$DOTFILES/packages/skills.txt" 2>/dev/null; }
 
+# A manifest skill counts as present in the CLI's store (~/.agents/skills —
+# where installs land for ANY agent target, incl. copilot) or claude's dir.
+_skill_present() { [[ -e $HOME/.agents/skills/$1 || -e $HOME/.claude/skills/$1 ]]; }
+
 skills_list() {
   ui_header "authored (in-repo)"
   local d; for d in "$DOTFILES"/skills/*/; do [[ -d $d ]] && echo "  $(basename "$d")"; done
@@ -31,7 +35,7 @@ skills_install_manifest() {
   [[ $(profile_get) == mac-work ]] && agent=github-copilot
   local name src n_skip=0
   while read -r name src; do
-    [[ -e $HOME/.claude/skills/$name ]] && continue
+    _skill_present "$name" && continue
     if [[ $src == TBD ]]; then
       warn "skill '$name': source not yet classified"; n_skip=$((n_skip+1)); continue
     fi
@@ -56,7 +60,7 @@ check_skills() {
       || { err "authored skill not linked: $name"; bad=$((bad+1)); }
   done
   while read -r name src; do
-    [[ -e $HOME/.claude/skills/$name ]] || { err "manifest skill missing: $name ($src)"; bad=$((bad+1)); }
+    _skill_present "$name" || { err "manifest skill missing: $name ($src)"; bad=$((bad+1)); }
   done < <(skills_manifest)
   return $((bad > 0))
 }
