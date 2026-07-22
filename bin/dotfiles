@@ -34,6 +34,7 @@ ${C_MAG}usage:${C_OFF} dotfiles [command]
                          --profile mac-personal|mac-work|vm   --tier N   --yes
   ${C_BLD}sync${C_OFF} [--auto]        pull (ff-only) + relink + refresh third-party skills
   ${C_BLD}save${C_OFF} [msg]           commit + push local config edits to every machine
+  ${C_BLD}diff${C_OFF}                 show uncommitted config changes (alias: status)
   ${C_BLD}link${C_OFF}                 (re)apply symlinks; prunes links whose source is gone
   ${C_BLD}doctor${C_OFF}               drift report: links, packages, skills, git (exit 1 on findings)
   ${C_BLD}cleanup${C_OFF}              uninstall brew packages no Brewfile declares (confirms first)
@@ -111,6 +112,7 @@ case "${1:-}" in
   link) shift; apply_links "$@" ;;
   sync) shift; do_sync "${1:-}" ;;
   save) shift; do_save "$*" ;;
+  diff|status) git -C "$DOTFILES" status --short; git -C "$DOTFILES" --no-pager diff ;;
   fetch) if [[ ${2:-} == --maybe ]]; then maybe_fetch_async; else do_fetch; fi ;;
   doctor) run_doctor ;;
   cleanup) pkg_cleanup ;;
