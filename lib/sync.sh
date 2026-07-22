@@ -46,9 +46,11 @@ do_sync() {
     apply_links --quiet || true
     status_set behind 0
     ok "dotfiles synced: pulled $behind commit(s) + relinked"
-    # manual sync also refreshes third-party skills from their upstreams
+    # manual sync also settles skills: install anything newly declared in the
+    # manifest on another machine, then refresh installed ones from upstream
     # (skipped in --auto/login mode: no network storms on ssh)
     if [[ $auto != --auto ]] && has npx; then
+      skills_install_manifest
       log "updating installed skills from upstream"
       (cd "$HOME" && npx --yes skills update -g -y </dev/null) 2>/dev/null || warn "skills update failed (non-fatal)"
     fi
