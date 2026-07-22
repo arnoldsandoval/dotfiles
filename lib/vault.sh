@@ -61,6 +61,30 @@ vault_settle() {
   return 0
 }
 
+# vault_note TEXT — quick-capture into today's daily note (YYYY-MM-DD.md at
+# the vault root). Macs only: there the vault folder belongs to Obsidian Sync
+# and a human-initiated append is just an edit — Sync ships it to every device
+# in seconds, vault_sync checkpoints it into git within the hour. On the VM
+# this would be a direct write to the git clone, which the vault constitution
+# reserves for branch+PR — so it refuses there.
+vault_note() {
+  local text=$*
+  [[ -n $text ]] || { warn "usage: dotfiles note <text>"; return 1; }
+  local dir="$HOME/Documents/arnievault"
+  if [[ ! -d $dir ]]; then
+    if [[ $(profile_get) == vm ]]; then
+      warn "quick-capture is mac-only: on the vm, vault writes go via branch+PR (see vault-lookup skill)"
+    else
+      warn "vault not found at $dir"
+    fi
+    return 1
+  fi
+  local today file; today=$(date +%F); file="$dir/$today.md"
+  [[ -f $file ]] || printf '# %s\n' "$today" > "$file"
+  printf -- '- %s — %s\n' "$(date +%H:%M)" "$text" >> "$file"
+  ok "noted in $today.md"
+}
+
 # check_vault — doctor section. Read-only; no fetch (uses last-known refs).
 check_vault() {
   local dir bad=0 age ahead behind err
