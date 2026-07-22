@@ -6,3 +6,4 @@
 ~/.tmux.conf                 config/tmux/tmux.conf
 ~/.config/zellij/config.kdl  config/zellij/config.kdl
 ~/.local/bin/dotfiles        bin/dotfiles
+~/.local/bin/dotfiles-notify    bin/dotfiles-notify

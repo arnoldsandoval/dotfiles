@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# dotfiles-notify — agent completion/attention pings, called by agent hooks.
+#
+#   dotfiles-notify done        # agent finished its turn
+#   dotfiles-notify input       # agent is blocked waiting on you
+#
+# Reads hook context from stdin when present (claude code passes JSON with cwd)
+# but works bare. Figures out its project + tmux session from cwd, suppresses
+# pings when that session is attached (you're watching), then:
+#   - macOS: banner (terminal-notifier if present, else osascript) + sound
+#   - everywhere: BEL into the session's pane tty so detached-but-open
+#     terminals get a bell/badge through tmux
+set -uo pipefail
+
+kind=${1:-done}
+payload=""
+[[ -t 0 ]] || payload=$(cat 2>/dev/null || true)
+
+# project dir: hook json cwd, else $PWD
+dir=$PWD
+if [[ $payload == *'"cwd"'* ]]; then
+  d=$(printf '%s' "$payload" | sed -n 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+  [[ -n $d ]] && dir=$d
+fi
+proj=$(basename "$dir")
+
+# find the wrapping tmux session (cc-/cp- convention, else any session at that cwd)
+sess=""
+for cand in "cc-$proj" "cp-$proj"; do
+  tmux has-session -t "=$cand" 2>/dev/null && { sess=$cand; break; }
+done
+
+# suppressed when the session is attached — you're already looking at it
+if [[ -n $sess ]]; then
+  attached=$(tmux display-message -t "=$sess" -p '#{session_attached}' 2>/dev/null || echo 0)
+  [[ ${attached:-0} -gt 0 ]] && exit 0
+fi
+
+case $kind in
+  input) title="🔔 $proj needs you" ;;
+  *)     title="✅ $proj is done" ;;
+esac
+
+# macOS: banner + sound
+if [[ $(uname -s) == Darwin ]]; then
+  if command -v terminal-notifier >/dev/null 2>&1; then
+    terminal-notifier -title "$title" -message "agent session $proj" -group "dotfiles-$proj" -sound Glass >/dev/null 2>&1 || true
+  else
+    osascript -e "display notification \"agent session $proj\" with title \"$title\" sound name \"Glass\"" >/dev/null 2>&1 || true
+  fi
+fi
+
+# everywhere: ring the bell inside the tmux pane so any open (even unfocused)
+# terminal attached later/elsewhere gets the terminal's bell/badge treatment
+if [[ -n $sess ]]; then
+  tty=$(tmux display-message -t "=$sess" -p '#{pane_tty}' 2>/dev/null || true)
+  [[ -n $tty && -w $tty ]] && printf '\a' > "$tty" 2>/dev/null || true
+fi
+
+exit 0
