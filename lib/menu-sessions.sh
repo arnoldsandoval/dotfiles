@@ -46,12 +46,44 @@ discover_projects() {
   done | sort -rn
 }
 
+# _agent_alive PREFIX NAME -> 0 iff the expected agent process is running
+# beneath (or as) the pane's process tree. pane_current_command is NOT enough:
+# copilot's wrapper (`a || b; exec $SHELL`) keeps the shell as the surface
+# process while the agent runs as its child — which both hid the ● and made
+# the husk-respawn think a LIVE copilot was dead.
+_agent_alive() {
+  local prefix=$1 name=$2 want root psout members pid ppid comm base grew w
+  case $prefix in
+    cc) want="claude" ;;
+    cp) want="copilot github-copilot-cli" ;;
+    *)  return 1 ;;
+  esac
+  root=$(tmux list-panes -t "=$prefix-$name" -F '#{pane_pid}' 2>/dev/null) || return 1
+  root=${root%%$'\n'*}
+  [[ -n $root ]] || return 1
+  psout=$(ps -ax -o pid= -o ppid= -o comm= 2>/dev/null) || return 1
+  # collect the pane's full descendant set (loop to fixpoint; ps order varies)
+  members=" $root "
+  grew=1
+  while (( grew )); do
+    grew=0
+    while read -r pid ppid comm; do
+      [[ $members == *" $ppid "* && $members != *" $pid "* ]] || continue
+      members+="$pid "
+      grew=1
+    done <<< "$psout"
+  done
+  # match ONLY the expected agent names — unrelated children never count
+  while read -r pid ppid comm; do
+    [[ $members == *" $pid "* ]] || continue
+    base=${comm##*/}
+    for w in $want; do [[ $base == "$w" ]] && return 0; done
+  done <<< "$psout"
+  return 1
+}
+
 _session_mark() { # _session_mark PREFIX NAME -> "●" only if the AGENT is alive
-  # (the wrapper outlives the agent: after the agent exits it falls back to a
-  # shell, which is a husk, not a running session)
-  local cmd
-  cmd=$(tmux list-panes -t "=$1-$2" -F '#{pane_current_command}' 2>/dev/null) || { echo " "; return; }
-  case ${cmd:-} in ""|zsh|bash|sh) echo " " ;; *) echo "●" ;; esac
+  _agent_alive "$1" "$2" && echo "●" || echo " "
 }
 
 # _enter TARGET DIR CMD — put the user in the tmux session (never returns).
@@ -60,14 +92,17 @@ _session_mark() { # _session_mark PREFIX NAME -> "●" only if the AGENT is aliv
 _enter() {
   local target=$1 dir=$2 cmd=$3 pane
   if tmux has-session -t "=$target" 2>/dev/null; then
-    # agent exited and left the wrapper shell? respawn the pane with the agent
-    # command directly — no visible typing (send-keys flashed the raw command)
-    pane=$(tmux list-panes -t "=$target" -F '#{pane_current_command}' 2>/dev/null)
-    case ${pane:-} in
-      zsh|bash|sh)
-        tmux respawn-pane -k -t "=$target:" -c "$dir" \
-          "printf '\\033[2J\\033[H⏳ resuming %s…\\n' '$target'; $cmd" ;;
-    esac
+    # true husk = agent dead by process-tree check AND surface is a bare shell
+    # (never respawn over a live agent hidden under its wrapper, nor over
+    # something the user left running in the husk, e.g. vim)
+    if ! _agent_alive "${target%%-*}" "${target#*-}"; then
+      pane=$(tmux list-panes -t "=$target" -F '#{pane_current_command}' 2>/dev/null)
+      case ${pane:-} in
+        zsh|bash|sh)
+          tmux respawn-pane -k -t "=$target:" -c "$dir" \
+            "printf '\\033[2J\\033[H⏳ resuming %s…\\n' '$target'; $cmd" ;;
+      esac
+    fi
   elif [[ -n ${TMUX:-} ]]; then
     tmux new-session -d -s "$target" -c "$dir" "$cmd"
   fi
