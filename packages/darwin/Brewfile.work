@@ -1,2 +1,6 @@
 # Brewfile.work — work-Mac-only additions (shared apps live in Brewfile.core)
 brew 'volta'
+
+cask 'copilot-cli'
+cask 'intellij-idea'
+cask 'jetbrains-toolbox'

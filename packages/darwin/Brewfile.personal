@@ -24,8 +24,6 @@ cask 'ngrok'          # personal tunnel tool; corp TLS interception breaks its d
 cask 'zoom'
 cask 'android-studio'
 cask 'zulu@17'
-cask 'obsidian'
 cask 'raspberry-pi-imager'
 cask 'sf-symbols'
 cask 'tailscale-app'
-cask 'termius'
