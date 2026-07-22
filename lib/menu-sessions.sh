@@ -60,10 +60,13 @@ _session_mark() { # _session_mark PREFIX NAME -> "●" only if the AGENT is aliv
 _enter() {
   local target=$1 dir=$2 cmd=$3 pane
   if tmux has-session -t "=$target" 2>/dev/null; then
-    # agent exited and left the wrapper shell? respawn the agent in place
+    # agent exited and left the wrapper shell? respawn the pane with the agent
+    # command directly — no visible typing (send-keys flashed the raw command)
     pane=$(tmux list-panes -t "=$target" -F '#{pane_current_command}' 2>/dev/null)
     case ${pane:-} in
-      zsh|bash|sh) tmux send-keys -t "=$target:" "cd $dir && $cmd" Enter ;;
+      zsh|bash|sh)
+        tmux respawn-pane -k -t "=$target:" -c "$dir" \
+          "printf '\\033[2J\\033[H⏳ resuming %s…\\n' '$target'; $cmd" ;;
     esac
   elif [[ -n ${TMUX:-} ]]; then
     tmux new-session -d -s "$target" -c "$dir" "$cmd"
