@@ -53,12 +53,33 @@ do_sync() {
   fi
 }
 
+# Ask the machine's agent (claude, else copilot) to write a one-line
+# conventional commit message from the diff. Prints it; fails silently on
+# no agent / timeout / malformed reply — caller falls back to the default.
+_gen_commit_msg() {
+  local agent="" out msg
+  if has claude; then agent="claude -p"
+  elif has copilot; then agent="copilot -p"
+  else return 1; fi
+  log "asking ${agent%% *} for a commit message…" >&2
+  out=$(git -C "$DOTFILES" status --short; git -C "$DOTFILES" diff HEAD | head -300)
+  out=$(timeout 45 $agent "Write a one-line conventional commit message (type: feat/fix/chore/docs/refactor, lowercase subject, max 65 chars, no quotes or backticks) for this dotfiles change. Reply with ONLY the message line, nothing else.
+
+$out" 2>/dev/null) || return 1
+  # capture first, then filter — a -m1 grep on a live pipe would SIGPIPE
+  msg=$(printf '%s\n' "$out" | grep -m1 -E '^[a-z]+(\([a-z0-9./-]+\))?: .{1,70}$') || return 1
+  printf '%s' "$msg"
+}
+
 # do_save [message] — the "I tweaked something on this machine" verb:
 # commit everything + push, so other machines pick it up on their next fetch.
 # (Configs are symlinks into the repo, so editing ~/.zshrc edits the repo.)
 do_save() {
-  local msg=${1:-"chore: update from $(hostname -s 2>/dev/null || hostname)"}
+  local msg=${1:-}
   if [[ -z $(git -C "$DOTFILES" status --porcelain) ]]; then ok "nothing to save — tree is clean"; return 0; fi
+  if [[ -z $msg ]]; then
+    msg=$(_gen_commit_msg) || msg="chore: update from $(hostname -s 2>/dev/null || hostname)"
+  fi
   git -C "$DOTFILES" add -A
   git -C "$DOTFILES" status --short
   if ! ui_confirm "commit + push the above as '$msg'?"; then warn "aborted"; return 1; fi
