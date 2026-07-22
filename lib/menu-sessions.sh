@@ -46,19 +46,30 @@ discover_projects() {
   done | sort -rn
 }
 
-_session_mark() { # _session_mark PREFIX NAME -> "●" if tmux session exists
-  tmux has-session -t "=$1-$2" 2>/dev/null && echo "●" || echo " "
+_session_mark() { # _session_mark PREFIX NAME -> "●" only if the AGENT is alive
+  # (the wrapper outlives the agent: after the agent exits it falls back to a
+  # shell, which is a husk, not a running session)
+  local cmd
+  cmd=$(tmux list-panes -t "=$1-$2" -F '#{pane_current_command}' 2>/dev/null) || { echo " "; return; }
+  case ${cmd:-} in ""|zsh|bash|sh) echo " " ;; *) echo "●" ;; esac
 }
 
 # _enter TARGET DIR CMD — put the user in the tmux session (never returns).
 # Outside tmux: attach-or-create. Inside tmux: create detached if needed and
 # SWITCH this client (new-session -A would trip the nesting guard).
 _enter() {
-  local target=$1 dir=$2 cmd=$3
+  local target=$1 dir=$2 cmd=$3 pane
+  if tmux has-session -t "=$target" 2>/dev/null; then
+    # agent exited and left the wrapper shell? respawn the agent in place
+    pane=$(tmux list-panes -t "=$target" -F '#{pane_current_command}' 2>/dev/null)
+    case ${pane:-} in
+      zsh|bash|sh) tmux send-keys -t "=$target" "cd $dir && $cmd" Enter ;;
+    esac
+  elif [[ -n ${TMUX:-} ]]; then
+    tmux new-session -d -s "$target" -c "$dir" "$cmd"
+  fi
   if [[ -n ${TMUX:-} ]]; then
-    tmux has-session -t "=$target" 2>/dev/null \
-      || tmux new-session -d -s "$target" -c "$dir" "$cmd"
-    exec tmux switch-client -t "=$target"
+    exec tmux switch-client -t "=$target"   # nesting-safe
   else
     exec tmux new-session -A -s "$target" -c "$dir" "$cmd"
   fi
