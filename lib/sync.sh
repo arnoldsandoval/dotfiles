@@ -41,6 +41,12 @@ do_sync() {
     apply_links --quiet || true
     status_set behind 0
     ok "dotfiles synced: pulled $behind commit(s) + relinked"
+    # manual sync also refreshes third-party skills from their upstreams
+    # (skipped in --auto/login mode: no network storms on ssh)
+    if [[ $auto != --auto ]] && has npx; then
+      log "updating installed skills from upstream"
+      (cd "$HOME" && npx --yes skills update -g -y </dev/null) 2>/dev/null || warn "skills update failed (non-fatal)"
+    fi
   else
     warn "cannot fast-forward (diverged) — resolve manually in $DOTFILES"
     return 1

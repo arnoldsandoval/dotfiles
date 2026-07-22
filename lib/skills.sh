@@ -22,19 +22,25 @@ skills_list() {
 }
 
 # Install manifest skills that are missing. Needs a JS runtime for npx.
+# -g global scope, -s exact skill (multi-skill repos), -a per-profile agent
+# (this IS the per-agent adapter: claude-code everywhere except mac-work).
 skills_install_manifest() {
   local runner=""
   if has npx; then runner="npx --yes"; elif has bunx; then runner="bunx"; fi
+  local agent=claude-code
+  [[ $(profile_get) == mac-work ]] && agent=github-copilot
   local name src n_skip=0
   while read -r name src; do
     [[ -e $HOME/.claude/skills/$name ]] && continue
     if [[ $src == TBD ]]; then
-      warn "skill '$name': source not yet classified (finalize from ~/.agents/.skill-lock.json on the Mac)"; n_skip=$((n_skip+1)); continue
+      warn "skill '$name': source not yet classified"; n_skip=$((n_skip+1)); continue
     fi
     if [[ -z $runner ]]; then
       warn "skill '$name': needs node/bun for 'npx skills add $src' — skipping"; n_skip=$((n_skip+1)); continue
     fi
-    ui_spin "installing skill $name" $runner skills add "$src" || warn "failed: $name"
+    log "installing skill $name ($src)"
+    (cd "$HOME" && $runner skills add "$src" -g -y -s "$name" -a "$agent" </dev/null) \
+      || warn "failed: $name"
   done < <(skills_manifest)
   [[ $n_skip -gt 0 ]] && warn "$n_skip manifest skill(s) skipped"
   return 0
