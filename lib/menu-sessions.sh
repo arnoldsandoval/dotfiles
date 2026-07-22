@@ -63,7 +63,7 @@ _enter() {
     # agent exited and left the wrapper shell? respawn the agent in place
     pane=$(tmux list-panes -t "=$target" -F '#{pane_current_command}' 2>/dev/null)
     case ${pane:-} in
-      zsh|bash|sh) tmux send-keys -t "=$target" "cd $dir && $cmd" Enter ;;
+      zsh|bash|sh) tmux send-keys -t "=$target:" "cd $dir && $cmd" Enter ;;
     esac
   elif [[ -n ${TMUX:-} ]]; then
     tmux new-session -d -s "$target" -c "$dir" "$cmd"
