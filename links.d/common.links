@@ -7,3 +7,4 @@
 ~/.config/zellij/config.kdl  config/zellij/config.kdl
 ~/.local/bin/dotfiles        bin/dotfiles
 ~/.local/bin/dotfiles-notify    bin/dotfiles-notify
+~/.local/bin/dotfiles-focus     bin/dotfiles-focus

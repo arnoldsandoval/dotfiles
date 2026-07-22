@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# dotfiles-focus <tmux-session> — notification click handler (macOS).
+# If a terminal client is attached to the session: focus that exact
+# Terminal.app tab (matched by tty). Otherwise: open a new Terminal window
+# attached to the session.
+set -uo pipefail
+sess=${1:-}
+[[ -n $sess ]] || exit 0
+[[ $(uname -s) == Darwin ]] || exit 0
+
+all=$(tmux list-clients -t "=$sess" -F '#{client_tty}' 2>/dev/null) || all=""
+tty=${all%%$'\n'*}
+
+if [[ -n $tty ]]; then
+  # attached somewhere: bring Terminal forward and select the owning tab
+  osascript >/dev/null 2>&1 <<EOF || true
+tell application "Terminal"
+  activate
+  repeat with w in windows
+    repeat with t in tabs of w
+      if tty of t is "$tty" then
+        set selected of t to true
+        set index of w to 1
+      end if
+    end repeat
+  end repeat
+end tell
+EOF
+else
+  # not attached anywhere: fresh window, straight into the session
+  osascript >/dev/null 2>&1 <<EOF || true
+tell application "Terminal"
+  activate
+  do script "tmux attach -t $sess"
+end tell
+EOF
+fi

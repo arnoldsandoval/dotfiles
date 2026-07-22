@@ -51,7 +51,11 @@ esac
 # macOS: banner + sound
 if [[ $(uname -s) == Darwin ]]; then
   if command -v terminal-notifier >/dev/null 2>&1; then
-    terminal-notifier -title "$title" -message "agent session $proj" -group "dotfiles-$proj" -sound Morse >/dev/null 2>&1 || true
+    # click: focus the exact terminal tab viewing the session, or open one
+    exec_arg=()
+    [[ -n $sess ]] && exec_arg=(-execute "$HOME/.local/bin/dotfiles-focus $sess")
+    terminal-notifier -title "$title" -message "agent session $proj" \
+      -group "dotfiles-$proj" -sound Morse "${exec_arg[@]}" >/dev/null 2>&1 || true
   else
     osascript -e "display notification \"agent session $proj\" with title \"$title\" sound name \"Morse\"" >/dev/null 2>&1 || true
   fi
