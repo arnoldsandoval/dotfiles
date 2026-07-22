@@ -53,6 +53,10 @@ cmd_bootstrap() {
     apply_links
     bash "$DOTFILES/lib/gen-local.sh"
     bash "$DOTFILES/lib/install-hooks.sh"
+  else
+    # links are cheap + idempotent: refresh them on ANY bootstrap run so a
+    # --tier N invocation never leaves freshly-pulled links unapplied
+    apply_links --quiet || true
   fi
   if [[ -z $tier || $tier == 1 ]]; then
     log "tier 1: packages"
