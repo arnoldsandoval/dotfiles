@@ -9,7 +9,7 @@ This file tracks the per-machine rollout — update it as machines cut over.
 | --- | --- | --- |
 | hetzner vm (ubuntu-4gb-fsn1-6) | `vm` | ✅ done 2026-07-21, live-verified |
 | personal mac | `mac-personal` | ✅ done 2026-07-22 — doctor all clear (pending: one 1Password signing smoke-test) |
-| work mac | `mac-work` | ⬜ pending (do last) |
+| work mac | `mac-work` | ✅ done 2026-07-22 — doctor all clear (drift curation of work apps pending) |
 
 ## Personal Mac runbook
 
