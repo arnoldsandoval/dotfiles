@@ -36,9 +36,13 @@ do_sync() {
     [[ $behind -gt 0 && -z $dirty ]] || return 0
   fi
   if [[ $behind -eq 0 ]]; then
-    # still relink: a manual git pull leaves new links.d entries unapplied
+    # still settle: a manual git pull leaves new links.d entries unapplied
+    # and new manifest skills uninstalled
     apply_links --quiet || true
-    [[ $auto == --auto ]] || ok "up to date (links refreshed)"
+    if [[ $auto != --auto ]]; then
+      has npx && skills_install_manifest
+      ok "up to date (links + skills settled)"
+    fi
     return 0
   fi
   if [[ -n $dirty ]]; then warn "dotfiles tree is dirty — not pulling (commit/stash first)"; return 1; fi
