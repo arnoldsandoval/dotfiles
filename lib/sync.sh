@@ -39,9 +39,10 @@ do_sync() {
     # still settle: a manual git pull leaves new links.d entries unapplied
     # and new manifest skills uninstalled
     apply_links --quiet || true
+    vault_settle
     if [[ $auto != --auto ]]; then
       has npx && skills_install_manifest
-      ok "up to date (links + skills settled)"
+      ok "up to date (links + skills + vault settled)"
     fi
     return 0
   fi
@@ -58,6 +59,7 @@ do_sync() {
       log "updating installed skills from upstream"
       (cd "$HOME" && npx --yes skills update -g -y </dev/null) 2>/dev/null || warn "skills update failed (non-fatal)"
     fi
+    vault_settle
   else
     warn "cannot fast-forward (diverged) — resolve manually in $DOTFILES"
     return 1

@@ -1,214 +1,303 @@
 #!/usr/bin/env python3
-"""On-demand digest of a chosen AI coding session.
+"""On-demand digest of a chosen AI coding session (multi-agent).
 
-Reads GitHub Copilot CLI's local session store (SQLite) and either lists recent
-sessions or prints a concise digest of one chosen session to stdout. It never
-writes into the vault. The point is "promote what matters": you review a digest,
-then deliberately author a distilled note into the relevant project only when the
-session produced something worth keeping (a decision, a learning), rather than
-auto-dumping every session.
+Adapters read each agent's local session store READ-ONLY and emit one shared
+digest shape. It never writes into the vault. The point is "promote what
+matters": you review a digest, then deliberately author a distilled note into
+the relevant project only when the session produced something worth keeping
+(a decision, a learning), rather than auto-dumping every session.
+
+Adapters:
+    copilot   ~/.copilot/session-store.db   (SQLite)
+    claude    ~/.claude/projects/*/<id>.jsonl (Claude Code transcripts)
 
 Usage:
-    session_digest.py list [--scope SUBSTR] [--limit N] [--all]
-    session_digest.py show <session_id_prefix>
+    session_digest.py list [--tool copilot|claude|auto] [--scope SUBSTR] [--limit N] [--all]
+    session_digest.py show <session_id_prefix> [--tool ...]
 
-Defaults: db=~/.copilot/session-store.db. `list` shows recent sessions (default
-20). `show` prints the digest for the session whose id starts with the prefix.
-Digest only: summary, what was asked, work done (from checkpoints when present),
-files touched, PR/commit refs. No transcripts, no assistant text.
+Default --tool auto: every store present on this machine. `show` searches all
+selected stores for the id prefix. Digest only: summary, what was asked, work
+done, files touched, refs. No transcripts, no assistant text.
 """
 import argparse
 import datetime as dt
+import json
 import re
 import sqlite3
 import sys
 from pathlib import Path
 
-TOOL = "copilot-cli"
-DEFAULT_DB = Path.home() / ".copilot/session-store.db"
+COPILOT_DB = Path.home() / ".copilot/session-store.db"
+CLAUDE_DIR = Path.home() / ".claude/projects"
 
 
 def to_date(ts: str) -> str:
     if not ts:
         return dt.date.today().isoformat()
-    m = re.match(r"(\d{4}-\d{2}-\d{2})", ts)
+    m = re.match(r"(\d{4}-\d{2}-\d{2})", str(ts))
     return m.group(1) if m else dt.date.today().isoformat()
 
 
-def connect_ro(db: Path) -> sqlite3.Connection:
-    # Read-only, but NOT immutable: immutable=1 ignores the -wal file and would
-    # read a stale snapshot that misses the most recent (still-in-WAL) sessions.
-    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
-    con.row_factory = sqlite3.Row
-    return con
+def squash(text: str, n: int) -> str:
+    text = re.sub(r"\[image:[^\]]*\]", "", text or "")
+    # mask token-shaped strings — transcripts contain pasted secrets, and a
+    # digest must never re-emit them (defense in depth on top of the
+    # promote-by-hand rule)
+    text = re.sub(r"[A-Za-z0-9_\-:]{24,}", "[redacted]", text)
+    return re.sub(r"\s+", " ", text).strip()[:n]
 
 
-def first_user_ask(con, sid):
-    r = con.execute(
-        "SELECT user_message FROM turns WHERE session_id=? AND user_message IS NOT NULL "
-        "AND TRIM(user_message)<>'' ORDER BY turn_index LIMIT 1",
-        (sid,),
-    ).fetchone()
-    if not r:
-        return ""
-    return re.sub(r"\s+", " ", r["user_message"]).strip()[:280]
+# ---------------------------------------------------------------- copilot ---
+class CopilotStore:
+    tool = "copilot-cli"
+
+    def __init__(self, db=COPILOT_DB):
+        self.db = Path(db)
+
+    def available(self):
+        return self.db.exists()
+
+    def _con(self):
+        # Read-only, but NOT immutable: immutable=1 ignores the -wal file and
+        # would miss the most recent (still-in-WAL) sessions.
+        con = sqlite3.connect(f"file:{self.db}?mode=ro", uri=True)
+        con.row_factory = sqlite3.Row
+        return con
+
+    def list_sessions(self, scope, limit):
+        con = self._con()
+        where = "WHERE s.cwd LIKE ?" if scope else ""
+        args = [f"%{scope}%"] if scope else []
+        rows = con.execute(
+            f"""SELECT s.id, s.cwd, s.summary, s.updated_at,
+                   (SELECT COUNT(*) FROM turns t WHERE t.session_id = s.id) AS turns
+                FROM sessions s {where} ORDER BY s.updated_at DESC LIMIT ?""",
+            args + [limit],
+        ).fetchall()
+        return [dict(id=r["id"], date=to_date(r["updated_at"]), turns=r["turns"],
+                     summary=r["summary"] or (Path(r["cwd"]).name if r["cwd"] else ""),
+                     tool=self.tool) for r in rows]
+
+    def match_ids(self, prefix):
+        con = self._con()
+        rows = con.execute("SELECT id FROM sessions WHERE id LIKE ? ORDER BY updated_at DESC",
+                           (prefix + "%",)).fetchall()
+        return [r["id"] for r in rows]
+
+    def digest(self, sid):
+        con = self._con()
+        s = con.execute(
+            "SELECT id, cwd, repository, branch, summary, updated_at, "
+            "(SELECT COUNT(*) FROM turns t WHERE t.session_id=sessions.id) AS turns "
+            "FROM sessions WHERE id=?", (sid,)).fetchone()
+        asks = [squash(r["user_message"], 160) for r in con.execute(
+            "SELECT user_message FROM turns WHERE session_id=? AND user_message IS NOT NULL "
+            "AND TRIM(user_message)<>'' ORDER BY turn_index LIMIT 10", (sid,)).fetchall()]
+        cp = con.execute(
+            "SELECT overview, work_done, next_steps FROM checkpoints "
+            "WHERE session_id=? ORDER BY checkpoint_number DESC LIMIT 1", (sid,)).fetchone()
+        frows = con.execute(
+            "SELECT file_path, tool_name FROM session_files WHERE session_id=? "
+            "ORDER BY first_seen_at", (sid,)).fetchall()
+        refs = [(r["ref_type"], r["ref_value"]) for r in con.execute(
+            "SELECT ref_type, ref_value FROM session_refs WHERE session_id=? "
+            "ORDER BY ref_type", (sid,)).fetchall()]
+        return dict(
+            id=sid, tool=self.tool, cwd=s["cwd"], repo=s["repository"], branch=s["branch"],
+            date=to_date(s["updated_at"]), turns=s["turns"],
+            summary=s["summary"] or (asks[0][:60] if asks else ""),
+            overview=cp["overview"] if cp else "", work_done=cp["work_done"] if cp else "",
+            next_steps=cp["next_steps"] if cp else "", asks=asks,
+            files=[(r["file_path"], r["tool_name"] or "") for r in frows][:30],
+            files_total=len(frows), refs=refs,
+        )
 
 
-def user_asks(con, sid, limit=10):
-    rows = con.execute(
-        "SELECT user_message FROM turns WHERE session_id=? AND user_message IS NOT NULL "
-        "AND TRIM(user_message)<>'' ORDER BY turn_index LIMIT ?",
-        (sid, limit),
-    ).fetchall()
-    out = []
-    for r in rows:
-        m = re.sub(r"\[image:[^\]]*\]", "", r["user_message"])
-        m = re.sub(r"\s+", " ", m).strip()
-        if m:
-            out.append(m[:160])
-    return out
+# ----------------------------------------------------------------- claude ---
+class ClaudeStore:
+    tool = "claude-code"
+
+    def __init__(self, root=CLAUDE_DIR):
+        self.root = Path(root)
+
+    def available(self):
+        return self.root.is_dir()
+
+    def _files(self):
+        # top-level session transcripts only; subagent transcripts live deeper
+        return sorted(self.root.glob("*/*.jsonl"),
+                      key=lambda p: p.stat().st_mtime, reverse=True)
+
+    @staticmethod
+    def _user_text(obj):
+        if obj.get("type") != "user":
+            return ""
+        c = (obj.get("message") or {}).get("content")
+        if isinstance(c, list):
+            c = " ".join(p.get("text", "") for p in c if isinstance(p, dict))
+        if not isinstance(c, str):
+            return ""
+        t = c.strip()
+        if not t or t.startswith("<") or "continued from" in t[:120]:
+            return ""
+        return t
+
+    def _scan(self, path, deep=False):
+        """One pass over a transcript. Cheap fields always; asks/files if deep."""
+        info = dict(cwd="", turns=0, first="", asks=[], files=[], files_seen=set())
+        try:
+            with open(path, errors="replace") as fh:
+                for line in fh:
+                    if '"cwd"' in line and not info["cwd"]:
+                        m = re.search(r'"cwd"\s*:\s*"([^"]+)"', line)
+                        if m:
+                            info["cwd"] = m.group(1)
+                    if '"type":"user"' not in line and '"type": "user"' not in line:
+                        if deep and '"file_path"' in line and '"name"' in line:
+                            m = re.search(r'"name"\s*:\s*"(Write|Edit|NotebookEdit)"', line)
+                            f = re.search(r'"file_path"\s*:\s*"([^"]+)"', line)
+                            if m and f and f.group(1) not in info["files_seen"]:
+                                info["files_seen"].add(f.group(1))
+                                info["files"].append((f.group(1), m.group(1)))
+                        continue
+                    try:
+                        obj = json.loads(line)
+                    except Exception:
+                        continue
+                    t = self._user_text(obj)
+                    if not t:
+                        continue
+                    info["turns"] += 1
+                    if not info["first"]:
+                        info["first"] = squash(t, 280)
+                    if deep and len(info["asks"]) < 10:
+                        info["asks"].append(squash(t, 160))
+        except OSError:
+            pass
+        return info
+
+    def list_sessions(self, scope, limit):
+        out = []
+        for p in self._files():
+            if len(out) >= limit:
+                break
+            info = self._scan(p)
+            if scope and scope not in info["cwd"]:
+                continue
+            if info["turns"] == 0:
+                continue
+            out.append(dict(
+                id=p.stem, date=dt.date.fromtimestamp(p.stat().st_mtime).isoformat(),
+                turns=info["turns"],
+                summary=info["first"][:44] or (Path(info["cwd"]).name if info["cwd"] else ""),
+                tool=self.tool))
+        return out
+
+    def match_ids(self, prefix):
+        return [p.stem for p in self._files() if p.stem.startswith(prefix)]
+
+    def _path(self, sid):
+        for p in self._files():
+            if p.stem == sid:
+                return p
+        return None
+
+    def digest(self, sid):
+        p = self._path(sid)
+        info = self._scan(p, deep=True)
+        return dict(
+            id=sid, tool=self.tool, cwd=info["cwd"], repo="", branch="",
+            date=dt.date.fromtimestamp(p.stat().st_mtime).isoformat(),
+            turns=info["turns"], summary=info["first"][:60],
+            overview="", work_done="", next_steps="", asks=info["asks"],
+            files=info["files"][:30], files_total=len(info["files"]), refs=[],
+        )
 
 
-def latest_checkpoint(con, sid):
-    return con.execute(
-        "SELECT overview, work_done, next_steps FROM checkpoints "
-        "WHERE session_id=? ORDER BY checkpoint_number DESC LIMIT 1",
-        (sid,),
-    ).fetchone()
-
-
-def files_touched(con, sid, limit=30):
-    rows = con.execute(
-        "SELECT file_path, tool_name FROM session_files WHERE session_id=? ORDER BY first_seen_at",
-        (sid,),
-    ).fetchall()
-    return [(r["file_path"], r["tool_name"] or "") for r in rows][:limit], len(rows)
-
-
-def refs(con, sid):
-    rows = con.execute(
-        "SELECT ref_type, ref_value FROM session_refs WHERE session_id=? ORDER BY ref_type",
-        (sid,),
-    ).fetchall()
-    return [(r["ref_type"], r["ref_value"]) for r in rows]
-
-
-def cmd_list(con, scope, want_all, limit):
-    where = "" if want_all else "WHERE s.cwd LIKE ?"
-    args = [] if want_all else [f"%{scope}%"]
-    rows = con.execute(
-        f"""
-        SELECT s.id, s.cwd, s.summary, s.updated_at,
-               (SELECT COUNT(*) FROM turns t WHERE t.session_id = s.id) AS turns
-        FROM sessions s
-        {where}
-        ORDER BY s.updated_at DESC
-        LIMIT ?
-        """,
-        args + [limit],
-    ).fetchall()
-    if not rows:
-        print("No sessions found.")
-        return 0
-    print(f"{'id':10} {'date':11} {'turns':>5}  summary / cwd")
-    print("-" * 72)
-    for r in rows:
-        summ = r["summary"] or (Path(r["cwd"]).name if r["cwd"] else "")
-        print(f"{r['id'][:8]:10} {to_date(r['updated_at']):11} {r['turns']:>5}  {summ[:44]}")
-    print("\nRun: session_digest.py show <id-prefix>")
-    return 0
-
-
-def resolve_id(con, prefix):
-    rows = con.execute(
-        "SELECT id FROM sessions WHERE id LIKE ? ORDER BY updated_at DESC",
-        (prefix + "%",),
-    ).fetchall()
-    return [r["id"] for r in rows]
-
-
-def cmd_show(con, prefix):
-    ids = resolve_id(con, prefix)
-    if not ids:
-        print(f"No session matches prefix '{prefix}'.", file=sys.stderr)
-        return 1
-    if len(ids) > 1:
-        print(f"Prefix '{prefix}' is ambiguous ({len(ids)} matches): "
-              + ", ".join(i[:8] for i in ids[:8]), file=sys.stderr)
-        return 1
-    sid = ids[0]
-    s = con.execute(
-        "SELECT id, cwd, repository, branch, summary, created_at, updated_at, "
-        "(SELECT COUNT(*) FROM turns t WHERE t.session_id=sessions.id) AS turns "
-        "FROM sessions WHERE id=?",
-        (sid,),
-    ).fetchone()
-
-    title = s["summary"] or first_user_ask(con, sid)[:60] or f"Session {sid[:8]}"
-    cp = latest_checkpoint(con, sid)
-    fls, fcount = files_touched(con, sid)
-    rfs = refs(con, sid)
-
-    out = [f"# {title}", ""]
+# ----------------------------------------------------------------- output ---
+def render(d):
+    out = [f"# {d['summary'] or 'Session ' + d['id'][:8]}", ""]
     meta = []
-    if s["repository"]:
-        meta.append(f"Repo: `{s['repository']}`")
-    if s["branch"]:
-        meta.append(f"Branch: `{s['branch']}`")
-    if s["cwd"]:
-        meta.append(f"CWD: `{s['cwd']}`")
-    meta.append(f"Date: {to_date(s['updated_at'])}  \u00b7  Turns: {s['turns']}  \u00b7  "
-                f"Tool: {TOOL}  \u00b7  Session `{sid[:8]}`")
-    out.append("  \n".join(meta))
-    out.append("")
-
-    if cp and (cp["overview"] or cp["work_done"]):
-        if cp["overview"]:
-            out += ["## Overview", cp["overview"].strip(), ""]
-        if cp["work_done"]:
-            out += ["## Work done", cp["work_done"].strip(), ""]
-        if cp["next_steps"]:
-            out += ["## Next steps", cp["next_steps"].strip(), ""]
-    else:
-        asks = user_asks(con, sid)
-        if asks:
-            out += ["## What was asked"] + [f"- {a}" for a in asks] + [""]
-
-    if fls:
-        out += ["## Files touched" + (f" ({fcount})" if fcount > len(fls) else "")]
-        out += [f"- `{p}`" + (f" ({t})" if t else "") for p, t in fls] + [""]
-    if rfs:
-        out += ["## References"] + [f"- {rt}: {rv}" for rt, rv in rfs] + [""]
-
+    if d["repo"]:
+        meta.append(f"Repo: `{d['repo']}`")
+    if d["branch"]:
+        meta.append(f"Branch: `{d['branch']}`")
+    if d["cwd"]:
+        meta.append(f"CWD: `{d['cwd']}`")
+    meta.append(f"Date: {d['date']}  ·  Turns: {d['turns']}  ·  "
+                f"Tool: {d['tool']}  ·  Session `{d['id'][:8]}`")
+    out += ["  \n".join(meta), ""]
+    if d["overview"] or d["work_done"]:
+        if d["overview"]:
+            out += ["## Overview", d["overview"].strip(), ""]
+        if d["work_done"]:
+            out += ["## Work done", d["work_done"].strip(), ""]
+        if d["next_steps"]:
+            out += ["## Next steps", d["next_steps"].strip(), ""]
+    elif d["asks"]:
+        out += ["## What was asked"] + [f"- {a}" for a in d["asks"]] + [""]
+    if d["files"]:
+        extra = f" ({d['files_total']})" if d["files_total"] > len(d["files"]) else ""
+        out += [f"## Files touched{extra}"]
+        out += [f"- `{p}`" + (f" ({t})" if t else "") for p, t in d["files"]] + [""]
+    if d["refs"]:
+        out += ["## References"] + [f"- {rt}: {rv}" for rt, rv in d["refs"]] + [""]
     print("\n".join(out).rstrip())
-    return 0
+
+
+def stores_for(tool):
+    all_stores = {"copilot": CopilotStore(), "claude": ClaudeStore()}
+    if tool != "auto":
+        return [all_stores[tool]]
+    return [s for s in all_stores.values() if s.available()]
 
 
 def main():
     ap = argparse.ArgumentParser(description="On-demand digest of a chosen AI session.")
-    ap.add_argument("--db", default=str(DEFAULT_DB))
+    ap.add_argument("--tool", choices=["auto", "copilot", "claude"], default="auto")
     sub = ap.add_subparsers(dest="cmd")
-
-    pl = sub.add_parser("list", help="list recent sessions")
+    pl = sub.add_parser("list")
     pl.add_argument("--scope", default="")
     pl.add_argument("--all", action="store_true")
     pl.add_argument("--limit", type=int, default=20)
-
-    ps = sub.add_parser("show", help="print a session's digest")
+    ps = sub.add_parser("show")
     ps.add_argument("session_id")
-
     args = ap.parse_args()
-    db = Path(args.db).expanduser()
-    if not db.exists():
-        print(f"session store not found: {db}", file=sys.stderr)
+
+    stores = stores_for(args.tool)
+    stores = [s for s in stores if s.available()]
+    if not stores:
+        print("no session stores found on this machine", file=sys.stderr)
         return 1
-    con = connect_ro(db)
 
     if args.cmd == "show":
-        return cmd_show(con, args.session_id)
+        hits = [(s, i) for s in stores for i in s.match_ids(args.session_id)]
+        if not hits:
+            print(f"No session matches prefix '{args.session_id}'.", file=sys.stderr)
+            return 1
+        if len(hits) > 1:
+            print(f"Ambiguous ({len(hits)}): " + ", ".join(f"{i[:8]}({s.tool})" for s, i in hits[:8]),
+                  file=sys.stderr)
+            return 1
+        render(hits[0][0].digest(hits[0][1]))
+        return 0
+
     scope = getattr(args, "scope", "")
-    want_all = getattr(args, "all", False) or not scope
-    return cmd_list(con, scope, want_all, getattr(args, "limit", 20))
+    limit = getattr(args, "limit", 20)
+    rows = []
+    for s in stores:
+        rows += s.list_sessions(scope, limit)
+    rows.sort(key=lambda r: r["date"], reverse=True)
+    rows = rows[:limit]
+    if not rows:
+        print("No sessions found.")
+        return 0
+    print(f"{'id':10} {'date':11} {'turns':>5} {'tool':13} summary / cwd")
+    print("-" * 78)
+    for r in rows:
+        print(f"{r['id'][:8]:10} {r['date']:11} {r['turns']:>5} {r['tool']:13} {r['summary'][:38]}")
+    print("\nRun: session_digest.py show <id-prefix>")
+    return 0
 
 
 if __name__ == "__main__":

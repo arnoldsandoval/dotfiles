@@ -18,6 +18,9 @@ run_doctor() {
   log "skills"
   check_skills || bad=$((bad+1))
 
+  log "vault"
+  check_vault || bad=$((bad+1))
+
   log "git"
   behind=$(status_get behind); ts=$(status_get fetch_ts); err_=$(status_get fetch_err)
   [[ -n $err_ ]] && { warn "last fetch failed: $err_"; }

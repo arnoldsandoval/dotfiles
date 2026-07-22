@@ -33,6 +33,19 @@ This file tracks the per-machine rollout — update it as machines cut over.
    repo; `brew bundle check` clean for core+personal; new terminal lands in zsh +
    starship with the hub… then update the table above and `dotfiles save`.
 
+## arnievault (added 2026-07-23)
+
+The personal Mac is the vault's git hub: dotfiles `vault_sync` (hourly shell
+hook + `dotfiles sync`) replaced the obsidian-git plugin as the sync bridge.
+**Cutover on the personal Mac:** pull dotfiles → open a terminal (first
+`vault_sync` fires; 15 days of edits land as one checkpoint, merged digests
+reach Obsidian via Sync) → disable the obsidian-git plugin in Obsidian →
+`dotfiles doctor` shows the vault heartbeat healthy. The VM keeps a read-only
+clone at `~/code/arnievault` (cloned/pulled by `dotfiles sync`; needs gh
+auth). Writes to the vault from any agent: branch + PR only — see the vault's
+`vault-automation.md` § Routine contract. After merging arnievault PR #25,
+update the three routine prompts at claude.ai/code/routines to the thin form.
+
 ## Work Mac runbook (after personal mac)
 
 1. Clone + `./bootstrap` → `mac-work` (prompts once for work git identity;

@@ -2,8 +2,8 @@
 name: session-digest
 description: >
   Review a past AI coding session and, when it produced something worth keeping,
-  promote a distilled note into the relevant arnievault project. Reads Copilot
-  CLI's local session store read-only and prints a digest; it never auto-writes
+  promote a distilled note into the relevant arnievault project. Reads local agent
+  session stores read-only (Copilot CLI sqlite + Claude Code JSONL) and prints a digest; it never auto-writes
   into the vault. Use when the user wants to capture a decision or learning from
   a session, or asks "what did we do in that session" / "save this to the vault".
 user_invocable: true
@@ -16,8 +16,7 @@ knowledge (decisions, learnings, patterns), not a log of every AI session. This 
 helps you look back at a session and, only when it earned it, write a distilled note
 into the right project by hand.
 
-The raw record already lives in Copilot CLI's `~/.copilot/session-store.db`. This tool
-reads it read-only and prints digests to your terminal. It does not create files in the
+The raw records live in each agent's local store — Copilot CLI's `~/.copilot/session-store.db` and Claude Code's `~/.claude/projects/*/…jsonl`. This tool reads them read-only (`--tool copilot|claude|auto`) and prints digests to your terminal. It does not create files in the
 vault. You (with the user) decide what, if anything, is worth promoting.
 
 ## Workflow
@@ -56,5 +55,5 @@ vault. You (with the user) decide what, if anything, is worth promoting.
 
 - Read-only DB access; safe to run any time.
 - `list` with no `--scope` shows recent sessions across all working directories.
-- This is the Copilot CLI adapter. Other tools (Claude Code JSONL under `~/.claude`)
-  could get a sibling adapter emitting the same digest shape.
+- Adapters: `copilot` (sqlite) and `claude` (JSONL) emit the same digest shape; future agents get new adapters.
+- Digest output masks token-shaped strings — transcripts can contain pasted secrets; never bypass that by quoting raw transcripts.

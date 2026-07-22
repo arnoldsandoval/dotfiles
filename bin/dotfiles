@@ -17,7 +17,7 @@ if [[ ${1:-} == nudge ]]; then
   exit 0
 fi
 
-for f in core platform profile tui link pkg skills sync doctor menu-sessions; do
+for f in core platform profile tui link pkg skills sync doctor menu-sessions vault; do
   # shellcheck disable=SC1090
   source "$DOTFILES/lib/$f.sh"
 done
@@ -41,6 +41,7 @@ ${C_MAG}usage:${C_OFF} dotfiles [command]
   ${C_BLD}skills${C_OFF} [install]     list skills / install missing manifest entries
   ${C_BLD}fetch${C_OFF} [--maybe]      quiet background fetch (used by timers + shell startup)
   ${C_BLD}nudge${C_OFF}                one-line status: behind origin / uncommitted (shell startup)
+  ${C_BLD}vault-sync${C_OFF} [--force] arnievault bridge: pull robot PRs, checkpoint, push (hub mac)
   ${C_BLD}help${C_OFF}                 this
 
 state: ~/.local/share/dotfiles   machine-local: ~/.config/zsh/local.zsh, ~/.gitconfig.local
@@ -131,6 +132,7 @@ case "${1:-}" in
   save) shift; do_save "$*" ;;
   diff|status) git -C "$DOTFILES" status --short; git -C "$DOTFILES" --no-pager diff ;;
   fetch) if [[ ${2:-} == --maybe ]]; then maybe_fetch_async; else do_fetch; fi ;;
+  vault-sync) shift; vault_sync "${1:-}" ;;
   doctor) run_doctor ;;
   cleanup) pkg_cleanup ;;
   skills) shift; case "${1:-list}" in list) skills_list ;; install) skills_install_manifest ;; *) skills_list ;; esac ;;
