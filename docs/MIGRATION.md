@@ -8,7 +8,7 @@ This file tracks the per-machine rollout — update it as machines cut over.
 | machine | profile | status |
 | --- | --- | --- |
 | hetzner vm (ubuntu-4gb-fsn1-6) | `vm` | ✅ done 2026-07-21, live-verified |
-| personal mac | `mac-personal` | ⬜ pending |
+| personal mac | `mac-personal` | 🟡 bootstrapped + cleaned 2026-07-22; final: pull → link → skills install → doctor |
 | work mac | `mac-work` | ⬜ pending (do last) |
 
 ## Personal Mac runbook
@@ -23,15 +23,12 @@ This file tracks the per-machine rollout — update it as machines cut over.
    - A stray real `~/.gitconfig` shadows the new `~/.config/git/config` — doctor
      warns; move it aside (identity now lives in generated `~/.gitconfig.local`).
    - Requires Homebrew already installed (bootstrap warns, doesn't install it).
-3. **Skills classification (Mac-only task):** `packages/skills.txt` refs are `TBD`.
-   Read `~/.agents/.skill-lock.json` to find each third-party skill's true install
-   source and replace the TBDs (`<skill-name> <owner/repo>`); verify each resolves
-   with `npx skills add <ref>`. Then run `dotfiles skills install`.
-4. **Archive the old skills repo:** once the classified skills install from their
-   real upstreams and the authored ones link from this repo, archive
-   `arnoldsandoval/skills` on GitHub (add a pointer README first). Remove the
-   `~/.agents/skills` clone; keep `~/.agents/skills → ~/code/dotfiles/skills`
-   as a compat symlink if any tooling still reads that path.
+3. **Skills: DONE 2026-07-22.** All refs classified (see packages/skills.txt);
+   4 authored skills live in skills/ (+ vendored MIT `editor`); 23 third-party
+   install from upstream via `dotfiles skills install`. `dotfiles sync` (manual)
+   also runs `npx skills update -g`. Old repo `arnoldsandoval/skills` is ARCHIVED.
+4. **Mac finishing steps:** `git pull && dotfiles link && dotfiles skills install
+   && dotfiles doctor`. Once green, the `~/.agents/skills` clone can be removed.
 5. Verify: `dotfiles doctor` clean; `git commit -S` signs via 1Password on a scratch
    repo; `brew bundle check` clean for core+personal; new terminal lands in zsh +
    starship with the hub… then update the table above and `dotfiles save`.
