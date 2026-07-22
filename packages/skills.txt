@@ -20,3 +20,11 @@ grill-with-docs mattpocock/skills
 handoff mattpocock/skills
 improve-codebase-architecture mattpocock/skills
 prototype mattpocock/skills
+# (previously vendored under local names: diagnose, to-issues, to-prd,
+#  write-a-skill, zoom-out — upstream names below)
+diagnosing-bugs mattpocock/skills
+to-tickets mattpocock/skills
+to-spec mattpocock/skills
+writing-great-skills mattpocock/skills
+wayfinder mattpocock/skills
+caveman JuliusBrussee/caveman
