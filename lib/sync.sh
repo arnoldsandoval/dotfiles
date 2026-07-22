@@ -35,7 +35,12 @@ do_sync() {
     [[ $profile == vm ]] || return 0            # workstations never auto-apply
     [[ $behind -gt 0 && -z $dirty ]] || return 0
   fi
-  if [[ $behind -eq 0 ]]; then [[ $auto == --auto ]] || ok "up to date"; return 0; fi
+  if [[ $behind -eq 0 ]]; then
+    # still relink: a manual git pull leaves new links.d entries unapplied
+    apply_links --quiet || true
+    [[ $auto == --auto ]] || ok "up to date (links refreshed)"
+    return 0
+  fi
   if [[ -n $dirty ]]; then warn "dotfiles tree is dirty — not pulling (commit/stash first)"; return 1; fi
   if git -C "$DOTFILES" merge --ff-only @{u} >/dev/null 2>&1; then
     apply_links --quiet || true
