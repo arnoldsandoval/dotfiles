@@ -57,15 +57,20 @@ do_sync() {
 # conventional commit message from the diff. Prints it; fails silently on
 # no agent / timeout / malformed reply — caller falls back to the default.
 _gen_commit_msg() {
-  local agent="" out msg
+  local agent="" out msg prompt
   if has claude; then agent="claude -p"
   elif has copilot; then agent="copilot -p"
   else return 1; fi
-  log "asking ${agent%% *} for a commit message…" >&2
-  out=$(git -C "$DOTFILES" status --short; git -C "$DOTFILES" diff HEAD | head -300)
-  out=$(timeout 45 $agent "Write a one-line conventional commit message (type: feat/fix/chore/docs/refactor, lowercase subject, max 65 chars, no quotes or backticks) for this dotfiles change. Reply with ONLY the message line, nothing else.
+  prompt="Write a one-line conventional commit message (type: feat/fix/chore/docs/refactor, lowercase subject, max 65 chars, no quotes or backticks) for this dotfiles change. Reply with ONLY the message line, nothing else.
 
-$out" 2>/dev/null) || return 1
+$(git -C "$DOTFILES" status --short; git -C "$DOTFILES" diff HEAD | head -300)"
+  if ui_has_gum; then
+    out=$(gum spin --show-output --title "✎ ${agent%% *} is writing a commit message…" -- \
+          timeout 45 $agent "$prompt" 2>/dev/null) || return 1
+  else
+    log "asking ${agent%% *} for a commit message…" >&2
+    out=$(timeout 45 $agent "$prompt" 2>/dev/null) || return 1
+  fi
   # capture first, then filter — a -m1 grep on a live pipe would SIGPIPE
   msg=$(printf '%s\n' "$out" | grep -m1 -E '^[a-z]+(\([a-z0-9./-]+\))?: .{1,70}$') || return 1
   printf '%s' "$msg"
