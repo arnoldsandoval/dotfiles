@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 # dotfiles — CLI + TUI for managing this machine's dev environment.
-#
-#   dotfiles                # TUI hub (gum-enhanced; plain menus without gum)
-#   dotfiles sessions       # dual-agent project session picker (alias: cc)
-#   dotfiles bootstrap      # tiered setup (see --help)
-#   dotfiles link           # (re)apply symlinks
-#   dotfiles sync [--auto]  # ff-only pull + relink; --auto used by login hooks
-#   dotfiles save [msg]     # commit + push local edits (configs are repo symlinks)
-#   dotfiles fetch          # quiet background fetch (used by timers)
-#   dotfiles doctor         # drift report (exit != 0 on findings)
-#   dotfiles skills         # list skills / install manifest entries
+# Run `dotfiles help` for usage.
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
@@ -31,7 +22,30 @@ for f in core platform profile tui link pkg skills sync doctor menu-sessions; do
   source "$DOTFILES/lib/$f.sh"
 done
 
-usage() { sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+usage() {
+  cat <<EOF
+${C_BLD}dotfiles${C_OFF} — one repo for every machine (profile: $(profile_get 2>/dev/null || echo unset), $OS/$DISTRO)
+
+${C_MAG}usage:${C_OFF} dotfiles [command]
+
+  ${C_BLD}(no command)${C_OFF}         menu hub: sessions / sync / save / doctor / skills / bootstrap
+  ${C_BLD}sessions${C_OFF}             per-project agent sessions in persistent tmux (alias: cc)
+  ${C_BLD}bootstrap${C_OFF} [flags]    set up this machine — tiers 0..2, safe to re-run
+                         --profile mac-personal|mac-work|vm   --tier N   --yes
+  ${C_BLD}sync${C_OFF} [--auto]        pull (ff-only) + relink + refresh third-party skills
+  ${C_BLD}save${C_OFF} [msg]           commit + push local config edits to every machine
+  ${C_BLD}link${C_OFF}                 (re)apply symlinks; prunes links whose source is gone
+  ${C_BLD}doctor${C_OFF}               drift report: links, packages, skills, git (exit 1 on findings)
+  ${C_BLD}cleanup${C_OFF}              uninstall brew packages no Brewfile declares (confirms first)
+  ${C_BLD}skills${C_OFF} [install]     list skills / install missing manifest entries
+  ${C_BLD}fetch${C_OFF} [--maybe]      quiet background fetch (used by timers + shell startup)
+  ${C_BLD}nudge${C_OFF}                one-line status: behind origin / uncommitted (shell startup)
+  ${C_BLD}help${C_OFF}                 this
+
+state: ~/.local/share/dotfiles   machine-local: ~/.config/zsh/local.zsh, ~/.gitconfig.local
+docs:  README.md + docs/MIGRATION.md in \$DOTFILES ($DOTFILES)
+EOF
+}
 
 cmd_bootstrap() {
   local profile="" tier="" yes=""
