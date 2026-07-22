@@ -41,7 +41,3 @@ cask 'zoom'
 
 # fonts
 cask 'font-fira-mono-nerd-font'
-cask 'font-dank-mono'
-cask 'font-monolisa'
-cask 'font-riforma'
-cask 'font-whyte'

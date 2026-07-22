@@ -95,7 +95,9 @@ install_packages_tier2() {
     return 0
   fi
   if [[ $OS == darwin ]] && has brew; then
-    ui_spin "brew bundle (private tap)" brew bundle --no-upgrade --file "$DOTFILES/packages/darwin/Brewfile.private"
+    _trust_declared_taps "$DOTFILES/packages/darwin/Brewfile.private"
+    log "brew bundle (private)"
+    brew bundle --no-upgrade --file "$DOTFILES/packages/darwin/Brewfile.private" || warn "private bundle had failures (see above)"
   else
     ok "tier 2: nothing to do on $DISTRO"
   fi

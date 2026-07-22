@@ -1,3 +1,10 @@
 # Brewfile.private — Tier 2 only: requires GitHub auth for the private tap.
 # Bootstrap skips this file (with a message) when unauthenticated.
-tap 'arnoldsandoval/homebrew-internal'
+# NOTE: brew names the tap arnoldsandoval/internal (repo: homebrew-internal).
+tap 'arnoldsandoval/internal'
+
+# commercial fonts served from the private tap
+cask 'font-dank-mono'
+cask 'font-monolisa'
+cask 'font-riforma'
+cask 'font-whyte'
