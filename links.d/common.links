@@ -8,3 +8,6 @@
 ~/.local/bin/dotfiles        bin/dotfiles
 ~/.local/bin/dotfiles-notify    bin/dotfiles-notify
 ~/.local/bin/dotfiles-focus     bin/dotfiles-focus
+# copilot cli agentStop hook -> same notifier the claude hooks use; copilot
+# has no needs-input event yet (github/copilot-cli#1128), so done-pings only
+~/.copilot/hooks/notify.json    config/copilot/hooks/notify.json
