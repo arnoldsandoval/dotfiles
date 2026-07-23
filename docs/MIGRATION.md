@@ -33,17 +33,35 @@ This file tracks the per-machine rollout — update it as machines cut over.
    repo; `brew bundle check` clean for core+personal; new terminal lands in zsh +
    starship with the hub… then update the table above and `dotfiles save`.
 
-## arnievault (added 2026-07-23)
+## arnievault (added 2026-07-23; recorder role same day)
 
-The personal Mac is the vault's git hub: dotfiles `vault_sync` (hourly shell
-hook + `dotfiles sync`) replaced the obsidian-git plugin as the sync bridge.
-**Cutover on the personal Mac:** pull dotfiles → open a terminal (first
-`vault_sync` fires; 15 days of edits land as one checkpoint, merged digests
-reach Obsidian via Sync) → disable the obsidian-git plugin in Obsidian →
-`dotfiles doctor` shows the vault heartbeat healthy. The VM keeps a read-only
-clone at `~/code/arnievault` (cloned/pulled by `dotfiles sync`; needs gh
-auth). Writes to the vault from any agent: branch + PR only — see the vault's
-`vault-automation.md` § Routine contract. After merging arnievault PR #25,
+The vault's git-capture duty is a **declared, movable role** — the machine
+named in `config/vault.conf` (`recorder=<short-hostname>`) is the single git
+writer; everything else is a Sync device (macs/phone) or a read-only git
+clone (VMs). Move the role by editing that one line and syncing.
+
+**Recorder cutover (Hetzner VM, supersedes the mac-hub bridge below):**
+1. Pull dotfiles on the VM, then `sudo bash lib/vault-recorder-setup.sh` —
+   idempotent; creates the `obsidian` unix user, `/srv/arnievault`
+   (obsidian-owned, group-read-only → agents physically cannot write it),
+   installs Obsidian + CLI, a write deploy key held only by `obsidian`,
+   and the systemd units (headless Sync daemon + 10-min capture timer).
+2. One manual step: sign the headless client into Obsidian Sync (the script
+   prints instructions; check the Sync device limit first).
+3. Parallel-run check: phone edit → `/srv/arnievault` in seconds → git
+   within 10 min → reader clones on next `dotfiles sync`; and a merged
+   robot PR flows the other way out to devices.
+4. Macs pull dotfiles → the mac `vault_sync` hook self-disables (it is
+   role-gated). The personal Mac's `~/Documents/arnievault/.git` goes
+   dormant as a cold spare; rollback = point `vault.conf` back at the mac.
+5. `dotfiles doctor` on the recorder watches the sync daemon, the capture
+   timer, commit freshness, and behind-count.
+
+History (2026-07-23, morning): the personal Mac briefly served as git hub
+via the hourly `vault_sync` hook, replacing the dead obsidian-git plugin.
+That path survives as the mac-recorder fallback. **A new VM is just
+`./bootstrap`** — readers need nothing else. Writes from any agent remain
+branch + PR only (`vault-automation.md` § Routine contract). Still pending:
 update the three routine prompts at claude.ai/code/routines to the thin form.
 
 ## Work Mac runbook (after personal mac)

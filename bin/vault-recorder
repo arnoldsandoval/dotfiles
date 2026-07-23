@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# vault-recorder — the recorder role's entire job, run as the `obsidian`
+# user by vault-recorder.timer: pull merged robot PRs into the live Sync
+# vault, checkpoint whatever the devices synced in, push so cloud routines
+# and reader clones see fresh history. Standalone on purpose (no dotfiles
+# sourcing — different unix user).
+set -uo pipefail
+V=${VAULT_PATH:-/srv/arnievault}
+cd "$V" 2>/dev/null || { echo "vault-recorder: $V missing"; exit 1; }
+export GIT_TERMINAL_PROMPT=0
+
+if ! git pull --ff-only -q 2>&1; then
+  echo "vault-recorder: pull failed (diverged or offline) — manual attention needed"
+  exit 0   # never leave the timer unit in a failed state over transient issues
+fi
+if [[ -n $(git status --porcelain) ]]; then
+  git add -A
+  git commit -qm "vault checkpoint: recorder $(date +%F-%H%M)" \
+    && echo "vault-recorder: checkpointed"
+fi
+git push -q 2>&1 || echo "vault-recorder: push failed"
+exit 0

@@ -105,6 +105,19 @@ tui_hub() {
       open "x-apple.systempreferences:com.apple.preference.notifications" 2>/dev/null || true
     fi
   fi
+  # One-time Obsidian CLI probe (darwin): the CLI ships inside the app but must
+  # be enabled in Settings and PATH-registered by hand (needs admin). Stamp when
+  # the binary appears; until then remind once per hub open.
+  if [[ $OS == darwin && ! -f $STATE_DIR/obsidian-cli-ok && -d /Applications/Obsidian.app && -t 1 ]]; then
+    if command -v obsidian >/dev/null 2>&1; then
+      ensure_state_dir; touch "$STATE_DIR/obsidian-cli-ok"
+      ok "obsidian CLI detected — agents can read the vault via it"
+    else
+      warn "Obsidian app is installed but its CLI isn't registered"
+      warn "enable: Obsidian → Settings → General → 'Register obsidian command' (needs admin)"
+      warn "(agents use it to read your vault; will re-check next time you open the hub)"
+    fi
+  fi
   while true; do
     local behind nudge=""
     behind=$(status_get behind); [[ -n $behind && $behind -gt 0 ]] && nudge=" (⇣$behind)"

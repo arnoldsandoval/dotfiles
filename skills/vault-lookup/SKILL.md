@@ -19,11 +19,15 @@ project notes. Consulting it grounds new work in what was already decided.
 
 | machine | path | role |
 |---|---|---|
-| personal Mac | `~/Documents/arnievault` | git hub (dotfiles vault_sync) |
-| work Mac | `~/Documents/arnievault` | Obsidian Sync only — no git |
-| VM | `~/code/arnievault` | read-only clone (dotfiles sync pulls it) |
+| Macs | `~/Documents/arnievault` | Obsidian Sync device |
+| any VM | `~/code/arnievault` | read-only clone (dotfiles sync pulls it) |
+| recorder (see `config/vault.conf`) | `/srv/arnievault` | live Sync copy, seconds-fresh, group-read-only |
 
-If the path is missing on the VM, `dotfiles sync` clones it (needs gh auth).
+Exactly one machine (named in the dotfiles `config/vault.conf`) is the
+**recorder** — the only git writer. On that
+machine prefer reading `/srv/arnievault` (fresher than the reader clone);
+it is filesystem-read-only to you by design. If `~/code/arnievault` is
+missing on a VM, `dotfiles sync` clones it (needs gh auth).
 
 ## Reading (always allowed)
 

@@ -1,0 +1,9 @@
+[Unit]
+Description=arnievault git capture (recorder role)
+After=obsidian-sync.service
+
+[Service]
+Type=oneshot
+User=obsidian
+Environment=VAULT_PATH=/srv/arnievault
+ExecStart=/usr/local/bin/vault-recorder

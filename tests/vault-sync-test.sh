@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Harness for vault_sync/check_vault against a throwaway repo + bare remote.
+# Harness for the mac-recorder fallback path (vault_sync/check_vault when a
+# mac holds the recorder role) against a throwaway repo + bare remote.
+# The normal linux-recorder path is covered by vault-recorder-test.sh.
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source lib/core.sh; source lib/platform.sh; source lib/tui.sh; source lib/vault.sh
@@ -15,9 +17,11 @@ git clone -q "$work/remote.git" "$work/vault" 2>/dev/null
 git -C "$work/vault" -c user.email=t@t -c user.name=t commit -q --allow-empty -m seed
 git -C "$work/vault" push -q -u origin main 2>/dev/null || git -C "$work/vault" push -q -u origin master
 
-# point the lib at the fake (override the profile-based resolver + identity)
+# point the lib at the fake: this "machine" is a mac holding the recorder role
 vault_dir() { echo "$work/vault"; }
 profile_get() { echo mac-personal; }
+vault_role() { echo recorder; }
+OS=darwin
 git -C "$work/vault" config user.email t@t; git -C "$work/vault" config user.name t
 
 pass=0 fail=0
@@ -43,9 +47,9 @@ vault_sync --force
 check "behind -> pulled" "0" "$(git -C "$work/vault" rev-list --count HEAD..@{u})"
 
 # 4. doctor: fresh commit -> no heartbeat warning; backdated -> warning
-out=$(check_vault 2>&1); check "fresh heartbeat quiet" "" "$(grep -o 'sync bridge silent' <<<"$out")"
+out=$(check_vault 2>&1); check "fresh heartbeat quiet" "" "$(grep -o 'recorder silent' <<<"$out")"
 GIT_COMMITTER_DATE="2026-07-01T00:00:00" git -C "$work/vault" -c user.email=t@t -c user.name=t commit -q --allow-empty --date="2026-07-01T00:00:00" -m old
-out=$(check_vault 2>&1); check "stale heartbeat warns" "sync bridge silent" "$(grep -o 'sync bridge silent' <<<"$out")"
+out=$(check_vault 2>&1); check "stale heartbeat warns" "recorder silent" "$(grep -o 'recorder silent' <<<"$out")"
 
 echo; echo "passed: $pass  failed: $fail"
 exit $((fail > 0))
