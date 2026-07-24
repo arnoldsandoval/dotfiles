@@ -48,10 +48,17 @@ do_sync() {
     return 0
   fi
   if [[ -n $dirty ]]; then warn "dotfiles tree is dirty — not pulling (commit/stash first)"; return 1; fi
+  local pre; pre=$(git -C "$DOTFILES" rev-parse HEAD)
   if git -C "$DOTFILES" merge --ff-only @{u} >/dev/null 2>&1; then
     apply_links --quiet || true
     status_set behind 0
     ok "dotfiles synced: pulled $behind commit(s) + relinked"
+    # running agents load hook config at session start — flag when this pull
+    # changed it so stale sessions get restarted instead of silently ignored
+    local hookdiff
+    hookdiff=$(git -C "$DOTFILES" diff --name-only "$pre..HEAD" -- \
+      config/claude/settings.json config/copilot 2>/dev/null)
+    [[ -n $hookdiff ]] && warn "agent hook config changed — restart cc-*/cp-* sessions to pick it up"
     # manual sync also settles skills: install anything newly declared in the
     # manifest on another machine, then refresh installed ones from upstream
     # (skipped in --auto/login mode: no network storms on ssh)
