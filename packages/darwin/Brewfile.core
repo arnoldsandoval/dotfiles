@@ -12,6 +12,7 @@ brew 'fzf'
 brew 'zoxide'
 brew 'jq'
 brew 'ripgrep'
+brew 'terminal-notifier'   # agent notification banners (dotfiles-notify)
 brew 'oven-sh/bun/bun'
 brew 'docker-compose'
 brew 'ffmpeg'
