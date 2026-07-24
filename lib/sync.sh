@@ -41,6 +41,7 @@ do_sync() {
     apply_links --quiet || true
     vault_settle
     if [[ $auto != --auto ]]; then
+      _run_installers
       has npx && skills_install_manifest
       ok "up to date (links + skills + vault settled)"
     fi
@@ -59,6 +60,9 @@ do_sync() {
       log "updating installed skills from upstream"
       (cd "$HOME" && npx --yes skills update -g -y </dev/null) 2>/dev/null || warn "skills update failed (non-fatal)"
     fi
+    # settle user-space installers too (idempotent, guarded): a pulled
+    # installers.d addition otherwise waits for the next full bootstrap
+    [[ $auto != --auto ]] && _run_installers
     vault_settle
   else
     warn "cannot fast-forward (diverged) — resolve manually in $DOTFILES"
