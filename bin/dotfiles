@@ -34,7 +34,7 @@ ${C_MAG}usage:${C_OFF} dotfiles [command]
                          (picks up new hook config; confirms first, skips busy panes)
   ${C_BLD}bootstrap${C_OFF} [flags]    set up this machine — tiers 0..2, safe to re-run
                          --profile mac-personal|mac-work|vm   --tier N   --yes
-  ${C_BLD}sync${C_OFF} [--auto]        pull (ff-only) + relink + refresh third-party skills
+  ${C_BLD}sync${C_OFF} [--auto]        pull (ff-only) + relink + missing brew pkgs + refresh skills
   ${C_BLD}save${C_OFF} [msg]           commit + push local config edits to every machine
   ${C_BLD}diff${C_OFF}                 show uncommitted config changes (alias: status)
   ${C_BLD}link${C_OFF}                 (re)apply symlinks; prunes links whose source is gone

@@ -42,6 +42,7 @@ do_sync() {
     vault_settle
     if [[ $auto != --auto ]]; then
       _run_installers
+      pkg_settle
       has npx && skills_install_manifest
       ok "up to date (links + skills + vault settled)"
     fi
@@ -67,9 +68,13 @@ do_sync() {
       log "updating installed skills from upstream"
       (cd "$HOME" && npx --yes skills update -g -y </dev/null) 2>/dev/null || warn "skills update failed (non-fatal)"
     fi
-    # settle user-space installers too (idempotent, guarded): a pulled
-    # installers.d addition otherwise waits for the next full bootstrap
-    [[ $auto != --auto ]] && _run_installers
+    # settle user-space installers + brew drift too (idempotent, guarded):
+    # a pulled installers.d addition or new Brewfile entry otherwise waits
+    # for the next full bootstrap
+    if [[ $auto != --auto ]]; then
+      _run_installers
+      pkg_settle
+    fi
     vault_settle
   else
     warn "cannot fast-forward (diverged) — resolve manually in $DOTFILES"

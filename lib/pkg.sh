@@ -80,6 +80,25 @@ _trust_declared_taps() {
   done
 }
 
+# pkg_settle — close Brewfile drift on manual sync (darwin): install
+# anything newly declared but missing. Fast no-op when clean (bundle check
+# only); never upgrades. Linux stays bootstrap-only (packages need sudo).
+pkg_settle() {
+  [[ $OS == darwin ]] || return 0
+  has brew || return 0
+  local profile f
+  profile=$(profile_get)
+  for f in "$DOTFILES/packages/darwin/Brewfile.core" \
+           "$DOTFILES/packages/darwin/Brewfile.${profile#mac-}"; do
+    [[ -f $f ]] || continue
+    HOMEBREW_BUNDLE_NO_UPGRADE=1 brew bundle check --file "$f" >/dev/null 2>&1 && continue
+    log "brew: installing missing packages from $(basename "$f")"
+    _trust_declared_taps "$f"
+    HOMEBREW_BUNDLE_NO_UPGRADE=1 brew bundle --no-upgrade --file "$f" \
+      || warn "brew bundle had failures ($(basename "$f")) — see above"
+  done
+}
+
 # Sudo-free fallbacks/user-space tools: every script in installers.d is
 # idempotent (guards on command -v) and installs to ~/.local/bin.
 _run_installers() {
