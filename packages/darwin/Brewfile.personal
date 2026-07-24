@@ -6,7 +6,6 @@ brew 'railway'
 brew 'node'
 brew 'mkcert'
 brew 'mosh'
-brew 'terminal-notifier'
 brew 'whisper-cpp'
 
 # ios toolchain
