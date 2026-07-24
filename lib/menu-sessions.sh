@@ -114,24 +114,83 @@ _enter() {
   fi
 }
 
-# _launch AGENT NAME DIR SID — build the agent command and enter its session
-_launch() {
-  local agent=$1 name=$2 dir=$3 sid=$4 cmd
+# _newest_sid DIR -> newest claude session id for the project, or nothing
+_newest_sid() {
+  local pdir all newest
+  pdir="$CLAUDE_PROJ/$(_encode_claude_dir "$1")"
+  [[ -d $pdir ]] || return 0
+  all=$(ls -t "$pdir"/*.jsonl 2>/dev/null) || all=""
+  newest=${all%%$'\n'*}
+  [[ -n $newest ]] && basename "$newest" .jsonl
+  return 0
+}
+
+# _agent_cmd AGENT NAME SID -> print the session's launch/resume command
+_agent_cmd() {
+  local agent=$1 name=$2 sid=$3 bin
   case $agent in
     claude)
-      local bin; bin=$(command -v claude || echo "$HOME/.local/bin/claude")
-      if [[ -n $sid ]]; then cmd="$bin --resume $sid --remote-control $name"
-      else cmd="$bin --remote-control $name"; fi
-      _enter "cc-$name" "$dir" "$cmd; exec \$SHELL" ;;
+      bin=$(command -v claude || echo "$HOME/.local/bin/claude")
+      if [[ -n $sid ]]; then printf '%s' "$bin --resume $sid --remote-control $name; exec \$SHELL"
+      else printf '%s' "$bin --remote-control $name; exec \$SHELL"; fi ;;
     copilot)
-      local bin; bin=$(command -v copilot || command -v github-copilot-cli || true)
-      [[ -n $bin ]] || die "copilot CLI not installed"
+      bin=$(command -v copilot || command -v github-copilot-cli || true)
+      [[ -n $bin ]] || return 1
       # Name-based resume: sessions are NAMED after the project (--name) and
       # resumed by that name — self-bootstrapping, no dependency on copilot
       # storage internals (session-store.db ids are NOT resumable).
-      _enter "cp-$name" "$dir" \
-        "$bin --resume=$name 2>/dev/null || $bin --name=$name; exec \$SHELL" ;;
+      printf '%s' "$bin --resume=$name 2>/dev/null || $bin --name=$name; exec \$SHELL" ;;
   esac
+}
+
+# _launch AGENT NAME DIR SID — build the agent command and enter its session
+_launch() {
+  local agent=$1 name=$2 dir=$3 sid=$4 cmd pfx=cc
+  [[ $agent == copilot ]] && pfx=cp
+  cmd=$(_agent_cmd "$agent" "$name" "$sid") || die "copilot CLI not installed"
+  _enter "$pfx-$name" "$dir" "$cmd"
+}
+
+# sessions_restart [project] — respawn cc-*/cp-* sessions into their resume
+# commands (e.g. to pick up new hook config); optional arg limits to one
+# project. One confirm covers them all; panes whose foreground is neither
+# the agent nor a bare shell (vim, tails, …) are skipped and reported,
+# never killed.
+sessions_restart() {
+  local only=${1:-} all s prefix name pane dir targets=() skipped=() agent sid cmd
+  all=$(tmux list-sessions -F '#{session_name}' 2>/dev/null) || { log "no tmux server running — nothing to restart"; return 0; }
+  for s in $all; do
+    case $s in cc-*|cp-*) ;; *) continue ;; esac
+    if [[ -n $only ]]; then
+      case $s in "$only"|"cc-$only"|"cp-$only") ;; *) continue ;; esac
+    fi
+    prefix=${s%%-*}; name=${s#*-}
+    if _agent_alive "$prefix" "$name"; then
+      targets+=("$s")
+    else
+      pane=$(tmux list-panes -t "=$s" -F '#{pane_current_command}' 2>/dev/null)
+      pane=${pane%%$'\n'*}
+      case ${pane:-} in
+        zsh|bash|sh) targets+=("$s") ;;
+        *)           skipped+=("$s:$pane") ;;
+      esac
+    fi
+  done
+  [[ ${#skipped[@]} -gt 0 ]] && warn "skipped (foreground program, not an agent): ${skipped[*]}"
+  [[ ${#targets[@]} -gt 0 ]] || { log "no agent sessions to restart"; return 0; }
+  ui_confirm "restart ${#targets[@]} session(s): ${targets[*]}? in-flight agent work is interrupted (conversations resume from history)" || return 0
+  for s in "${targets[@]}"; do
+    prefix=${s%%-*}; name=${s#*-}
+    agent=claude; [[ $prefix == cp ]] && agent=copilot
+    dir="$CODE_DIR/$name"
+    [[ -d $dir ]] || dir=$(tmux display-message -t "=$s:" -p '#{pane_current_path}' 2>/dev/null)
+    [[ -d ${dir:-} ]] || { warn "$s: no project dir — skipped"; continue; }
+    sid=""; [[ $agent == claude ]] && sid=$(_newest_sid "$dir")
+    cmd=$(_agent_cmd "$agent" "$name" "$sid") || { warn "$s: agent CLI not installed — skipped"; continue; }
+    tmux respawn-pane -k -t "=$s:" -c "$dir" \
+      "printf '\\033[2J\\033[H⏳ restarting %s…\\n' '$s'; $cmd"
+    ok "restarted $s"
+  done
 }
 
 sessions_menu() {

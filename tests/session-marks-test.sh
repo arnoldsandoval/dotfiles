@@ -7,7 +7,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source lib/core.sh; source lib/platform.sh; source lib/tui.sh; source lib/menu-sessions.sh
 
 fake=$(mktemp -d -p "$HOME/.cache")   # NOT /tmp: often mounted noexec
-trap 'tmux kill-session -t cc-marktest 2>/dev/null; tmux kill-session -t cp-marktest 2>/dev/null; rm -rf "$fake"' EXIT
+trap 'tmux kill-session -t cc-marktest 2>/dev/null; tmux kill-session -t cp-marktest 2>/dev/null; tmux kill-session -t cc-skiptest 2>/dev/null; rm -rf "$fake"' EXIT
 # real binaries (comm = executable basename, like the real agents). NB: not
 # scripts (comm=bash) and not coreutils sleep (multi-call binary dispatches on
 # argv0 and dies when renamed) — a copied bash accepts any name.
@@ -27,8 +27,15 @@ sleep 1
 check "active copilot child -> cp dot" "●" "$(_session_mark cp marktest)"
 
 # 2. copilot exits, wrapper shell remains -> husk, no dot
-tmux list-panes -t =cp-marktest -F '#{pane_pid}' >/dev/null   # session alive
-pkill -f "$fake/copilot" 2>/dev/null; sleep 1
+# NB: kill by comm under the pane, NOT pkill -f — the wrapper shell's cmdline
+# contains the same string, so -f nuked the whole pane (husk tests then
+# passed vacuously against a dead session)
+root=$(tmux list-panes -t =cp-marktest -F '#{pane_pid}')
+while read -r pid ppid comm; do
+  [[ ${comm##*/} == copilot && $ppid == "$root" ]] && kill "$pid" 2>/dev/null
+done < <(ps -ax -o pid= -o ppid= -o comm=)
+sleep 1
+check "husk session survives agent death" "1" "$(tmux has-session -t =cp-marktest 2>/dev/null && echo 1 || echo 0)"
 check "exited copilot, wrapper shell only -> no dot" " " "$(_session_mark cp marktest)"
 
 # 2b. husk respawn fires for the dead agent (and ONLY then)
@@ -45,6 +52,26 @@ _agent_alive cc marktest && check "live claude protected from respawn" "alive" "
 
 # 4. missing session -> no dot
 check "missing session -> no dot" " " "$(_session_mark cc nosuchproject)"
+
+# 5. sessions_restart: scoped by project, auto-confirmed, fake agents on PATH
+ui_confirm() { return 0; }
+PATH="$fake:$PATH"
+
+# 5a. busy pane (foreground program, dead agent) -> skipped, never killed
+tmux new-session -d -s cc-skiptest "tail -f /dev/null"
+sleep 1
+out=$(sessions_restart skiptest 2>&1)
+check "busy pane skipped" "1" "$(grep -c 'skipped' <<<"$out")"
+check "busy pane untouched" "tail" "$(tmux list-panes -t =cc-skiptest -F '#{pane_current_command}')"
+
+# 5b. live agent (cc-marktest) + husk (cp-marktest) both respawn on restart
+out=$(sessions_restart marktest 2>&1)
+sleep 1
+check "live agent respawned" "1" "$(grep -c 'restarted cc-marktest' <<<"$out")"
+check "husk respawned" "1" "$(grep -c 'restarted cp-marktest' <<<"$out")"
+# the old fake agent process must actually be gone (killed by respawn -k)
+pgrep -f "$fake/claude" >/dev/null && gone=no || gone=yes
+check "old agent process killed" "yes" "$gone"
 
 echo
 echo "passed: $pass  failed: $fail"
