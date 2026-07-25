@@ -45,8 +45,11 @@ fi
 step "3/8 obsidian app + cli"
 if ! command -v obsidian >/dev/null 2>&1; then
   echo "fetching latest Obsidian Linux build…"
-  deb=$(sudo -u "$OWNER_USER" gh api repos/obsidianmd/obsidian-releases/releases/latest \
-        --jq '.assets[].browser_download_url' 2>/dev/null | grep 'amd64\.deb$' | head -1)
+  # -H: force the target user's HOME so gh finds its auth (without it gh can
+  # inherit root's HOME under sudo and silently return nothing)
+  assets=$(sudo -H -u "$OWNER_USER" gh api repos/obsidianmd/obsidian-releases/releases/latest \
+        --jq '.assets[].browser_download_url' 2>/dev/null) || assets=""
+  deb=$(grep 'amd64\.deb$' <<<"$assets") ; deb=${deb%%$'\n'*}
   if [[ -n $deb ]]; then
     curl -fsSL -o /tmp/obsidian.deb "$deb" && apt-get install -y /tmp/obsidian.deb && rm -f /tmp/obsidian.deb
   else
@@ -69,19 +72,22 @@ Host github-arnievault
   IdentitiesOnly yes
 EOF
 fi
-if sudo -u "$OWNER_USER" gh api repos/arnoldsandoval/arnievault/keys --jq '.[].title' 2>/dev/null | grep -q "vault-recorder@$(hostname -s)"; then
+if sudo -H -u "$OWNER_USER" gh api repos/arnoldsandoval/arnievault/keys --jq '.[].title' 2>/dev/null | grep -q "vault-recorder@$(hostname -s)"; then
   ok "deploy key already registered"
 else
-  sudo -u "$OWNER_USER" gh api repos/arnoldsandoval/arnievault/keys \
+  sudo -H -u "$OWNER_USER" gh api repos/arnoldsandoval/arnievault/keys \
     -f title="vault-recorder@$(hostname -s)" -f key="$(cat "$KEY.pub")" -F read_only=false >/dev/null \
     && ok "deploy key registered (write, repo-scoped)" \
-    || echo "!! deploy key registration failed — add $KEY.pub manually at github.com/arnoldsandoval/arnievault/settings/keys"
+    || { echo "!! deploy key registration failed — add $KEY.pub manually at github.com/arnoldsandoval/arnievault/settings/keys"; echo "   pub key: $(cat "$KEY.pub")"; }
 fi
 
 step "5/8 clone the vault as obsidian (git plane; Sync attaches to the same dir)"
 if [[ ! -d $VAULT/.git ]]; then
-  sudo -u obsidian git clone "$REPO_SSH" "$VAULT" 2>/dev/null \
-    || { rmdir "$VAULT" 2>/dev/null; sudo -u obsidian git clone "$REPO_SSH" "$VAULT"; chown obsidian:"$OWNER_USER" "$VAULT"; chmod 750 "$VAULT"; }
+  # a failed earlier run may have removed the dir — re-assert it first, then
+  # clone INTO it (git clones into an existing empty dir fine; never rmdir)
+  mkdir -p "$VAULT"; chown obsidian:"$OWNER_USER" "$VAULT"; chmod 750 "$VAULT"
+  sudo -u obsidian git clone "$REPO_SSH" "$VAULT" \
+    || echo "!! clone failed — usually the deploy key (step 4) isn't registered yet; fix that and re-run"
 fi
 sudo -u obsidian git -C "$VAULT" config user.name "vault-recorder"
 sudo -u obsidian git -C "$VAULT" config user.email "vault-recorder@$(hostname -s)"
