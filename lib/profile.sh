@@ -1,7 +1,10 @@
 # profile.sh — machine profile: chosen once, saved to state. Sourced after core.sh.
 # shellcheck shell=bash
 
-PROFILES=(mac-personal mac-work vm)
+# vm       = personal VM: vault reader clone + personal git identity
+# vm-work  = work VM: NO personal vault, work git identity (dotfiles stays
+#            personal via includeIf) — mirrors the mac-personal/mac-work split
+PROFILES=(mac-personal mac-work vm vm-work)
 
 profile_get() { [[ -f $PROFILE_FILE ]] && cat "$PROFILE_FILE" || true; }
 

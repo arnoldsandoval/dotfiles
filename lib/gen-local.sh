@@ -29,12 +29,13 @@ gc_local="$HOME/.gitconfig.local"
 if [[ ! -f $gc_local ]]; then
   name="arnie"; email="arnold@arnie.io"
   signingkey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICf21qywyaQtu+IGPKMu5nu32GMstbtbYUEzuppUcP5I"
-  if [[ $profile == mac-work ]]; then
+  if [[ $profile == mac-work || $profile == vm-work ]]; then
+    email=""                                  # work identity: never default to the personal address
     if [[ -z ${DOTFILES_YES:-} ]]; then
       name=$(ui_input "git name (work)" "$name")
       email=$(ui_input "git email (work)" "")
     fi
-    [[ -n $email ]] || email="SET-ME@work.example"
+    [[ -n $email ]] || email="SET-ME@work.example"   # non-interactive: a clear fill-me marker, not a silent leak
   fi
   {
     printf '[user]\n\tname = %s\n\temail = %s\n' "$name" "$email"
@@ -43,13 +44,13 @@ if [[ ! -f $gc_local ]]; then
       printf '[gpg "ssh"]\n\tprogram = /Applications/1Password.app/Contents/MacOS/op-ssh-sign\n'
       printf '[commit]\n\tgpgsign = true\n'
     fi
-    if [[ $profile == mac-work ]]; then
+    if [[ $profile == mac-work || $profile == vm-work ]]; then
       # dotfiles repo commits stay personal even on the work machine
       printf '[includeIf "gitdir:~/code/dotfiles/"]\n\tpath = ~/.gitconfig.personal\n'
     fi
   } >"$gc_local"
   ok "wrote $gc_local ($profile identity)"
-  if [[ $profile == mac-work && ! -f $HOME/.gitconfig.personal ]]; then
+  if [[ ( $profile == mac-work || $profile == vm-work ) && ! -f $HOME/.gitconfig.personal ]]; then
     printf '[user]\n\tname = arnie\n\temail = arnold@arnie.io\n' >"$HOME/.gitconfig.personal"
     ok "wrote ~/.gitconfig.personal (dotfiles identity)"
   fi

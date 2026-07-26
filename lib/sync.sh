@@ -24,7 +24,7 @@ maybe_fetch_async() {
 }
 
 # do_sync [--auto]: ff-only pull + relink + skills + one summary line.
-# --auto (login hook): silent when nothing to do; applies only on vm profile.
+# --auto (login hook): silent when nothing to do; applies only on VM profiles.
 do_sync() {
   local auto=${1:-}
   local dirty behind profile; profile=$(profile_get)
@@ -32,7 +32,7 @@ do_sync() {
   do_fetch
   behind=$(status_get behind); behind=${behind:-0}
   if [[ $auto == --auto ]]; then
-    [[ $profile == vm ]] || return 0            # workstations never auto-apply
+    [[ $profile == vm || $profile == vm-work ]] || return 0   # workstations never auto-apply
     [[ $behind -gt 0 && -z $dirty ]] || return 0
   fi
   if [[ $behind -eq 0 ]]; then

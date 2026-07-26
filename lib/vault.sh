@@ -9,8 +9,9 @@ vault_conf() { sed -n "s/^$1=//p" "$DOTFILES/config/vault.conf" 2>/dev/null | he
 
 # vault_role -> recorder | reader | sync-device | none
 # The recorder is whichever machine vault.conf names (any platform — a mac
-# can hold the role as transitional fallback). Otherwise: VMs read via git,
-# macs are Obsidian Sync devices.
+# can hold the role as transitional fallback). Otherwise: personal VMs read
+# via git, macs are Obsidian Sync devices, and work VMs get NOTHING — the
+# personal vault never lands on a work box (identity/EMU boundary).
 vault_role() {
   local rec; rec=$(vault_conf recorder)
   if [[ -n $rec && $(hostname -s 2>/dev/null || hostname) == "$rec" ]]; then
@@ -19,6 +20,7 @@ vault_role() {
   case "$(profile_get)" in
     vm)                        echo reader ;;
     mac-personal|mac-work)     echo sync-device ;;
+    vm-work)                   echo none ;;     # no personal vault on work VMs
     *)                         echo none ;;
   esac
 }
