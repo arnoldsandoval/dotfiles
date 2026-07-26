@@ -42,22 +42,42 @@ else
   ok "$VAULT (750; install 'acl' later so new files stay group-readable)"
 fi
 
-step "3/8 obsidian app + cli"
-if ! command -v obsidian >/dev/null 2>&1; then
-  echo "fetching latest Obsidian Linux build…"
-  # -H: force the target user's HOME so gh finds its auth (without it gh can
-  # inherit root's HOME under sudo and silently return nothing)
-  assets=$(sudo -H -u "$OWNER_USER" gh api repos/obsidianmd/obsidian-releases/releases/latest \
-        --jq '.assets[].browser_download_url' 2>/dev/null) || assets=""
-  deb=$(grep 'amd64\.deb$' <<<"$assets") ; deb=${deb%%$'\n'*}
-  if [[ -n $deb ]]; then
-    curl -fsSL -o /tmp/obsidian.deb "$deb" && apt-get install -y /tmp/obsidian.deb && rm -f /tmp/obsidian.deb
+step "3/8 node.js 22+ and the obsidian-headless CLI (ob)"
+# The recorder is a headless Sync PEER via the OFFICIAL obsidian-headless npm
+# CLI (`ob`) — github.com/obsidianmd/obsidian-headless, shipped 2026-02 — NOT
+# the desktop GUI (no display here) and NOT any `obsidian --headless` flag.
+# It needs Node 22+, installed system-wide (/usr/local) so the `obsidian`
+# service user and systemd can both run it off the default PATH.
+node_major() { command -v node >/dev/null 2>&1 && node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
+if [[ $(node_major) -lt 22 ]]; then
+  echo "installing Node.js 22 (system-wide, /usr/local)…"
+  case "$(uname -m)" in x86_64) narch=x64;; aarch64) narch=arm64;; *) narch="";; esac
+  if [[ -n $narch ]]; then
+    # resolve the exact latest-v22 tarball from SHASUMS (capture-then-slice,
+    # never `grep | head` on a live pipe — SIGPIPE-under-pipefail is banned)
+    sums=$(curl -fsSL https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt 2>/dev/null) || sums=""
+    tarball=$(grep -oE "node-v22\.[0-9]+\.[0-9]+-linux-$narch\.tar\.xz" <<<"$sums")
+    tarball=${tarball%%$'\n'*}
+    if [[ -n $tarball ]]; then
+      curl -fsSL -o /tmp/node.tar.xz "https://nodejs.org/dist/latest-v22.x/$tarball" \
+        && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+        && rm -f /tmp/node.tar.xz \
+        && hash -r
+    else
+      echo "!! could not resolve a Node 22 tarball — install Node 22+ manually, then re-run"
+    fi
   else
-    echo "!! could not resolve the .deb automatically — install manually from https://obsidian.md/download, then re-run"
+    echo "!! unsupported arch $(uname -m) for auto Node install — install Node 22+ manually, then re-run"
   fi
 fi
-command -v obsidian >/dev/null 2>&1 && ok "obsidian binary present" \
-  || echo "!! obsidian binary still missing (headless CLI may register a different name — check 'obsidian.md/cli' install notes and adjust obsidian-sync.service ExecStart)"
+if [[ $(node_major) -ge 22 ]] && ! command -v ob >/dev/null 2>&1; then
+  npm install -g obsidian-headless >/dev/null 2>&1 || echo "!! 'npm install -g obsidian-headless' failed"
+fi
+if command -v ob >/dev/null 2>&1; then
+  ok "obsidian-headless present ($(command -v ob), node $(node --version 2>/dev/null))"
+else
+  echo "!! obsidian-headless (ob) still missing — need Node 22+ then 'npm install -g obsidian-headless'"
+fi
 
 step "4/8 deploy key for the obsidian user (write access, this repo only)"
 KEY=/var/lib/obsidian/.ssh/arnievault_deploy
@@ -122,16 +142,24 @@ systemctl enable --now vault-recorder.timer >/dev/null 2>&1 && ok "capture timer
 systemctl enable obsidian-sync.service >/dev/null 2>&1 && ok "sync daemon enabled (starts after login step)"
 
 step "8/8 MANUAL: sign the headless client into Obsidian Sync"
-cat <<'EOF'
-Remaining one-time step (needs your Obsidian account):
-  1. Check your Sync plan's device list first (Settings → Sync on a mac) —
-     remove a stale device if you are at the limit.
-  2. On this machine, as the obsidian user, run the CLI login per
-     https://obsidian.md/cli (headless section), then attach the remote
-     vault to /srv/arnievault.
-       sudo -u obsidian obsidian <login/serve command per the docs>
-  3. systemctl start obsidian-sync.service
-  4. Watch /srv/arnievault populate, then: dotfiles doctor
+cat <<EOF
+Remaining one-time step (needs your Obsidian account + an active Sync plan).
+Run everything as the obsidian user with -H so credentials land in the home
+the daemon reads (/var/lib/obsidian):
+
+  1. Check your Sync device list first (Settings → Sync on a mac) and remove a
+     stale device if you are at the limit — the recorder is a new device.
+  2. Log in and attach the remote vault to the already-cloned /srv/arnievault:
+       sudo -u obsidian -H ob login                 # email, password, 2FA if enabled
+       sudo -u obsidian -H ob sync-list-remote       # note the exact vault name
+       sudo -u obsidian -H ob sync-setup --vault "arnievault" --path $VAULT \\
+            --device-name vault-recorder-$(hostname -s)
+     If the vault is END-TO-END ENCRYPTED, append  --password '<e2ee password>'
+     to the sync-setup line (it is required for E2EE vaults).
+  3. Start the daemon and check it:
+       systemctl start obsidian-sync.service
+       sudo -u obsidian -H ob sync-status --path $VAULT
+  4. Watch $VAULT populate, then: dotfiles doctor
 Until then, doctor will report the sync daemon down — the git plane
 (pull/checkpoint/push of robot PRs + manual edits) already works.
 EOF

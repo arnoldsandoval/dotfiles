@@ -5,9 +5,10 @@ Wants=network-online.target
 
 [Service]
 User=obsidian
-# NOTE: exact headless invocation verified during vault-recorder-setup —
-# override there if the CLI's flag differs (obsidian.md/cli).
-ExecStart=/usr/bin/obsidian --headless
+# The official obsidian-headless CLI (`ob`, github.com/obsidianmd/obsidian-headless);
+# `ob login` + `ob sync-setup` are done once as the obsidian user during
+# vault-recorder-setup, then this runs the continuous watcher.
+ExecStart=/usr/local/bin/ob sync --path /srv/arnievault --continuous
 Restart=on-failure
 RestartSec=30
 Environment=VAULT_PATH=/srv/arnievault
