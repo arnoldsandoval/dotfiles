@@ -59,9 +59,11 @@ if [[ $(node_major) -lt 22 ]]; then
     tarball=$(grep -oE "node-v22\.[0-9]+\.[0-9]+-linux-$narch\.tar\.xz" <<<"$sums")
     tarball=${tarball%%$'\n'*}
     if [[ -n $tarball ]]; then
-      curl -fsSL -o /tmp/node.tar.xz "https://nodejs.org/dist/latest-v22.x/$tarball" \
-        && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
-        && rm -f /tmp/node.tar.xz \
+      # /var/tmp (disk), not /tmp: /tmp is a RAM-backed tmpfs on this 4GB VM
+      # and a 31MB write there raced memory pressure (curl error 23)
+      curl -fsSL -o /var/tmp/node.tar.xz "https://nodejs.org/dist/latest-v22.x/$tarball" \
+        && tar -xJf /var/tmp/node.tar.xz -C /usr/local --strip-components=1 \
+        && rm -f /var/tmp/node.tar.xz \
         && hash -r
     else
       echo "!! could not resolve a Node 22 tarball — install Node 22+ manually, then re-run"
@@ -92,13 +94,26 @@ Host github-arnievault
   IdentitiesOnly yes
 EOF
 fi
-if sudo -H -u "$OWNER_USER" gh api repos/arnoldsandoval/arnievault/keys --jq '.[].title' 2>/dev/null | grep -q "vault-recorder@$(hostname -s)"; then
-  ok "deploy key already registered"
+# gh lives in the owner's ~/.local/bin (dotfiles static install), which is NOT
+# on sudo's secure_path — resolve the absolute path or `sudo -u $OWNER_USER gh`
+# dies with 'command not found'.
+GH=$(sudo -u "$OWNER_USER" sh -lc 'command -v gh' 2>/dev/null)
+[[ -n $GH ]] || GH=$(command -v gh 2>/dev/null)
+hn=$(hostname -s 2>/dev/null || hostname)
+if [[ -z $GH ]]; then
+  echo "!! gh CLI not found for $OWNER_USER — add $KEY.pub manually at github.com/arnoldsandoval/arnievault/settings/keys"
+  echo "   pub key: $(cat "$KEY.pub")"
 else
-  sudo -H -u "$OWNER_USER" gh api repos/arnoldsandoval/arnievault/keys \
-    -f title="vault-recorder@$(hostname -s)" -f key="$(cat "$KEY.pub")" -F read_only=false >/dev/null \
-    && ok "deploy key registered (write, repo-scoped)" \
-    || { echo "!! deploy key registration failed — add $KEY.pub manually at github.com/arnoldsandoval/arnievault/settings/keys"; echo "   pub key: $(cat "$KEY.pub")"; }
+  # capture first, then grep — a -q on the live pipe would SIGPIPE gh under pipefail
+  titles=$(sudo -H -u "$OWNER_USER" "$GH" api repos/arnoldsandoval/arnievault/keys --jq '.[].title' 2>/dev/null)
+  if grep -q "vault-recorder@$hn" <<<"$titles"; then
+    ok "deploy key already registered"
+  else
+    sudo -H -u "$OWNER_USER" "$GH" api repos/arnoldsandoval/arnievault/keys \
+      -f title="vault-recorder@$hn" -f key="$(cat "$KEY.pub")" -F read_only=false >/dev/null \
+      && ok "deploy key registered (write, repo-scoped)" \
+      || { echo "!! deploy key registration failed — add $KEY.pub manually at github.com/arnoldsandoval/arnievault/settings/keys"; echo "   pub key: $(cat "$KEY.pub")"; }
+  fi
 fi
 
 step "5/8 clone the vault as obsidian (git plane; Sync attaches to the same dir)"
