@@ -134,10 +134,25 @@ check_vault() {
             || { warn "vault: obsidian sync daemon not running (recorder blind to device edits)"; bad=$((bad+1)); }
           systemctl is-active vault-recorder.timer >/dev/null 2>&1 \
             || { warn "vault: recorder timer inactive (no git capture)"; bad=$((bad+1)); }
-          age=$(( $(date +%s) - $(git -C "$srv" log -1 --format=%ct 2>/dev/null || echo 0) ))
-          (( age > 1800 )) && warn "vault: recorder last commit $((age/60))m ago (quiet vault, or capture stuck)"
+          # Health = capture is RUNNING and in sync with the remote — NOT "time
+          # since last commit", which false-warns on any quiet vault (a healthy
+          # recorder makes no commit when there is nothing to capture). The timer
+          # fires every 10min regardless of vault activity, so a stale last-fire
+          # is the real "capture stuck" signal.
+          local lt lt_epoch trig_age
+          lt=$(systemctl show vault-recorder.timer -p LastTriggerUSec --value 2>/dev/null)
+          if [[ -n $lt && $lt != 0 ]]; then
+            lt_epoch=$(date -d "$lt" +%s 2>/dev/null || echo 0)
+            trig_age=$(( $(date +%s) - lt_epoch ))
+            (( lt_epoch > 0 && trig_age > 1500 )) \
+              && { warn "vault: capture timer last fired $((trig_age/60))m ago (stuck? journalctl -u vault-recorder)"; bad=$((bad+1)); }
+          fi
+          # behind = merged robot PRs not pulled; ahead = commits not pushed
+          # (push failing). Both self-heal next cycle, so soft-warn, no bad++.
           behind=$(git -C "$srv" rev-list --count HEAD..@{u} 2>/dev/null || echo 0)
-          (( behind > 0 )) && warn "vault: recorder $behind behind — merged robot PRs not yet pulled"
+          (( behind > 0 )) && warn "vault: recorder $behind behind remote — merged robot PRs not yet pulled"
+          ahead=$(git -C "$srv" rev-list --count @{u}..HEAD 2>/dev/null || echo 0)
+          (( ahead > 0 )) && warn "vault: recorder $ahead commit(s) unpushed — push failing?"
         fi
         # the recorder also keeps the agents' reader clone
         dir=$(vault_dir)
