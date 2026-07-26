@@ -126,6 +126,12 @@ if [[ ! -d $VAULT/.git ]]; then
 fi
 sudo -u obsidian git -C "$VAULT" config user.name "vault-recorder"
 sudo -u obsidian git -C "$VAULT" config user.email "vault-recorder@$(hostname -s)"
+# The repo is obsidian-owned; the owner ($OWNER_USER, via the group ACL) can
+# READ it but git refuses cross-owner repos ("dubious ownership"). Mark it
+# safe system-wide so `dotfiles doctor` can inspect commit age / behind-count.
+# Read-only: file perms still block $OWNER_USER from committing or pushing.
+safedirs=$(git config --system --get-all safe.directory 2>/dev/null)   # capture, don't pipe to grep -q
+grep -qx "$VAULT" <<<"$safedirs" || git config --system --add safe.directory "$VAULT"
 [[ -d $VAULT/.git ]] && ok "vault clone in place" || echo "!! clone failed (deploy key not yet accepted?)"
 
 step "6/8 recorder + note-helper binaries"
