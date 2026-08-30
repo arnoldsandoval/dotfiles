@@ -1,23 +1,61 @@
 {
-  "tui": "fullscreen",
-  "skipWorkflowUsageWarning": true,
-  "theme": "dark",
-  "agentPushNotifEnabled": true,
   "model": "opus[1m]",
   "hooks": {
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "~/.local/bin/dotfiles-notify done" }
+          {
+            "type": "command",
+            "command": "~/.local/bin/dotfiles-notify done"
+          }
         ]
       }
     ],
     "Notification": [
       {
         "hooks": [
-          { "type": "command", "command": "~/.local/bin/dotfiles-notify input" }
+          {
+            "type": "command",
+            "command": "~/.local/bin/dotfiles-notify input"
+          }
         ]
       }
+    ]
+  },
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(rm:apps/api/scripts/tmp-seed-prod.ts)"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: Cloudflare R2 (object storage; configured via R2_ACCOUNT_ID/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY/R2_BUCKET in this repo's .env.example, not currently filled in)",
+      "**Repository visibility**: private — panchoinc/swappy (confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured — local .env files (.env, .env.local, .env.*.local) gitignored; machine-local secrets live outside this repo per ~/.claude/CLAUDE.md",
+      "**Default / protected branches**: no branch protection rules or rulesets currently configured on panchoinc/swappy (via gh)",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: dev box has a public IP; API/DB bind to 127.0.0.1 by default, mobile app reaches API via LAN/Tailscale IP for physical-device testing (per README)",
+      "**Source control**: this repo (panchoinc/swappy) and its origin remote (github.com:panchoinc/swappy.git) only",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: .env, .env.example, apps/admin/.env.local, apps/api/.env, apps/mobile/.env (local secrets, gitignored); apps/api/scripts/tmp-seed-prod.ts (production seed script) — share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment (e.g. apps/api/scripts/tmp-seed-prod.ts touches prod data)",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (Bun/Turborepo monorepo — Expo mobile app + Hono/oRPC API, face-swap iOS app)",
+      "**Trusted repo**: /home/arnie/code/swappy (github.com:panchoinc/swappy.git, private) — confidential material (non-secret) is fine to commit/push here; secrets and sensitive data are never cleared by visibility alone",
+      "**Org-specific CLIs**: None configured",
+      "routine under /home/arnie/code/swappy/ prefix: bun, bunx, docker compose, git — within this repo only"
     ]
   }
 }
