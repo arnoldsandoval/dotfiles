@@ -163,7 +163,16 @@ _combined_brewfile() {
 _check_brew_drift() {
   local combined extras
   combined=$(_combined_brewfile)
-  extras=$(brew bundle cleanup --file "$combined" 2>/dev/null | sed 's/^/    /')
+  # `brew bundle cleanup` reports orphaned formulae/casks AND folds in
+  # `brew cleanup`'s cache/empty-dir sweep. Only the former is real drift.
+  # Cut everything from the "Would `brew cleanup`" marker onward and drop the
+  # stray cache/footer lines, so a machine with zero orphans warns about
+  # nothing (the cache tarball + empty gio dirs are Homebrew's own cruft, not
+  # hand-installed packages you could 'dotfiles save' or uninstall).
+  extras=$(brew bundle cleanup --file "$combined" 2>/dev/null \
+    | sed '/Would `brew cleanup`/,$d' \
+    | grep -vE '^[[:space:]]*(Would remove|Run `brew|$)' \
+    | sed 's/^/    /')
   rm -f "$combined"
   [[ -n $extras ]] && { warn "installed but not in any Brewfile (add + 'dotfiles save', or uninstall):"; printf '%s\n' "$extras"; }
   return 0
