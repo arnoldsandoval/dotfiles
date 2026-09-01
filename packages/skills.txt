@@ -31,6 +31,5 @@ prototype mattpocock/skills
 diagnosing-bugs mattpocock/skills
 to-tickets mattpocock/skills
 to-spec mattpocock/skills
-writing-great-skills mattpocock/skills
 wayfinder mattpocock/skills
 caveman JuliusBrussee/caveman
