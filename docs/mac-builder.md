@@ -15,7 +15,13 @@ caller (`native-builds.yml`).
 3. `echo 'export PATH="/opt/homebrew/opt/node@22/bin:$PATH"' >> ~/.zprofile`
 4. Android: `yes | sdkmanager --licenses`, then
    `sdkmanager "platform-tools" "platforms;android-36"`. Gradle pulls NDK
-   versions itself once licenses are accepted.
+   versions itself once licenses are accepted. REQUIRED: a user-home
+   `~/.gradle/gradle.properties` with
+   `org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=2g` and
+   `org.gradle.parallel=true` — Expo's template caps metaspace at 512m
+   and the daemon dies of OutOfMemoryError: Metaspace, hanging the build
+   silently at 0% CPU for however long you let it. User-home properties
+   outrank the project's.
 5. **Apple WWDR intermediates** — a fresh Mac lacks the generations that
    validate EAS distribution certs; without them every build dies with
    "certificate hasn't been imported successfully":
