@@ -46,3 +46,14 @@ token), ASC key trio for TestFlight submits. Set with
   public repo could execute code on this machine.
 - Ad-hoc install page pattern (Expo-style, tailnet-only): manifest.plist
   + IPA served over `tailscale serve` https, `itms-services://` link.
+
+## The runtime-version rule (learned 2026-08-31, the hard way)
+
+`runtimeVersion = appVersion` in the Expo apps, and version is the OTA
+compatibility wall. ANY build that changes natives (new module, pod
+bumps, expo patch bumps) MUST bump the app version — otherwise the new
+binary downloads OTAs published for the old natives and expo-updates
+ErrorRecovery.crash()es on every launch after the first ("instantly
+crashes, doesn't open"). Symptom in the .ips: SIGABRT on
+expo.controller.errorRecoveryQueue. Old binaries freeze safely on their
+last matching OTA when the version moves; that's the design working.
