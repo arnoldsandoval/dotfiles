@@ -27,3 +27,10 @@ command -v zoxide  >/dev/null && eval "$(zoxide init zsh)"
 [[ -o interactive ]] && command -v dotfiles >/dev/null && dotfiles nudge
 
 unset _f _profile
+
+# bun completions
+[ -s "/Users/arnie/.bun/_bun" ] && source "/Users/arnie/.bun/_bun"
+
+# lm-studio cli — only present on the inference host; the guard keeps this
+# inert on every other machine (installer wrote a hardcoded path, replaced)
+[[ -d $HOME/.lmstudio/bin ]] && PATH="$PATH:$HOME/.lmstudio/bin"
