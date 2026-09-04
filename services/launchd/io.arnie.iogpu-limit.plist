@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>io.arnie.iogpu-limit</string>
+  <!-- sysctl settings are runtime-only. The default GPU wired limit is ~75% of
+       RAM (~27GB here), which the 64k-context model plus every Electron app on
+       the machine can crowd. Raising it to 30000MB gives the driver headroom;
+       this box took two IOGPUGroupMemory kernel panics under the default. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/sbin/sysctl</string>
+    <string>iogpu.wired_limit_mb=30000</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardErrorPath</key>
+  <string>/tmp/iogpu-limit.err</string>
+</dict>
+</plist>

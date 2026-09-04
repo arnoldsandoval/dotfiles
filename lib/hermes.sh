@@ -45,6 +45,11 @@ hermes_doctor() {
   [[ ${acsleep:-1} -eq 0 ]] \
     || echo "hermes: AC sleep is ${acsleep:-?} min, want 0 (sudo pmset -c sleep 0) — machine unreachable if it sleeps"
 
+  # sysctl is runtime-only, so this silently reverts on every reboot.
+  local gpul; gpul=$(sysctl -n iogpu.wired_limit_mb 2>/dev/null)
+  [[ ${gpul:-0} -ge 30000 ]] \
+    || echo "hermes: iogpu.wired_limit_mb is ${gpul:-0}, want >=30000 — load io.arnie.iogpu-limit (needs root)"
+
   if [[ $(hermes_conf evict_on_ci) == true ]]; then
     grep -q 'ACTIONS_RUNNER_HOOK_JOB_STARTED' "$HOME/actions-runner/.env" 2>/dev/null \
       || echo "hermes: evict_on_ci=true but no runner hook in ~/actions-runner/.env"
