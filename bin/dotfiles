@@ -17,7 +17,7 @@ if [[ ${1:-} == nudge ]]; then
   exit 0
 fi
 
-for f in core platform profile tui link pkg skills sync doctor menu-sessions vault; do
+for f in core platform profile tui link pkg skills sync doctor menu-sessions vault hermes; do
   # shellcheck disable=SC1090
   source "$DOTFILES/lib/$f.sh"
 done

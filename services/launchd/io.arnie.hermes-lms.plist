@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>io.arnie.hermes-lms</string>
+  <!-- Re-assert the local inference server: it does not survive a reboot, and a
+       wake-from-sleep can leave the port dead. Idempotent, so re-running is free. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>__DOTFILES__/bin/hermes-lms-up</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>300</integer>
+  <key>StandardErrorPath</key>
+  <string>/tmp/hermes-lms.err</string>
+</dict>
+</plist>

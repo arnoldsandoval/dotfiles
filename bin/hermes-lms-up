@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# hermes-lms-up — ensure the local inference server is listening. Run at load and
+# every 5 min by io.arnie.hermes-lms.plist: the server does not survive a reboot,
+# and waking from sleep can leave the port dead while the app still runs.
+# Host-gated and always exit 0 — this must never become a boot-time failure.
+set -u
+exec 2>/dev/null
+DOTFILES="${DOTFILES:-$HOME/code/dotfiles}"
+PY_BIN="$(command -v python3 2>/dev/null || echo /usr/bin/python3)"
+conf() { sed -n "s/^$1=//p" "$DOTFILES/config/hermes.conf" 2>/dev/null | head -1; }
+[ "$(conf host)" = "$(hostname -s)" ] || exit 0
+
+LMS="$(command -v lms 2>/dev/null)"; [ -n "$LMS" ] || LMS="$HOME/.lmstudio/bin/lms"
+[ -x "$LMS" ] || exit 0
+
+# Never fight the CI eviction hook: if a job is running the model is unloaded on
+# purpose, and reloading here would hand the build a 16GB competitor.
+pgrep -f 'Runner.Worker' >/dev/null 2>&1 && exit 0
+
+pgrep -f "LM Studio.app" >/dev/null 2>&1 || { open -g -a "LM Studio"; sleep 10; }
+curl -sf --max-time 5 http://localhost:1234/v1/models >/dev/null 2>&1 || "$LMS" server start >/dev/null 2>&1
+
+# Load explicitly rather than letting a request JIT-load it. A JIT load takes
+# LM Studio's GLOBAL defaults and silently drops --parallel, which puts the
+# model back on MLX's batched path with 4 KV slots. At 64k that exhausts the
+# GPU: observed as kIOGPUCommandBufferCallbackErrorOutOfMemory mid-generation,
+# and very likely the same pressure behind the IOGPUGroupMemory kernel panics.
+MODEL="$(conf model)"
+PAR="$(conf parallel)";  PAR="${PAR:-1}"
+CTX="$(conf context)";   CTX="${CTX:-64000}"
+TTL="$(conf ttl_seconds)"; TTL="${TTL:-900}"
+
+# Parse structured output, never columns: `lms ps` pads SIZE ("17.19 GB") and
+# TTL ("12m / 15m") across multiple whitespace fields, so positional awk silently
+# reads the wrong column. An earlier version compared $(NF-2) -- which is the TTL
+# -- against the wanted parallelism, never matched, and therefore unloaded and
+# reloaded the model on EVERY run. That churned 17GB of GPU allocation every five
+# minutes and killed an in-flight scheduled job mid-generation.
+state=$("$LMS" ps --json 2>/dev/null | "$PY_BIN" -c "
+import json,sys
+try: d=json.load(sys.stdin)
+except Exception: print(''); raise SystemExit
+if not isinstance(d,list): d=[d]
+for m in d:
+    if m.get('modelKey')==sys.argv[1] or m.get('identifier')==sys.argv[1]:
+        print(f\"{m.get('parallel','')} {m.get('contextLength','')}\"); break
+else: print('')
+" "$MODEL" 2>/dev/null)
+
+loaded_par=$(printf '%s' "$state" | cut -d' ' -f1)
+loaded_ctx=$(printf '%s' "$state" | cut -d' ' -f2)
+
+if [ -z "$loaded_par" ]; then
+  "$LMS" load "$MODEL" --context-length "$CTX" --gpu max --parallel "$PAR" --ttl "$TTL" -y >/dev/null 2>&1
+elif [ "$loaded_par" != "$PAR" ] || [ "$loaded_ctx" != "$CTX" ]; then
+  # A JIT reload restored LM Studio's globals and dropped our settings. Replace
+  # it -- but only when it is genuinely idle, so we never yank the model out
+  # from under a running request.
+  st=$("$LMS" ps 2>/dev/null | awk -v m="$MODEL" '$0 ~ m {print $3}' | head -1)
+  if [ "$st" = "IDLE" ]; then
+    "$LMS" unload --all >/dev/null 2>&1
+    "$LMS" load "$MODEL" --context-length "$CTX" --gpu max --parallel "$PAR" --ttl "$TTL" -y >/dev/null 2>&1
+  fi
+fi
+exit 0

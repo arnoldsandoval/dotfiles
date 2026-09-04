@@ -21,6 +21,17 @@ run_doctor() {
   log "vault"
   check_vault || bad=$((bad+1))
 
+  if hermes_is_host 2>/dev/null; then
+    log "hermes"
+    local hfind; hfind=$(hermes_doctor)
+    if [[ -n $hfind ]]; then
+      while IFS= read -r line; do warn "$line"; done <<<"$hfind"
+      bad=$((bad+1))
+    else
+      ok "local inference healthy"
+    fi
+  fi
+
   log "git"
   behind=$(status_get behind); ts=$(status_get fetch_ts); err_=$(status_get fetch_err)
   [[ -n $err_ ]] && { warn "last fetch failed: $err_"; }
