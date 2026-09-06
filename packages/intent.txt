@@ -3,6 +3,7 @@
 # Sudo-free fallbacks for some of these live in installers.d/.
 git
 gh
+unzip
 zsh
 tmux
 starship
