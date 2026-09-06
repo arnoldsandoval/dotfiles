@@ -44,3 +44,6 @@ cask 'lm-studio'      # local inference server (MLX); 'lms' cli needs one-time '
 
 # fonts
 cask 'font-fira-mono-nerd-font'
+
+tap "teamookla/speedtest"
+brew "speedtest"

@@ -6,6 +6,13 @@
 
 speed_test() {
   local quick=${1:-}
+  # Ookla's CLI when present (multi-stream, nearest server — the better
+  # numbers); the curl/Cloudflare path below is the zero-install fallback
+  # that works the minute a box exists.
+  if command -v speedtest >/dev/null; then
+    speedtest --accept-license --accept-gdpr "$@"
+    return
+  fi
   local down_bytes=100000000 up_bytes=25000000
   [[ $quick == --quick || $quick == -q ]] && down_bytes=25000000 up_bytes=10000000
 
