@@ -17,7 +17,7 @@ if [[ ${1:-} == nudge ]]; then
   exit 0
 fi
 
-for f in core platform profile tui link pkg skills sync doctor menu-sessions vault hermes; do
+for f in core platform profile tui link pkg skills sync doctor menu-sessions vault hermes speed; do
   # shellcheck disable=SC1090
   source "$DOTFILES/lib/$f.sh"
 done
@@ -39,6 +39,7 @@ ${C_MAG}usage:${C_OFF} dotfiles [command]
   ${C_BLD}diff${C_OFF}                 show uncommitted config changes (alias: status)
   ${C_BLD}link${C_OFF}                 (re)apply symlinks; prunes links whose source is gone
   ${C_BLD}doctor${C_OFF}               drift report: links, packages, skills, git (exit 1 on findings)
+  ${C_BLD}speed${C_OFF} [--quick]       up/down/latency via Cloudflare (pure curl, same everywhere)
   ${C_BLD}cleanup${C_OFF}              uninstall brew packages no Brewfile declares (confirms first)
   ${C_BLD}skills${C_OFF} [install]     list skills / install missing manifest entries
   ${C_BLD}fetch${C_OFF} [--maybe]      quiet background fetch (used by timers + shell startup)
@@ -154,6 +155,7 @@ case "${1:-}" in
   vault-sync) shift; vault_sync "${1:-}" ;;
   note) shift; vault_note "$*" ;;
   doctor) run_doctor ;;
+  speed) shift; speed_test "${1:-}" ;;
   cleanup) pkg_cleanup ;;
   skills) shift; case "${1:-list}" in list) skills_list ;; install) skills_install_manifest ;; *) skills_list ;; esac ;;
   -h|--help|help) usage ;;
