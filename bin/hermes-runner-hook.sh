@@ -6,7 +6,11 @@
 # Contract, because the runner enforces none of it: hooks have NO timeout and
 # a non-zero exit FAILS the CI job. So this must be fast, idempotent, and
 # always exit 0 — a broken assistant must never break a build.
-set -u
+#
+# The runner IGNORES the shebang and runs hooks under `bash -e -o pipefail`,
+# so `set +e` alone isn't enough armor: every status-bearing command below
+# carries its own `|| true`, or -e turns a failed lms call into a failed job.
+set -u +e
 exec 2>/dev/null
 
 DOTFILES="${DOTFILES:-$HOME/code/dotfiles}"
@@ -15,7 +19,7 @@ conf() { sed -n "s/^$1=//p" "$DOTFILES/config/hermes.conf" 2>/dev/null | head -1
 [ "$(conf evict_on_ci)" = "true" ]            || exit 0
 [ "$(conf host)" = "$(hostname -s)" ]         || exit 0
 
-LMS="$(command -v lms 2>/dev/null)"
+LMS="$(command -v lms 2>/dev/null || true)"
 [ -n "$LMS" ] || LMS="$HOME/.lmstudio/bin/lms"
 [ -x "$LMS" ] || exit 0
 
@@ -24,7 +28,7 @@ LMS="$(command -v lms 2>/dev/null)"
 worker=$!
 ( sleep 20; kill -9 "$worker" 2>/dev/null ) &
 watchdog=$!
-wait "$worker" 2>/dev/null
-kill "$watchdog" 2>/dev/null
+wait "$worker" 2>/dev/null || true
+kill "$watchdog" 2>/dev/null || true
 
 exit 0
