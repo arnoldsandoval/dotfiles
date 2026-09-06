@@ -29,6 +29,12 @@ skills_list() {
 # -g global scope, -s exact skill (multi-skill repos), -a per-profile agent
 # (this IS the per-agent adapter: claude-code everywhere except mac-work).
 skills_install_manifest() {
+  # First-run PATH: tier-1 installers drop bun/node into ~/.bun and
+  # ~/.local/bin moments before this runs, but the invoking shell's PATH
+  # predates them — so a fresh machine skipped every skill with "needs
+  # node/bun" while bun sat right there. Look where the installers put
+  # things, not just where the old PATH does.
+  export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
   local runner=""
   if has npx; then runner="npx --yes"; elif has bunx; then runner="bunx"; fi
   local agent=claude-code
