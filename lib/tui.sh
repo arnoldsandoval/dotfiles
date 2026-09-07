@@ -49,11 +49,11 @@ _ui_read_num() {
 }
 
 # ui_choose [--nested] HEADER OPTION... -> prints chosen option (empty on cancel)
-# Single-keypress numbered selection; esc = shell at top level, back when
+# Single-keypress numbered selection; esc or q = shell at top level, back when
 # --nested. gum stays out of this path (terminal probes; see note below).
 ui_choose() {
-  local esc_hint="esc = shell"
-  [[ $1 == --nested ]] && { esc_hint="esc = back"; shift; }
+  local esc_hint="esc/q = shell"
+  [[ $1 == --nested ]] && { esc_hint="esc/q = back"; shift; }
   local header=$1; shift
   # one menu at a time: in alt-screen mode each menu clears and redraws in place
   [[ ${DOTFILES_ALT:-} == 1 ]] && printf '\e[2J\e[H' >&2
