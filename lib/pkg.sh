@@ -143,7 +143,27 @@ check_packages() {
     done
     _check_brew_drift
   fi
+  has copilot && { _check_copilot_channel || bad=$((bad+1)); }
   for i in $(missing_intents); do err "missing tool: $i"; bad=$((bad+1)); done
+  return $((bad > 0))
+}
+
+# copilot's own binary self-updates in place (independent of Homebrew) and
+# can silently drift onto a prerelease build even while the cask still
+# thinks it's on a pinned stable version. Flag that drift, and flag a
+# duplicate npm/Volta install of @github/copilot — two installs racing their
+# own updaters is exactly how a machine ends up on prerelease unexpectedly.
+_check_copilot_channel() {
+  local bad=0 ver
+  ver=$(copilot --version 2>/dev/null | head -1)
+  if [[ $ver == *-[0-9]* ]]; then
+    warn "copilot on a prerelease build ($ver) — run 'brew reinstall --cask copilot-cli' to restore stable"
+    bad=$((bad+1))
+  fi
+  if [[ -d $HOME/.volta/tools/image/packages/@github/copilot ]]; then
+    warn "duplicate copilot install via npm/Volta (@github/copilot) — run 'volta uninstall @github/copilot'"
+    bad=$((bad+1))
+  fi
   return $((bad > 0))
 }
 
